@@ -22,12 +22,11 @@ namespace GameServer
 
         public bool Init()
         {
-            network = new NetService();                                                 //实例化网络服务。
-            network.Init(8000);                                                         //初始化网络服务并指定端口号 8000。
-            HelloWorldService.Instance.init();
-            //DBService.Instance.Init();                                                //DBService 会初始化数据库连接，用于访问和管理数据库中的数据。
-            //var a = DBService.Instance.Entities.Characters.Where(s => s.TID == 1);    //创建一个新的线程来运行 Update 方法，这个方法包含服务器的主循环。
-            //Console.WriteLine("{0}",a.FirstOrDefault<TCharacter>().Name);
+            network = new NetService();      //实例化网络服务。
+            network.Init(8000);              //初始化网络服务并指定端口号 8000。
+            DBService.Instance.Init();       //DBService 会初始化数据库连接，用于访问和管理数据库中的数据。
+            UserService.Instance.Init();
+
             thread = new Thread(new ThreadStart(this.Update));
 
             return true;
@@ -36,7 +35,6 @@ namespace GameServer
         public void Start()
         {
             network.Start();                        //启动网络服务，使服务器开始监听客户端连接。
-            HelloWorldService.Instance.start();     //启动 HelloWorldService，开始处理与客户端的交互。
             running = true;                         //设置 running 标志位为 true，指示服务器正在运行。
             thread.Start();                         //启动服务器更新线程，使 Update 方法在后台持续运行。
         }

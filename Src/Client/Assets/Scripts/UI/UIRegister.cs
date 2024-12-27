@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-//using Services;
+using Services;
 
 public class UIRegister : MonoBehaviour {
 
@@ -12,18 +12,18 @@ public class UIRegister : MonoBehaviour {
     public Button buttonRegister;
 
     void Start () {
-        //UserService.Instance.OnRegister = this.OnRegister;
+        UserService.Instance.OnRegister = this.OnRegister;
     }
+    void Update () {
+		
+	}
 
     void OnRegister(SkillBridge.Message.Result result, string msg)
     {
         MessageBox.Show(string.Format("结果：{0} msg:{1}", result, msg));
     }
 
-    void Update () {
-		
-	}
-
+    //直接给Unity中的组件绑定的方法
     public void OnClickRegister()
     {
         if (string.IsNullOrEmpty(this.username.text))
@@ -46,6 +46,6 @@ public class UIRegister : MonoBehaviour {
             MessageBox.Show("两次输入的密码不一致");
             return;
         }
-        //UserService.Instance.SendRegister(this.username.text, this.password.text);
+        UserService.Instance.SendRegister(this.username.text, this.password.text);
     }
 }

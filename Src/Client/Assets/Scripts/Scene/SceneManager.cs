@@ -26,7 +26,7 @@ public class SceneManager : MonoSingleton<SceneManager>
     IEnumerator LoadLevel(string name)
     {
         Debug.LogFormat("LoadLevel: {0}", name);
-        AsyncOperation async = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(name);
+        AsyncOperation async = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(name);//AsyncOperation 是 Unity 引擎中的一个类，表示一个异步操作，例如加载场景或卸载场景。
         async.allowSceneActivation = true;
         async.completed += LevelLoadCompleted;
         while (!async.isDone)

@@ -46,41 +46,19 @@ enum ENTITY_EVENT
 	JUMP = 4;
 }
 
-message NUserInfo {
-	int32 id = 1;
-	NPlayerInfo player = 2;
-}
-
-message NPlayerInfo {
-	int32 id = 1;
-	repeated NCharacterInfo characters = 2;
-}
-
-message NCharacterInfo {
-	int32 id = 1;
-	int32 tid = 2;
-	string name = 3;
-	CHARACTER_TYPE type = 4;
-	CHARACTER_CLASS class = 5;
-	int32 level = 6;
-	int32 mapId = 7;
-	NEntity entity = 8;
-}
-
 message NVector3
 {
 	int32 x = 1;
 	int32 y = 2;
 	int32 z = 3;
 }
-
 ////////////////////////////////////////////////////////////////
 //
 //  Entities
 //
 ////////////////////////////////////////////////////////////////
 
-
+// NEntity 是游戏中的一个实体对象，通常用于表示玩家在游戏世界中的状态或存在。
 message NEntity {
 	int32 id = 1;
 	NVector3 position = 2;
@@ -120,9 +98,7 @@ message NetMessageRequest{
 	MapEntitySyncRequest mapEntitySync = 8;
 	MapTeleportRequest mapTeleport = 9;
 
-	FirstTestRequest firstRequest = 10;
 }
-
 message NetMessageResponse{
 	UserRegisterResponse userRegister = 1;
 	UserLoginResponse userLogin = 2;
@@ -136,96 +112,102 @@ message NetMessageResponse{
 	MapEntitySyncResponse mapEntitySync = 8;
 	
 }
-
+/* ———————————————————————————————————————————————————— */
 
 // User Protocol
-message FirstTestRequest {
-	string HelloWorld = 1;
-}
-
 message UserLoginRequest {
 	string user = 1;
-	string passward = 2;
+	string password = 2;
 }
-
 message UserLoginResponse {
 	RESULT result = 1;
 	string errormsg = 2;
 	NUserInfo userinfo = 3;
 }
 
-
+message NUserInfo {
+	int32 id = 1;
+	NPlayerInfo player = 2;
+}
+message NPlayerInfo {
+	int32 id = 1;
+	repeated NCharacterInfo characters = 2;
+}
+message NCharacterInfo {
+	int32 id = 1;
+	int32 tid = 2;
+	string name = 3;
+	CHARACTER_TYPE type = 4;
+	CHARACTER_CLASS class = 5;
+	int32 level = 6;
+	int32 mapId = 7;
+	NEntity entity = 8;
+}
+/* ———————————————————————————————————————————————————— */
 message UserRegisterRequest
 {
 	string user = 1;
 	string passward = 2;
 }
-
 message UserRegisterResponse {
 	RESULT result = 1;
 	string errormsg = 2;
 }
 
+/* ———————————————————————————————————————————————————— */
 message UserCreateCharacterRequest
 {
 	string name = 1;
 	CHARACTER_CLASS class = 2;
 }
-
 message UserCreateCharacterResponse {
 	RESULT result = 1;
 	string errormsg = 2;
 	repeated NCharacterInfo characters = 3;
 }
-
+/* ———————————————————————————————————————————————————— */
 message UserGameEnterRequest
 {
 	int32 characterIdx = 1;
 }
-
 message UserGameEnterResponse {
 	RESULT result = 1;
 	string errormsg = 2;
 }
-
+/* ———————————————————————————————————————————————————— */
 message UserGameLeaveRequest
 {
 }
-
 message UserGameLeaveResponse {
 	RESULT result = 1;
 	string errormsg = 2;
 }
-
+/* ———————————————————————————————————————————————————— */
 // Map Protocol
 message MapCharacterEnterRequest
 {
 	int32 mapId = 1;
 }
-
 message MapCharacterEnterResponse
 {
 	int32 mapId = 1;
 	repeated NCharacterInfo characters = 2;
 }
-
+/* ———————————————————————————————————————————————————— */
 message MapCharacterLeaveResponse
 {
 	int32 characterId = 1;
 }
-
-
+/* ———————————————————————————————————————————————————— */
 message MapEntitySyncRequest
 {
     NEntitySync entitySync = 1;
 }
-
-
 message MapEntitySyncResponse
 {
     repeated NEntitySync entitySyncs = 2;
 }
-
+/* ———————————————————————————————————————————————————— */
 message MapTeleportRequest
 {
 	int32 teleporterId = 1;

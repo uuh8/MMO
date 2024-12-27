@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 10/23/2018 21:23:15
--- Generated from EDMX file: D:\Projects\ExtremeWorld\mmorpg\Src\Server\GameServer\GameServer\Entities.edmx
+-- Date Created: 12/18/2024 20:38:34
+-- Generated from EDMX file: F:\Develop Project\Extreme World\MyMMO\Src\Server\GameServer\GameServer\Entities.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
@@ -17,26 +17,11 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_UserPlayer]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Users] DROP CONSTRAINT [FK_UserPlayer];
-GO
-IF OBJECT_ID(N'[dbo].[FK_PlayerCharacter]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Characters] DROP CONSTRAINT [FK_PlayerCharacter];
-GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[Users]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Users];
-GO
-IF OBJECT_ID(N'[dbo].[Players]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Players];
-GO
-IF OBJECT_ID(N'[dbo].[Characters]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Characters];
-GO
 
 -- --------------------------------------------------
 -- Creating all tables

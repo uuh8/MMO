@@ -5,6 +5,7 @@
     "Type": "Normal",
     "Class": "WARRIOR",
     "Resource": "Character/Warrior",
+    "Description": "力量强大的近战单位",
     "InitLevel": 1,
     "Speed": 300
   },
@@ -14,6 +15,7 @@
     "Type": "Normal",
     "Class": "WIZARD",
     "Resource": "Character/Wizard",
+    "Description": "火力强大的远程单位",
     "InitLevel": 1,
     "Speed": 300
   },
@@ -23,6 +25,7 @@
     "Type": "Normal",
     "Class": "ARCHER",
     "Resource": "Character/Archer",
+    "Description": "敏捷的远程单位",
     "InitLevel": 1,
     "Speed": 300
   },
@@ -32,6 +35,7 @@
     "Type": "Normal",
     "Class": "WARRIOR",
     "Resource": "Monster/M1001",
+    "Description": "孱弱的小鬼",
     "InitLevel": 1,
     "Speed": 300
   },

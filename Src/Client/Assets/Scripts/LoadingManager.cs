@@ -40,7 +40,7 @@ public class LoadingManager : MonoBehaviour {
         //UserService.Instance.Init();
 
 
-        // Fake Loading Simulate
+        // 加载进度条
         for (float i = 0; i < 100;)
         {
             i += Random.Range(0.1f, 1.5f);

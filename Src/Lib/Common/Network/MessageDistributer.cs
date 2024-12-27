@@ -94,6 +94,12 @@ namespace Network
 
         public void RaiseEvent<Tm>(T sender,Tm msg)
         {
+            if (msg == null)
+            {
+                Log.Error("RaiseEvent: The message object is null!");
+                return;
+            }
+
             string key = msg.GetType().Name;
             if (messageHandlers.ContainsKey(key))
             {
