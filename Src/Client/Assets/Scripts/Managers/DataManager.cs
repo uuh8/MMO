@@ -28,6 +28,7 @@ public class DataManager : Singleton<DataManager>
     /*服务端使用。Load() 方法会读取游戏数据文件（如CharacterDefine.txt），并解析成对象（如 CharacterDefine），存储到字典中。*/
     public void Load()
     {
+
         string json = File.ReadAllText(this.DataPath + "MapDefine.txt"); //读取 MapDefine.txt 文件的内容
         this.Maps = JsonConvert.DeserializeObject<Dictionary<int, MapDefine>>(json);
 
@@ -37,8 +38,8 @@ public class DataManager : Singleton<DataManager>
         json = File.ReadAllText(this.DataPath + "TeleporterDefine.txt");//读取 TeleporterDefine.txt 文件的内容
         this.Teleporters = JsonConvert.DeserializeObject<Dictionary<int, TeleporterDefine>>(json);
 
-        json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");//读取 SpawnPointDefine.txt 文件的内容
-        this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>> (json);
+        //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");//读取 SpawnPointDefine.txt 文件的内容
+        //this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>> (json);
     }
 
     /*客户端使用*/

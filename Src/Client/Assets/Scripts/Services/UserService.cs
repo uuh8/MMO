@@ -7,6 +7,8 @@ using Network;
 using UnityEngine;
 
 using SkillBridge.Message;
+using Models;
+using static UnityEditor.PlayerSettings;
 
 namespace Services
 {
@@ -14,6 +16,7 @@ namespace Services
     {
         public UnityEngine.Events.UnityAction<Result, string> OnRegister;   //通过回调 OnRegister 通知 UI 层
         public UnityEngine.Events.UnityAction<Result, string> OnLogin;      //通过回调 OnLogin 通知 UI 层
+        public UnityEngine.Events.UnityAction<Result, string> OnCharCreate;  //通过回调 OnCharCreate 通知 UI 层(给UI层使用)
 
         NetMessage pendingMessage = null;      //网络消息的缓存变量，用来保存尚未发送的消息（例如当网络断开时）。
         bool connected = false;
@@ -22,21 +25,25 @@ namespace Services
         {
             NetClient.Instance.OnConnect += OnGameServerConnect;                     //当客户端连接到服务器时触发。
             NetClient.Instance.OnDisconnect += OnGameServerDisconnect;               //当客户端与服务器断开时触发。
-            MessageDistributer.Instance.Subscribe<UserRegisterResponse>(this.OnUserRegister); //监听来自服务器的 UserRegisterResponse 消息。当服务器返回用户注册结果时，触发 OnUserRegister 方法。
-            MessageDistributer.Instance.Subscribe<UserLoginResponse>(this.OnUserLogin);                                                                                   
-        }
 
+            MessageDistributer.Instance.Subscribe<UserRegisterResponse>(this.OnUserRegister); //监听来自服务器的 UserRegisterResponse 消息。当服务器返回用户注册结果时，触发 OnUserRegister 方法。
+            MessageDistributer.Instance.Subscribe<UserLoginResponse>(this.OnUserLogin);
+            MessageDistributer.Instance.Subscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
+
+        }
 
 
         public void Dispose()//资源释放，解除订阅的事件和消息，防止内存泄漏或对象被销毁后仍然调用事件逻辑。
         {
             MessageDistributer.Instance.Unsubscribe<UserRegisterResponse>(this.OnUserRegister);
             MessageDistributer.Instance.Unsubscribe<UserLoginResponse>(this.OnUserLogin);
+            MessageDistributer.Instance.Unsubscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
+
 
             NetClient.Instance.OnConnect -= OnGameServerConnect;
             NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
         }
-
+        /*————————————————————————————————————————————————————————————————————————————————————————————————————————————*/
         public void Init()
         {
 
@@ -93,15 +100,7 @@ namespace Services
             }
             return false;
         }
-
-        /*
-        主要功能：
-            构建用户注册请求消息。
-            如果网络已连接，直接发送消息。
-            如果网络未连接，缓存消息并重新连接服务器。
-        消息结构：
-            NetMessage 是一个通用消息对象，包含请求和响应字段。
-            UserRegisterRequest 包含注册所需的用户名和密码。*/
+        /*————————————————————————————————————————————————————————————————————————————————————————————————————————————*/
         public void  SendRegister(string user, string psw)   //发送注册请求
         {
             Debug.LogFormat("UserRegisterRequest::user :{0} psw:{1}", user, psw);
@@ -124,12 +123,6 @@ namespace Services
                 this.ConnectToServer();
             }
         }
-/*      功能：
-          处理服务器返回的 UserRegisterResponse
-          调用 OnRegister 回调，通知 UI 层注册是否成功。
-        响应内容：
-          response.Result：注册结果（成功或失败）。
-          response.Errormsg：错误消息。*/
         void OnUserRegister(object sender, UserRegisterResponse response)   //处理注册响应
         {
             Debug.LogFormat("OnUserRegister:{0} [{1}]", response.Result, response.Errormsg);
@@ -139,6 +132,7 @@ namespace Services
                 this.OnRegister(response.Result, response.Errormsg);
             }
         }
+        /*————————————————————————————————————————————————————————————————————————————————————————————————————————————*/
 
         public void SendLogin(string user, string psw) //发送登录请求
         {
@@ -162,14 +156,6 @@ namespace Services
                 this.ConnectToServer();
             }
         }
-
-
-        /* 功能：
-          处理服务器返回的 UserLoginResponse
-          调用 OnLogin 回调，通知 UI 层注册是否成功。
-        响应内容：
-          response.Result：注册结果（成功或失败）。
-          response.Errormsg：错误消息。*/
         void OnUserLogin(object sender, UserLoginResponse response)
         {
             // 验证消息是否为 null
@@ -192,5 +178,55 @@ namespace Services
 
             }
         }
+        /*————————————————————————————————————————————————————————————————————————————————————————————————————————————*/
+        public void SendCreateCharacter(string name, CharacterClass charClass)
+        {
+            Debug.LogFormat("UserCreateCharacterRequest::name :{0} class:{1}", name, charClass);
+
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.createChar = new UserCreateCharacterRequest();
+            
+            message.Request.createChar.Name = name;
+            message.Request.createChar.Class = charClass;
+            
+            if (this.connected && NetClient.Instance.Connected)
+            {
+                this.pendingMessage = null;
+                NetClient.Instance.SendMessage(message);
+            }
+            else
+            {
+                this.pendingMessage = message;
+                this.ConnectToServer();
+            }
+        }
+        /*message UserCreateCharacterResponse 
+        {
+            RESULT result = 1;
+            string errormsg = 2;
+            repeated NCharacterInfo characters = 3;
+        }*/
+        private void OnUserCreateCharacter(object sender, UserCreateCharacterResponse message)
+        {
+            Debug.LogFormat("OnUserCreateCharacter:{0} [{1}]", message.Result, message.Errormsg);
+
+            if (message.Result == Result.Success)
+            {
+                Models.User.Instance.Info.Player.Characters.Clear();
+                //通过 AddRange(response.Characters) 将从服务端返回的角色列表添加到当前玩家的角色列表中。response.Characters 是一个包含新角色的集合。
+                Models.User.Instance.Info.Player.Characters.AddRange(message.Characters);
+            }
+            else
+            {
+                // 检查 OnCharCreate 是否被赋值（即是否有注册回调,OnCharCreate是给UI用的）。
+                if (this.OnCharCreate != null)
+                {
+                    this.OnCharCreate(message.Result, message.Errormsg);
+
+                }
+            }
+        }
+
     }
 }

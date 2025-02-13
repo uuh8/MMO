@@ -29,25 +29,25 @@ public class UIlogin : MonoBehaviour
     {
         if (result == Result.Success)
         {
-            //µÇÂ¼³É¹¦£¬½øÈë½ÇÉ«Ñ¡Ôñ
-            MessageBox.Show("µÇÂ¼³É¹¦,×¼±¸½ÇÉ«Ñ¡Ôñ" + message,"ÌáÊ¾", MessageBoxType.Information);
+            //ç™»å½•æˆåŠŸï¼Œè¿›å…¥è§’è‰²é€‰æ‹©
+            MessageBox.Show("ç™»å½•æˆåŠŸ,å‡†å¤‡è§’è‰²é€‰æ‹©" + message, "æç¤º", MessageBoxType.Information);
             SceneManager.Instance.LoadScene("CharSelect");
         }
         else
-            MessageBox.Show(message, "´íÎó", MessageBoxType.Error);
+            MessageBox.Show(message, "é”™è¯¯", MessageBoxType.Error);
     }
 
-    //Ö±½Ó¸øUnityÖĞµÄ×é¼ş°ó¶¨µÄ·½·¨
+    //ç›´æ¥ç»™Unityä¸­çš„æŒ‰é’®ç»‘å®šçš„æ–¹æ³•
     public void OnClickLogin()
     {
         if (string.IsNullOrEmpty(this.username.text))
         {
-            MessageBox.Show("ÇëÊäÈëÕËºÅ");
+            MessageBox.Show("è¯·è¾“å…¥è´¦å·");
             return;
         }
         if (string.IsNullOrEmpty(this.password.text))
         {
-            MessageBox.Show("ÇëÊäÈëÃÜÂë");
+            MessageBox.Show("è¯·è¾“å…¥å¯†ç ");
             return;
         }
         UserService.Instance.SendLogin(this.username.text, this.password.text);

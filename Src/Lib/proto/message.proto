@@ -107,6 +107,7 @@ message NetMessageResponse{
 	UserGameLeaveResponse gameLeave = 5;
 
 	MapCharacterEnterResponse mapCharacterEnter = 6;
+
 	MapCharacterLeaveResponse mapCharacterLeave = 7;
 
 	MapEntitySyncResponse mapEntitySync = 8;
@@ -124,7 +125,7 @@ message UserLoginResponse {
 	string errormsg = 2;
 	NUserInfo userinfo = 3;
 }
-
+/* ———————————————————————————————————————————————————— */
 message NUserInfo {
 	int32 id = 1;
 	NPlayerInfo player = 2;
@@ -160,7 +161,8 @@ message UserCreateCharacterRequest
 	string name = 1;
 	CHARACTER_CLASS class = 2;
 }
-message UserCreateCharacterResponse {
+message UserCreateCharacterResponse 
+{
 	RESULT result = 1;
 	string errormsg = 2;
 	repeated NCharacterInfo characters = 3;

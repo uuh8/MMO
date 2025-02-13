@@ -13,7 +13,7 @@ namespace Common.Data
         public CharacterClass Class { get; set; }
         public string Resource { get; set; }
 
-        public int Description { get; set; } 
+        public string Description { get; set; } 
 
         //基本属性
         public int Speed { get; set; }
