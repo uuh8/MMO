@@ -163,6 +163,7 @@ namespace GameServer.Services
             NetMessage response = new NetMessage();
             response.Response = new NetMessageResponse();
             response.Response.createChar = new UserCreateCharacterResponse();
+
             response.Response.createChar.Result = Result.Success;
             response.Response.createChar.Errormsg = "None";
 

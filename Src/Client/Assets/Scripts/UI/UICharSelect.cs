@@ -10,6 +10,9 @@ using Services;
 
 public class UICharSelect : MonoBehaviour
 {
+    public GameObject panelCreate;
+    public GameObject panelSelect;
+
     public GameObject warriorModel;
     public GameObject archerModel;
     public GameObject magicianModel;
@@ -24,6 +27,8 @@ public class UICharSelect : MonoBehaviour
     public Button create_char_bt;
 
     public Text char_intros;
+    // 角色名
+    public InputField char_name;
 
     // 当前显示模型
     private GameObject currentModel;
@@ -41,7 +46,9 @@ public class UICharSelect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UserService.Instance.OnCharCreate = OnCharCreate;
+        UserService.Instance.OnCharCreate = OnCharCreate; // 注册创建角色回调
+
+        create_char_bt.onClick.AddListener(OnClickCreateChar); // 绑定创建角色按钮的点击事件
 
         // 查找子物体
         warriorSelectFrame = select_frame.transform.Find("warrior_select_frame").gameObject;
@@ -77,11 +84,20 @@ public class UICharSelect : MonoBehaviour
 
 
     }
+
+
+
     /*——————————————————————————————————————————————————————————————————————————————————————————————————————————*/
-    // 初始化角色选择
+    // 初始化角色选择(当点击创建角色按钮的时候调用)，首先先转换页面到选择存档的界面，再然后显示所有存档的角色信息（包括刚创建的角色）
     private void InitCharacterSelect(bool init)
     {
+        panelCreate.SetActive(false);
+        panelSelect.SetActive(true);
 
+        if (init)
+        {
+
+        }
     }
 
     /*——————————————————————————————————————————————————————————————————————————————————————————————————————————*/
@@ -210,12 +226,10 @@ public class UICharSelect : MonoBehaviour
     {
         ChangeChar(CharacterClass.Warrior);
     }
-
     public void OnClickArcher()
     {
         ChangeChar(CharacterClass.Archer);
     }
-
     public void OnClickMagician()
     {
         ChangeChar(CharacterClass.Wizard);
@@ -230,6 +244,16 @@ public class UICharSelect : MonoBehaviour
         else
         {
             MessageBox.Show(message,"错误",MessageBoxType.Error);
+        }
+
+    }
+
+    private void OnClickCreateChar()
+    {
+        String name = char_name.text;
+        if (currentSelectedIndex != -1 && name != "")
+        {
+            UserService.Instance.SendCreateCharacter(name, (CharacterClass)currentSelectedIndex);
         }
     }
 

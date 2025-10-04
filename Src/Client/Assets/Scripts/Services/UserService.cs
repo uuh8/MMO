@@ -57,7 +57,6 @@ namespace Services
             NetClient.Instance.Connect();
         }
 
-
         void OnGameServerConnect(int result, string reason) //连接回调
         {
             Log.InfoFormat("LoadingMesager::OnGameServerConnect :{0} reason:{1}", result, reason);
@@ -213,16 +212,15 @@ namespace Services
 
             if (message.Result == Result.Success)
             {
-                Models.User.Instance.Info.Player.Characters.Clear();
-                //通过 AddRange(response.Characters) 将从服务端返回的角色列表添加到当前玩家的角色列表中。response.Characters 是一个包含新角色的集合。
-                Models.User.Instance.Info.Player.Characters.AddRange(message.Characters);
+                Models.User.Instance.Info.Player.Characters.Clear();    // 清除当前角色的信息
+                Models.User.Instance.Info.Player.Characters.AddRange(message.Characters); //通过 AddRange(response.Characters) 将从服务端返回的角色列表添加到当前玩家的角色列表中。message.Characters 是一个包含新角色的集合。
             }
             else
             {
                 // 检查 OnCharCreate 是否被赋值（即是否有注册回调,OnCharCreate是给UI用的）。
                 if (this.OnCharCreate != null)
                 {
-                    this.OnCharCreate(message.Result, message.Errormsg);
+                    this.OnCharCreate(message.Result, message.Errormsg); 
 
                 }
             }
