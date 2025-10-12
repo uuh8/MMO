@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameServer.Entities
 {
+    /*父类*/
     class CharacterBase : Entity
     {
 
@@ -20,7 +21,7 @@ namespace GameServer.Entities
             }
         }
         public NCharacterInfo Info;
-        public CharacterDefine Define;
+        public CharacterDefine Define;  // 配置表
 
         public CharacterBase(Vector3Int pos, Vector3Int dir):base(pos,dir)
         {

@@ -11,6 +11,7 @@ using System.Threading;
 
 using Network;
 using GameServer.Services;
+using GameServer.Managers;
 
 namespace GameServer
 {
@@ -22,10 +23,12 @@ namespace GameServer
 
         public bool Init()
         {
-            network = new NetService();      //实例化网络服务。
-            network.Init(8000);              //初始化网络服务并指定端口号 8000。
-            DBService.Instance.Init();       //DBService 会初始化数据库连接，用于访问和管理数据库中的数据。
+            network = new NetService();   //实例化网络服务。
+            network.Init(8000);           //初始化网络服务并指定端口号 8000。
+            DBService.Instance.Init();    //DBService 会初始化数据库连接，用于访问和管理数据库中的数据。
             UserService.Instance.Init();
+            DataManager.Instance.Load();
+            MapManager.Instance.Init();
 
             thread = new Thread(new ThreadStart(this.Update));
 
@@ -34,9 +37,9 @@ namespace GameServer
 
         public void Start()
         {
-            network.Start();                        //启动网络服务，使服务器开始监听客户端连接。
-            running = true;                         //设置 running 标志位为 true，指示服务器正在运行。
-            thread.Start();                         //启动服务器更新线程，使 Update 方法在后台持续运行。
+            network.Start();  //启动网络服务，使服务器开始监听客户端连接。
+            running = true;   //设置 running 标志位为 true，指示服务器正在运行。
+            thread.Start();   //启动服务器更新线程，使 Update 方法在后台持续运行。
         }
 
 
@@ -49,9 +52,9 @@ namespace GameServer
 
         public void Update()
         {
-            while (running)             //当 running 为 true 时，服务器进入循环，持续更新。
+            while (running)   //当 running 为 true 时，服务器进入循环，持续更新。
             {
-                Time.Tick();            //调用 Time 的 Tick() 方法，这可能用于更新服务器的计时器、帧数或其他时间相关的逻辑。
+                Time.Tick();  //调用 Time 的 Tick() 方法，这可能用于更新服务器的计时器、帧数或其他时间相关的逻辑。
                 Thread.Sleep(100);      //线程休眠 100 毫秒，以控制循环频率，减轻服务器的负载。
                 //Console.WriteLine("{0} {1} {2} {3} {4}", Time.deltaTime, Time.frameCount, Time.ticks, Time.time, Time.realtimeSinceStartup);
             }

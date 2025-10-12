@@ -30,6 +30,9 @@ namespace Services
             MessageDistributer.Instance.Subscribe<UserRegisterResponse>(this.OnUserRegister); 
             MessageDistributer.Instance.Subscribe<UserLoginResponse>(this.OnUserLogin);
             MessageDistributer.Instance.Subscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
+            MessageDistributer.Instance.Subscribe<UserGameEnterResponse>(this.OnGameEnter);
+            MessageDistributer.Instance.Subscribe<UserGameLeaveResponse>(this.OnGameLeave);
+            MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
         }
 
         //资源释放，解除订阅的事件和消息，防止内存泄漏或对象被销毁后仍然调用事件逻辑。
@@ -38,6 +41,9 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<UserRegisterResponse>(this.OnUserRegister);
             MessageDistributer.Instance.Unsubscribe<UserLoginResponse>(this.OnUserLogin);
             MessageDistributer.Instance.Unsubscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
+            MessageDistributer.Instance.Unsubscribe<UserGameEnterResponse>(this.OnGameEnter);
+            MessageDistributer.Instance.Unsubscribe<UserGameLeaveResponse>(this.OnGameLeave);
+            MessageDistributer.Instance.Unsubscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
 
             NetClient.Instance.OnConnect -= OnGameServerConnect;
             NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
@@ -168,8 +174,6 @@ namespace Services
         /// <param name="charClass"></param>
         public void SendCreateCharacter(string name, CharacterClass charClass)
         {
-            // Debug.LogFormat("<color=yellow>[UserService.SendCreateCharacter]</color> UserCreateCharacterRequest:: name :{0} class:{1}", name, charClass);
-
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.createChar = new UserCreateCharacterRequest();
@@ -186,6 +190,21 @@ namespace Services
                 this.pendingMessage = message;
                 this.ConnectToServer();
             }
+        }
+
+        /// <summary>
+        /// 发送角色进入游戏的请求
+        /// </summary>
+        /// <param name="characterIdx"></param>
+        public void SendGameEnter(int characterIdx)
+        {
+            Debug.LogFormat("[UserService] UserGameEnterRequest::characterId:{0}", characterIdx);
+
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.gameEnter = new UserGameEnterRequest();
+            message.Request.gameEnter.characterIdx = characterIdx;
+            NetClient.Instance.SendMessage(message);
         }
         #endregion
 
@@ -238,7 +257,7 @@ namespace Services
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="message"></param>
-        private void OnUserCreateCharacter(object sender, UserCreateCharacterResponse message)
+        void OnUserCreateCharacter(object sender, UserCreateCharacterResponse message)
         {
             Debug.LogFormat("[UserService] OnUserCreateCharacter:{0} [{1}]", message.Result, message.Errormsg);
 
@@ -257,6 +276,44 @@ namespace Services
             {
                 Debug.LogFormat("<color=yellow>[UserService]</color> OnCharCreate没有被触发");
             }
+
+        }
+
+        /// <summary>
+        /// 用户进入游戏的响应
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="response"></param>
+        void OnGameEnter(object sender, UserGameEnterResponse response)
+        {
+            Debug.LogFormat("[UserService] OnGameEnter:{0} [{1}]", response.Result, response.Errormsg);
+            if (response.Result == Result.Success)
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// 用户离开游戏的响应
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="response"></param>
+        void OnGameLeave(object sender, UserGameLeaveResponse response)
+        {
+
+        }
+
+        /// <summary>
+        /// 处理角色进入游戏（地图）的响应
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="response"></param>
+        void OnCharacterEnterMap(object sender, MapCharacterEnterResponse response)
+        {
+            Debug.LogFormat("[UserService] OnCharacterEnterMap:{0}", response.mapId);
+            NCharacterInfo info = response.Characters[0];
+            User.Instance.CurrentCharacter = info;  // User里面保存了当前这个玩家的信息
+            SceneManager.Instance.LoadScene(DataManager.Instance.Maps[response.mapId].Resource);
 
         }
         #endregion

@@ -9,6 +9,7 @@ using SkillBridge.Message;
 using GameServer.Entities;
 using System.Security.Cryptography;
 using System.Data.SqlTypes;
+using GameServer.Managers;
 
 namespace GameServer.Services
 {
@@ -20,6 +21,8 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserRegisterRequest>(this.OnRegister); //订阅消息
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserLoginRequest>(this.OnLogin);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserCreateCharacterRequest>(this.OnCreateCharacter);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameEnterRequest>(this.OnGameEnter);
+            //MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave);
         }
 
         public void Init()
@@ -28,6 +31,7 @@ namespace GameServer.Services
         }
 
         #region 客户端消息处理
+
         /// <summary>
         /// 处理客户端的登录请求
         /// </summary>
@@ -173,6 +177,40 @@ namespace GameServer.Services
             byte[] data = PackageHandler.PackMessage(response);
             sender.SendData(data, 0, data.Length);
         }
+
+        /// <summary>
+        /// 处理客户端进入游戏的请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="request"></param>
+        private void OnGameEnter(NetConnection<NetSession> sender, UserGameEnterRequest request)
+        {
+            TCharacter dbchar = sender.Session.User.Player.Characters.ElementAt(request.characterIdx);
+            Log.InfoFormat("UserGameEnterRequest: characterID:{0}:{1} Map:{2}", dbchar.ID, dbchar.Name, dbchar.MapID);
+            Character character = CharacterManager.Instance.AddCharacter(dbchar);
+
+            // 构建DTO
+            NetMessage message = new NetMessage();
+            message.Response = new NetMessageResponse();
+            message.Response.gameEnter = new UserGameEnterResponse();
+            message.Response.gameEnter.Result = Result.Success;
+            message.Response.gameEnter.Errormsg = "None";
+
+            // 发送消息给客户端
+            byte[] data = PackageHandler.PackMessage(message);
+            sender.SendData(data, 0, data.Length);
+
+            // 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
+            sender.Session.Character = character;
+
+            MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character);
+        }
+
+        /*private void OnGameLeave(NetConnection<NetSession> sender, UserCreateCharacterRequest request)
+        {
+
+        }*/
+
         #endregion
     }
 }

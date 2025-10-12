@@ -48,7 +48,8 @@ public class UICharSelect : MonoBehaviour
 
     // 当前选中的角色
     private int selectCharacterIdx = -1;
-    // 选中角色的
+
+    // 选中角色的Render Texture
     public UICharacterView characterView;
 
     private int currentSelectedIndex = -1; // 跟踪当前选中的职业索引
@@ -61,7 +62,10 @@ public class UICharSelect : MonoBehaviour
         UserService.Instance.OnCharCreate = OnCharacterCreate;
     }
 
-    // 初始化
+    /// <summary>
+    /// 进入角色选择界面的初始化
+    /// </summary>
+    /// <param name="init"></param>
     private void InitCharacterSelect(bool init)
     {
         panelCreate.SetActive(false);
@@ -267,6 +271,9 @@ public class UICharSelect : MonoBehaviour
 
     #endregion
 
+    /// <summary>
+    /// 点击创建角色按钮的回调
+    /// </summary>
     public void OnClickCreate()
     {
         if(string.IsNullOrEmpty(this.char_name.text))
@@ -276,6 +283,11 @@ public class UICharSelect : MonoBehaviour
         }
         UserService.Instance.SendCreateCharacter(this.char_name.text, this.charClass);
     }
+    /// <summary>
+    /// 点击创建角色按钮的回调
+    /// </summary>
+    /// <param name="result"></param>
+    /// <param name="message"></param>
     void OnCharacterCreate(Result result, string message)
     {
         if (result == Result.Success)
@@ -285,6 +297,10 @@ public class UICharSelect : MonoBehaviour
         else
             MessageBox.Show(message, "错误", MessageBoxType.Error);
     }
+    /// <summary>
+    /// 点击已创建角色按钮的回调
+    /// </summary>
+    /// <param name="idx"></param>
     private void OnCharacterSelect(int idx)
     {
         this.selectCharacterIdx = idx;
@@ -301,5 +317,14 @@ public class UICharSelect : MonoBehaviour
             charInfo.Selected = (idx == i);
         }
     }
-
+    /// <summary>
+    /// 点击开始游戏按钮的回调
+    /// </summary>
+    public void OnClickPlay()
+    {
+        if(selectCharacterIdx >= 0)
+        {
+            UserService.Instance.SendGameEnter(selectCharacterIdx);
+        }
+    }
 }

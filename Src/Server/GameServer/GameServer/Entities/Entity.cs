@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace GameServer.Entities
 {
+    /*父类*/
     class Entity
     {
         public int entityId
@@ -15,7 +16,7 @@ namespace GameServer.Entities
             get { return this.entityData.Id; }
         }
 
-
+        // 位置
         private Vector3Int position;
 
         public Vector3Int Position
@@ -27,6 +28,7 @@ namespace GameServer.Entities
             }
         }
 
+        // 方向
         private Vector3Int direction;
         public Vector3Int Direction
         {
@@ -38,6 +40,7 @@ namespace GameServer.Entities
             }
         }
 
+        // 速度
         private int speed;
         public int Speed
         {
@@ -49,6 +52,7 @@ namespace GameServer.Entities
             }
         }
 
+        // 实体
         private NEntity entityData;
         public NEntity EntityData
         {

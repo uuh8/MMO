@@ -99,6 +99,7 @@ message NetMessageRequest{
 	UserRegisterRequest userRegister = 1;         // 用户注册
 	UserLoginRequest userLogin = 2;               // 用户登录
 	UserCreateCharacterRequest createChar = 3;    // 创建角色
+
 	UserGameEnterRequest gameEnter = 4;           // 进入游戏
 	UserGameLeaveRequest gameLeave = 5;           // 离开游戏
 	
@@ -113,6 +114,7 @@ message NetMessageResponse{
 	UserRegisterResponse userRegister = 1;        // 注册结果
 	UserLoginResponse userLogin = 2;              // 登录结果
 	UserCreateCharacterResponse createChar = 3;   // 创建角色结果
+
 	UserGameEnterResponse gameEnter = 4;          // 进入游戏结果
 	UserGameLeaveResponse gameLeave = 5;          // 离开游戏结果
 
@@ -179,11 +181,12 @@ message UserCreateCharacterResponse
 	string errormsg = 2;                  // 错误信息
 	repeated NCharacterInfo characters = 3; // 最新角色列表
 }
+
 /* ———————————————————————————————————————————————————— */
 // 进入游戏
 message UserGameEnterRequest
 {
-	int32 characterIdx = 1; // 选中的角色下标/ID（依实现而定）
+	int32 characterIdx = 1; // 选中的角色下标/ID
 }
 message UserGameEnterResponse {
 	RESULT result = 1;   // 进入结果
@@ -198,8 +201,9 @@ message UserGameLeaveResponse {
 	RESULT result = 1;   // 离开结果
 	string errormsg = 2; // 错误信息
 }
+
 /* ———————————————————————————————————————————————————— */
-// Map Protocol（地图/场景相关协议）
+// 角色进入游戏后通知服务器的其他角色
 message MapCharacterEnterRequest
 {
 	int32 mapId = 1; // 目标地图ID
