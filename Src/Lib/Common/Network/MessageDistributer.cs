@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Common;
 
+/*把“消息”投递给订阅者*/
 namespace Network
 {
     /// <summary>
@@ -92,6 +93,7 @@ namespace Network
             messageHandlers[type] = (MessageHandler<Tm>)messageHandlers[type] - messageHandler;
         }
 
+        // 统一触发
         public void RaiseEvent<Tm>(T sender,Tm msg)
         {
             if (msg == null)

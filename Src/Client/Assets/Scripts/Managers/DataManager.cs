@@ -15,30 +15,28 @@ public class DataManager : Singleton<DataManager>
     public string DataPath;
     public Dictionary<int, MapDefine> Maps = null;
     public Dictionary<int, CharacterDefine> Characters = null;
-    public Dictionary<int, TeleporterDefine> Teleporters = null;                    
+    public Dictionary<int, TeleporterDefine> Teleporters = null; // 传送点
     public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
 
 
     public DataManager()
     {
-        this.DataPath = "Data/";//
-        Debug.LogFormat("DataManager > DataManager()");
+        this.DataPath = "Data/"; 
     }
 
     /*服务端使用。Load() 方法会读取游戏数据文件（如CharacterDefine.txt），并解析成对象（如 CharacterDefine），存储到字典中。*/
     public void Load()
     {
-
-        string json = File.ReadAllText(this.DataPath + "MapDefine.txt"); //读取 MapDefine.txt 文件的内容
+        string json = File.ReadAllText(this.DataPath + "MapDefine.txt"); 
         this.Maps = JsonConvert.DeserializeObject<Dictionary<int, MapDefine>>(json);
 
-        json = File.ReadAllText(this.DataPath + "CharacterDefine.txt");//读取 CharacterDefine.txt 文件的内容
+        json = File.ReadAllText(this.DataPath + "CharacterDefine.txt");
         this.Characters = JsonConvert.DeserializeObject<Dictionary<int, CharacterDefine>>(json);
 
-        json = File.ReadAllText(this.DataPath + "TeleporterDefine.txt");//读取 TeleporterDefine.txt 文件的内容
+        json = File.ReadAllText(this.DataPath + "TeleporterDefine.txt");
         this.Teleporters = JsonConvert.DeserializeObject<Dictionary<int, TeleporterDefine>>(json);
 
-        //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");//读取 SpawnPointDefine.txt 文件的内容
+        //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
         //this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>> (json);
     }
 
@@ -60,8 +58,8 @@ public class DataManager : Singleton<DataManager>
 
         yield return null;
 
-        json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
-        this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>>(json);
+        //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
+        //this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>>(json);
 
         yield return null;
     }

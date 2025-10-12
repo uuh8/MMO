@@ -13,16 +13,11 @@ public class UIlogin : MonoBehaviour
     public Button buttonlogin;
     public Button buttonRegister;
 
-    // Start is called before the first frame update
     void Start()
     {
         UserService.Instance.OnLogin = this.Login;
 
         buttonlogin.onClick.AddListener(OnClickLogin);
-    }
-    void Update()
-    {
-        
     }
 
     void Login(Result result, string message)
@@ -30,7 +25,7 @@ public class UIlogin : MonoBehaviour
         if (result == Result.Success)
         {
             //登录成功，进入角色选择
-            MessageBox.Show("登录成功,准备角色选择" + message, "提示", MessageBoxType.Information);
+            MessageBox.Show("[UIlogin] 登录成功,准备角色选择" + message, "提示", MessageBoxType.Information);
             SceneManager.Instance.LoadScene("CharSelect");
         }
         else

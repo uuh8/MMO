@@ -8,6 +8,7 @@ using Network;
 using SkillBridge.Message;
 using GameServer.Entities;
 using System.Security.Cryptography;
+using System.Data.SqlTypes;
 
 namespace GameServer.Services
 {
@@ -25,29 +26,22 @@ namespace GameServer.Services
         {
 
         }
-        /*——————————————————————————————————————————————————————————————————————————————————————————————————————————————————*/
-        void OnLogin(NetConnection<NetSession> sender, UserLoginRequest request)
-        {
-            Log.InfoFormat("UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
 
-            /*message UserLoginResponse {
-                RESULT result = 1;
-                string errormsg = 2;
-                NUserInfo userinfo = 3;
-            }*/
+        #region 客户端消息处理
+        /// <summary>
+        /// 处理客户端的登录请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="request"></param>
+        private void OnLogin(NetConnection<NetSession> sender, UserLoginRequest request)
+        {
+            Log.InfoFormat("[UserService] UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
+
             NetMessage message = new NetMessage();
             message.Response = new NetMessageResponse();
             message.Response.userLogin = new UserLoginResponse();
 
-            // 在这段代码中，DBService.Instance.Entities.Users 实际上是 Entity Framework 中的一个 DbSet，它代表了应用程序中的一个集合，用于与 Users 表进行交互。
-            // DBService.Instance.Entities.Users 是一个 ORM 映射对象，它代表了数据库中的 Users 表，并允许你用 C# 代码来操作数据库。
-            // 实际上，数据库和代码中的 User 类之间的关系是通过 ORM 映射来建立的，EF 会在后台将你的 C# 类与数据库表进行映射，从而将对象操作转换为 SQL 操作。
-            //.FirstOrDefault()表示返回查询结果中的第一个元素，如果没有结果，则返回 null。
-            /*会被 ORM 转换为类似的 SQL 查询：
-            SELECT TOP 1 *
-            FROM Users
-            WHERE Username = @Username*/
-            // DBService.Instance.Entities 应用程序中所有数据库实体的集合，Users 则是其中的一个属性，代表数据库中的 Users 表。
+
             TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
             if (user == null)
             {
@@ -59,12 +53,13 @@ namespace GameServer.Services
                 message.Response.userLogin.Result = Result.Failed;
                 message.Response.userLogin.Errormsg = "密码错误";
             }
-            else
+            else // 登录成功
             {
-                //登录成功后，服务器将当前用户绑定到当前会话
+                // 注意这儿会话里存的是 EF 跟踪的实体，而不是独立的 DTO 或数据库重新查询的结果。
                 sender.Session.User = user;
 
-                message.Response.userLogin.Result = Result.Success;  // 将 Result.Success 赋值给 UserLoginResponse 消息的 Result 字段，表示登录成功。
+                // 装配DTO
+                message.Response.userLogin.Result = Result.Success;
                 message.Response.userLogin.Errormsg = "None";           
                 message.Response.userLogin.Userinfo = new NUserInfo();  // 初始化用户信息
                 message.Response.userLogin.Userinfo.Id = 1;
@@ -75,27 +70,26 @@ namespace GameServer.Services
                 //遍历当前玩家账号下所有已创建的角色
                 foreach (var c in user.Player.Characters)
                 {
-                    //为当前遍历到的角色（c）创建一个 NCharacterInfo 对象。NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
+                    //为当前遍历到的角色创建一个 NCharacterInfo 对象。NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
                     NCharacterInfo info = new NCharacterInfo();
-                    // 填充角色信息
                     info.Id = c.ID;
                     info.Name = c.Name;
                     info.Class = (CharacterClass)c.Class;
-                    //message.Response.userLogin.Userinfo.Player.Characters 是一个集合，用于存储所有角色的信息。例如：
-                    /*message.Response.userLogin.Userinfo.Player.Characters = [
-                        { Id = 1, Name = "Warrior1", Class = CharacterClass.Warrior },
-                        { Id = 2, Name = "Mage1", Class = CharacterClass.Mage }
-                    ];*/
+
                     message.Response.userLogin.Userinfo.Player.Characters.Add(info);
                 }
             }
 
             byte[] data = PackageHandler.PackMessage(message);  // 将 NetMessage 对象序列化为字节数组，方便通过网络发送。
-            sender.SendData(data, 0, data.Length);  // 将打包好的字节数组通过当前会话 sender 发送给客户端。
+            sender.SendData(data, 0, data.Length);              // 将打包好的字节数组通过当前会话 sender 发送给客户端。
         }
 
-
-        void OnRegister(NetConnection<NetSession> sender, UserRegisterRequest request)
+        /// <summary>
+        /// 处理客户端的注册请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="request"></param>
+        private void OnRegister(NetConnection<NetSession> sender, UserRegisterRequest request)
         {
             Log.InfoFormat("UserRegisterRequest: User:{0}  Pass:{1}", request.User, request.Passward);
 
@@ -130,13 +124,19 @@ namespace GameServer.Services
             sender.SendData(data, 0, data.Length);
         }
 
+        /// <summary>
+        /// 处理客户端的创建角色请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
         private void OnCreateCharacter(NetConnection<NetSession> sender, UserCreateCharacterRequest message)
         {
             // 客户端发送来的网络消息
             Log.InfoFormat("UserCreateCharacterRequest: Name:{0}  Class:{1}", message.Name, message.Class);
 
             /*—————————————————————— 数据库操作 ————————————————————————*/
-            // 创建角色对象TCharacter，TCharacter 类是一个 C# 对象，表示角色。它映射到数据库中的 Characters 表，
+            // 1. 创建角色对象，对象的每个字段对应数据库表的一列
+            // 创建角色对象TCharacter，TCharacter 类是一个 C# 对象，表示角色，它映射到数据库中的 Characters 表
             TCharacter character = new TCharacter()
             {
                 Name = message.Name,
@@ -147,28 +147,32 @@ namespace GameServer.Services
                 MapPosY = 4000,
                 MapPosZ = 820
             };
-            // 通过 Entity Framework 将 TCharacter 对象添加到 Characters 表中。
-            // Entities.Characters 是 Entity Framework 中与数据库表 Characters 相关联的 DbSet<TCharacter>，它允许我们操作数据库中的角色数据。
-            // Add(character) 会把新创建的角色对象 character 加入到 DbSet<TCharacter> 中，表示角色将被插入到数据库。
+
+            // 2. 把新角色对象加入到“待插入”的集合中
+            // Entities.Characters其实是DbSet<TCharacter>，相当于一个操作数据库表的“集合”。
+            // Add(character)并不会立刻写入数据库，只是告诉EF有一个新对象要插入到数据库表中。
             DBService.Instance.Entities.Characters.Add(character);
-            // 将角色对象添加到当前登录玩家的角色列表中。
-            // sender.Session.User 代表当前会话的用户，User.Player 是该用户的玩家对象，Player.Characters 是该玩家已经拥有的角色集合。
-            // 这样，在数据库中添加角色的同时，也在服务器内存中的玩家数据结构中更新角色列表。
+
+            // 3. 把角色加到玩家角色列表（服务器内存结构，不是数据库）里
+            // 这只是把新角色对象加到当前登录玩家的内存角色列表，与数据库无关，属于服务端业务层数据结构。
             sender.Session.User.Player.Characters.Add(character);
-            // 这行代码会将 DbSet<TCharacter> 中的更改（即新添加的角色）保存到数据库。
-            // SaveChanges() 是 Entity Framework 提供的一个方法，它会生成 SQL 插入语句（INSERT），并将所有对 Entities 的更改持久化到数据库中。在这里，它会将新创建的角色插入到 Characters 表。
+
+            // 4. 把所有“待插入/待更新”的数据 一次性 同步到数据库
+            // 这行才是真正把所有Add/Remove/Update的对象变成SQL语句，批量发送给数据库执行。
             DBService.Instance.Entities.SaveChanges();
 
-            /*—————————————————————— 构建UserCreateCharacterResponse发送给客户端 ————————————————————————*/
+            /*—————————————————————— 网络发送 ————————————————————————*/
+            // 构建DTO发给客户端
             NetMessage response = new NetMessage();
             response.Response = new NetMessageResponse();
             response.Response.createChar = new UserCreateCharacterResponse();
-
             response.Response.createChar.Result = Result.Success;
             response.Response.createChar.Errormsg = "None";
 
+            // 消息打包成字节流发送给客户端
             byte[] data = PackageHandler.PackMessage(response);
             sender.SendData(data, 0, data.Length);
         }
+        #endregion
     }
 }

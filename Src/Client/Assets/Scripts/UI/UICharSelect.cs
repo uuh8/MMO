@@ -7,6 +7,8 @@ using System;
 using Common;
 using UnityEngine.EventSystems;
 using Services;
+using Models;
+// using UnityEngine.UIElements;
 
 public class UICharSelect : MonoBehaviour
 {
@@ -16,8 +18,6 @@ public class UICharSelect : MonoBehaviour
     public GameObject warriorModel;
     public GameObject archerModel;
     public GameObject magicianModel;
-
-    // CharacterClass charClass;
 
     public Button warrior_bt;
     public Button archer_bt;
@@ -41,54 +41,27 @@ public class UICharSelect : MonoBehaviour
     private GameObject archerSelectFrame;
     private GameObject magicianSelectFrame;
 
+    // 创建的角色
+    public Transform uiCharList;
+    public GameObject uiCharInfo;
+    public List<GameObject> uiChars = new List<GameObject>();
+
+    // 当前选中的角色
+    private int selectCharacterIdx = -1;
+    // 选中角色的
+    public UICharacterView characterView;
+
     private int currentSelectedIndex = -1; // 跟踪当前选中的职业索引
-    /*——————————————————————————————————————————————————————————————————————————————————————————————————————————*/
+    CharacterClass charClass;
+
     // Start is called before the first frame update
     void Start()
     {
-        UserService.Instance.OnCharCreate = OnCharCreate; // 注册创建角色回调
-
-        create_char_bt.onClick.AddListener(OnClickCreateChar); // 绑定创建角色按钮的点击事件
-
-        // 查找子物体
-        warriorSelectFrame = select_frame.transform.Find("warrior_select_frame").gameObject;
-        archerSelectFrame = select_frame.transform.Find("archer_select_frame").gameObject;
-        magicianSelectFrame = select_frame.transform.Find("magician_select_frame").gameObject;
-
-        // 确保角色数据已加载
-        DataManager.Instance.Load();
-        // 设置初始模型
-        currentModel = warriorModel;
-        // 初始化模型显示状态
-        warriorModel.SetActive(true);
-        archerModel.SetActive(false);
-        magicianModel.SetActive(false);
-
-        // 初始化角色模型字典
-        characterModels = new Dictionary<CharacterClass, GameObject>
-        {
-            { CharacterClass.Warrior, warriorModel },
-            { CharacterClass.Archer, archerModel },
-            { CharacterClass.Wizard, magicianModel }
-        };
-
-        // 添加事件监听
-        AddButtonEvents(warrior_bt, 0, CharacterClass.Warrior);
-        AddButtonEvents(archer_bt, 1, CharacterClass.Archer);
-        AddButtonEvents(magician_bt, 2, CharacterClass.Wizard);
-
-        // 初始时隐藏所有选择框
-        warriorSelectFrame.SetActive(false);
-        archerSelectFrame.SetActive(false);
-        magicianSelectFrame.SetActive(false);
-
-
+        InitCharacterSelect(true);
+        UserService.Instance.OnCharCreate = OnCharacterCreate;
     }
 
-
-
-    /*——————————————————————————————————————————————————————————————————————————————————————————————————————————*/
-    // 初始化角色选择(当点击创建角色按钮的时候调用)，首先先转换页面到选择存档的界面，再然后显示所有存档的角色信息（包括刚创建的角色）
+    // 初始化
     private void InitCharacterSelect(bool init)
     {
         panelCreate.SetActive(false);
@@ -96,12 +69,66 @@ public class UICharSelect : MonoBehaviour
 
         if (init)
         {
+            foreach(var old in uiChars)
+            {
+                Destroy(old);
+            }
+            uiChars.Clear();
+            for (int i = 0; i < User.Instance.Info.Player.Characters.Count; i++)
+            {
+                // 在Content下实例化
+                GameObject go = Instantiate(uiCharInfo, this.uiCharList);
+
+                // 设置内容/数据
+                UICharInfo charinfo = go.GetComponent<UICharInfo>();
+                charinfo.CharacterInfo = User.Instance.Info.Player.Characters[i];
+
+                Button button = go.GetComponent<Button>();
+                int idx = i;    // 闭包问题，必须拷贝i
+                button.onClick.AddListener(() => {
+                    OnCharacterSelect(idx);
+                });
+
+                uiChars.Add(go);
+                go.SetActive(true);
+            }
+
+            // 查找子物体
+            warriorSelectFrame = select_frame.transform.Find("warrior_select_frame").gameObject;
+            archerSelectFrame = select_frame.transform.Find("archer_select_frame").gameObject;
+            magicianSelectFrame = select_frame.transform.Find("magician_select_frame").gameObject;
+
+            // 确保角色数据已加载
+            DataManager.Instance.Load();
+            // 设置初始模型
+            currentModel = warriorModel;
+            // 初始化模型显示状态
+            warriorModel.SetActive(true);
+            archerModel.SetActive(false);
+            magicianModel.SetActive(false);
+
+            // 初始化角色模型字典
+            characterModels = new Dictionary<CharacterClass, GameObject>
+        {
+            { CharacterClass.Warrior, warriorModel },
+            { CharacterClass.Archer, archerModel },
+            { CharacterClass.Wizard, magicianModel }
+        };
+
+            // 添加事件监听
+            AddButtonEvents(warrior_bt, 0, CharacterClass.Warrior);
+            AddButtonEvents(archer_bt, 1, CharacterClass.Archer);
+            AddButtonEvents(magician_bt, 2, CharacterClass.Wizard);
+
+            // 初始时隐藏所有选择框
+            warriorSelectFrame.SetActive(false);
+            archerSelectFrame.SetActive(false);
+            magicianSelectFrame.SetActive(false);
 
         }
     }
 
-    /*——————————————————————————————————————————————————————————————————————————————————————————————————————————*/
-
+    #region 鼠标相关
     private void AddButtonEvents(Button button, int positionIndex, CharacterClass charClass)
     {
         // 获取或添加EventTrigger组件
@@ -132,15 +159,15 @@ public class UICharSelect : MonoBehaviour
 
         // 添加点击事件
         EventTrigger.Entry clickEntry = new EventTrigger.Entry();
-        clickEntry.eventID = EventTriggerType.PointerClick;
-        clickEntry.callback = new EventTrigger.TriggerEvent();
-        clickEntry.callback.AddListener((data) => { OnCharacterSelected(charClass); });
-        trigger.triggers.Add(clickEntry);
+        clickEntry.eventID = EventTriggerType.PointerClick;         // 设置事件类型为PointerClick（点击事件）
+        clickEntry.callback = new EventTrigger.TriggerEvent();  // 初始化回调函数容器，TriggerEvent是一个事件类型，可以添加多个监听器
+        clickEntry.callback.AddListener((data) => { OnCharacterSelected(charClass); }); // 添加一个监听器到回调函数中
+        trigger.triggers.Add(clickEntry);   // 将创建好的事件条目添加到EventTrigger组件的triggers列表中。
 
         // 保留原有的按钮点击事件
         button.onClick.AddListener(() => ChangeChar(charClass));
     }
-    /*——————————————————————————————————————————————————————————————————————————————————————————————————————————*/
+
     //鼠标进入
     private void OnPointerEnter(CharacterClass charClass)
     {
@@ -206,6 +233,9 @@ public class UICharSelect : MonoBehaviour
                 break;
         }
 
+        // 把当前选中职业写回成员变量（集中管理）
+        this.charClass = charClass;
+
         // 处理角色选择逻辑
         ChangeChar(charClass);
     }
@@ -235,27 +265,41 @@ public class UICharSelect : MonoBehaviour
         ChangeChar(CharacterClass.Wizard);
     }
 
-    private void OnCharCreate(Result result, string message)
+    #endregion
+
+    public void OnClickCreate()
     {
-        if(result == Result.Success)
+        if(string.IsNullOrEmpty(this.char_name.text))
+        {
+            MessageBox.Show("请输入角色名");
+            return;
+        }
+        UserService.Instance.SendCreateCharacter(this.char_name.text, this.charClass);
+    }
+    void OnCharacterCreate(Result result, string message)
+    {
+        if (result == Result.Success)
         {
             InitCharacterSelect(true);
         }
         else
-        {
-            MessageBox.Show(message,"错误",MessageBoxType.Error);
-        }
-
+            MessageBox.Show(message, "错误", MessageBoxType.Error);
     }
-
-    private void OnClickCreateChar()
+    private void OnCharacterSelect(int idx)
     {
-        String name = char_name.text;
-        if (currentSelectedIndex != -1 && name != "")
+        this.selectCharacterIdx = idx;
+        var character = User.Instance.Info.Player.Characters[idx];
+        User.Instance.CurrentCharacter = character;
+        // Debug.LogFormat("<color=yellow>[UICharSelect]</color> 选择角色：[{0}]{1} Class: {2} (值: {3})", character.Id,character.Name, character.Class,  (int)character.Class); 
+
+        User.Instance.CurrentCharacter = character;
+        characterView.CurrectCharacter = ((int)character.Class) - 1;
+
+        for (int i = 0; i < User.Instance.Info.Player.Characters.Count; i++)
         {
-            UserService.Instance.SendCreateCharacter(name, (CharacterClass)currentSelectedIndex);
+            UICharInfo charInfo = this.uiChars[i].GetComponent<UICharInfo>();
+            charInfo.Selected = (idx == i);
         }
     }
-
 
 }

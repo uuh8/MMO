@@ -10,7 +10,7 @@ namespace GameServer.Services
 {
     class DBService : Singleton<DBService>
     {
-        ExtremeWorldEntities entities;
+        ExtremeWorldEntities entities;  //  Entity Framework 的上下文对象（DbContext）用于与数据库进行交互
 
         public ExtremeWorldEntities Entities
         {

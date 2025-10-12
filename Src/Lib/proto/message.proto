@@ -10,12 +10,14 @@ option cc_enable_arenas = true;
 //  Basic Defines
 //
 ////////////////////////////////////////////////////////////////
+// 通用结果码：指示请求/操作是否成功
 enum RESULT
 {
 	SUCCESS = 0;
 	FAILED = 1;
 }
 
+// 角色实体类型：用于区分玩家/NPC/怪物
 enum CHARACTER_TYPE
 {
 	Player = 0;
@@ -23,6 +25,7 @@ enum CHARACTER_TYPE
 	Monster = 2;
 }
 
+// 职业类型：用于角色创建与显示
 enum CHARACTER_CLASS
 {
 	NONE = 0;
@@ -31,12 +34,14 @@ enum CHARACTER_CLASS
 	ARCHER = 3;
 }
 
+// 角色状态：基础移动/待机等
 enum CHARACTER_STATE
 {
 	IDLE = 0;
 	MOVE = 1;
 }
 
+// 实体事件：用于实体同步时描述发生了什么动作
 enum ENTITY_EVENT
 {
 	NONE = 0;
@@ -46,6 +51,7 @@ enum ENTITY_EVENT
 	JUMP = 4;
 }
 
+// 三维向量，通常表示位置/朝向（单位与缩放由客户端/服务器约定）
 message NVector3
 {
 	int32 x = 1;
@@ -58,18 +64,19 @@ message NVector3
 //
 ////////////////////////////////////////////////////////////////
 
-// NEntity 是游戏中的一个实体对象，通常用于表示玩家在游戏世界中的状态或存在。
+// NEntity 表示一个可同步的实体（玩家/NPC/怪物等）的核心属性
 message NEntity {
-	int32 id = 1;
-	NVector3 position = 2;
-	NVector3 direction = 3;
-	int32 speed = 4;
+	int32 id = 1;            // 实体唯一标识
+	NVector3 position = 2;   // 世界坐标位置
+	NVector3 direction = 3;  // 面向方向（通常为单位向量或角度向量）
+	int32 speed = 4;         // 当前移动速度（单位与换算由协议双方约定）
 }
 
+// NEntitySync 用于描述一次实体的状态/事件同步
 message NEntitySync {
-	int32 id = 1;
-	ENTITY_EVENT event = 2;
-	NEntity entity = 3;
+	int32 id = 1;            // 发生同步的实体ID
+	ENTITY_EVENT event = 2;  // 触发的事件（移动、跳跃等）
+	NEntity entity = 3;      // 同步后的实体快照（位置/方向/速度等）
 	
 }
 
@@ -81,136 +88,143 @@ message NEntitySync {
 //
 ////////////////////////////////////////////////////////////////
 
+// NetMessage 是网络层统一包裹：包含请求(Request)和响应(Response)二选一
 message NetMessage{
-	NetMessageRequest Request = 1;
-	NetMessageResponse Response = 2;
+	NetMessageRequest Request = 1;   // 请求消息体
+	NetMessageResponse Response = 2; // 响应消息体
 }
 
+// NetMessageRequest 收纳所有可发送至服务器的请求类型
 message NetMessageRequest{
-	UserRegisterRequest userRegister = 1;
-	UserLoginRequest userLogin = 2;
-	UserCreateCharacterRequest createChar = 3;
-	UserGameEnterRequest gameEnter = 4;
-	UserGameLeaveRequest gameLeave = 5;
+	UserRegisterRequest userRegister = 1;         // 用户注册
+	UserLoginRequest userLogin = 2;               // 用户登录
+	UserCreateCharacterRequest createChar = 3;    // 创建角色
+	UserGameEnterRequest gameEnter = 4;           // 进入游戏
+	UserGameLeaveRequest gameLeave = 5;           // 离开游戏
 	
-	MapCharacterEnterRequest mapCharacterEnter = 6;
+	MapCharacterEnterRequest mapCharacterEnter = 6; // 进入地图
 
-	MapEntitySyncRequest mapEntitySync = 8;
-	MapTeleportRequest mapTeleport = 9;
+	MapEntitySyncRequest mapEntitySync = 8;       // 实体同步（客户端->服务器）
+	MapTeleportRequest mapTeleport = 9;           // 传送请求
 
 }
+// NetMessageResponse 收纳服务器返回的所有响应类型
 message NetMessageResponse{
-	UserRegisterResponse userRegister = 1;
-	UserLoginResponse userLogin = 2;
-	UserCreateCharacterResponse createChar = 3;
-	UserGameEnterResponse gameEnter = 4;
-	UserGameLeaveResponse gameLeave = 5;
+	UserRegisterResponse userRegister = 1;        // 注册结果
+	UserLoginResponse userLogin = 2;              // 登录结果
+	UserCreateCharacterResponse createChar = 3;   // 创建角色结果
+	UserGameEnterResponse gameEnter = 4;          // 进入游戏结果
+	UserGameLeaveResponse gameLeave = 5;          // 离开游戏结果
 
-	MapCharacterEnterResponse mapCharacterEnter = 6;
+	MapCharacterEnterResponse mapCharacterEnter = 6; // 进入地图结果/同步
 
-	MapCharacterLeaveResponse mapCharacterLeave = 7;
+	MapCharacterLeaveResponse mapCharacterLeave = 7; // 地图内角色离开通知
 
-	MapEntitySyncResponse mapEntitySync = 8;
+	MapEntitySyncResponse mapEntitySync = 8;      // 实体同步（服务器广播）
 	
 }
 /* ———————————————————————————————————————————————————— */
 
-// User Protocol
+// User Protocol（用户/角色相关协议）
 message UserLoginRequest {
-	string user = 1;
-	string password = 2;
+	string user = 1;      // 用户名
+	string password = 2;  // 密码（明文/加密由上层决定）
 }
 message UserLoginResponse {
-	RESULT result = 1;
-	string errormsg = 2;
-	NUserInfo userinfo = 3;
+	RESULT result = 1;     // 结果码
+	string errormsg = 2;   // 错误信息（失败时返回）
+	NUserInfo userinfo = 3;// 登录成功后返回的用户信息
 }
 /* ———————————————————————————————————————————————————— */
 message NUserInfo {
-	int32 id = 1;
-	NPlayerInfo player = 2;
+	int32 id = 1;          // 用户ID
+	NPlayerInfo player = 2;// 玩家信息（角色列表等）
 }
 message NPlayerInfo {
-	int32 id = 1;
-	repeated NCharacterInfo characters = 2;
+	int32 id = 1;                          // 玩家ID
+	repeated NCharacterInfo characters = 2; // 该账号下的角色列表
 }
 message NCharacterInfo {
-	int32 id = 1;
-	int32 tid = 2;
-	string name = 3;
-	CHARACTER_TYPE type = 4;
-	CHARACTER_CLASS class = 5;
-	int32 level = 6;
-	int32 mapId = 7;
-	NEntity entity = 8;
+	int32 id = 1;                 // 角色实例ID
+	int32 tid = 2;                // 角色模板ID（配置表）
+	string name = 3;              // 角色名
+	CHARACTER_TYPE type = 4;      // 类型：玩家/NPC/怪物
+	CHARACTER_CLASS class = 5;    // 职业
+	int32 level = 6;              // 等级
+	int32 mapId = 7;              // 所在地图ID
+	NEntity entity = 8;           // 实体属性（位置/方向等）
 }
 /* ———————————————————————————————————————————————————— */
+// 用户注册
 message UserRegisterRequest
 {
-	string user = 1;
-	string passward = 2;
+	string user = 1;      // 用户名
+	string passward = 2;  // 密码（注意：字段名存在拼写，保持兼容）
 }
 message UserRegisterResponse {
-	RESULT result = 1;
-	string errormsg = 2;
+	RESULT result = 1;   // 结果码
+	string errormsg = 2; // 错误信息
 }
 
 /* ———————————————————————————————————————————————————— */
+// 创建角色
 message UserCreateCharacterRequest
 {
-	string name = 1;
-	CHARACTER_CLASS class = 2;
+	string name = 1;             // 角色名
+	CHARACTER_CLASS class = 2;   // 职业
 }
 message UserCreateCharacterResponse 
 {
-	RESULT result = 1;
-	string errormsg = 2;
-	repeated NCharacterInfo characters = 3;
+	RESULT result = 1;                    // 结果码
+	string errormsg = 2;                  // 错误信息
+	repeated NCharacterInfo characters = 3; // 最新角色列表
 }
 /* ———————————————————————————————————————————————————— */
+// 进入游戏
 message UserGameEnterRequest
 {
-	int32 characterIdx = 1;
+	int32 characterIdx = 1; // 选中的角色下标/ID（依实现而定）
 }
 message UserGameEnterResponse {
-	RESULT result = 1;
-	string errormsg = 2;
+	RESULT result = 1;   // 进入结果
+	string errormsg = 2; // 错误信息
 }
 /* ———————————————————————————————————————————————————— */
+// 离开游戏
 message UserGameLeaveRequest
 {
 }
 message UserGameLeaveResponse {
-	RESULT result = 1;
-	string errormsg = 2;
+	RESULT result = 1;   // 离开结果
+	string errormsg = 2; // 错误信息
 }
 /* ———————————————————————————————————————————————————— */
-// Map Protocol
+// Map Protocol（地图/场景相关协议）
 message MapCharacterEnterRequest
 {
-	int32 mapId = 1;
+	int32 mapId = 1; // 目标地图ID
 }
 message MapCharacterEnterResponse
 {
-	int32 mapId = 1;
-	repeated NCharacterInfo characters = 2;
+	int32 mapId = 1;                    // 当前地图ID
+	repeated NCharacterInfo characters = 2; // 地图内可见角色列表
 }
 /* ———————————————————————————————————————————————————— */
 message MapCharacterLeaveResponse
 {
-	int32 characterId = 1;
+	int32 characterId = 1; // 离开的角色ID
 }
 /* ———————————————————————————————————————————————————— */
 message MapEntitySyncRequest
 {
-    NEntitySync entitySync = 1;
+    NEntitySync entitySync = 1; // 客户端上报的实体同步数据
 }
 message MapEntitySyncResponse
 {
-    repeated NEntitySync entitySyncs = 2;
+    repeated NEntitySync entitySyncs = 2; // 服务器广播的同步列表
 }
 /* ———————————————————————————————————————————————————— */
 message MapTeleportRequest
 {
-	int32 teleporterId = 1;
+	int32 teleporterId = 1; // 触发的传送点ID
 }

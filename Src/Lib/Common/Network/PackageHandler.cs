@@ -31,6 +31,7 @@
 using System;
 using System.IO;
 
+/*把“字节流”变回“消息”*/
 namespace Network
 {
     /// <summary>
@@ -51,7 +52,7 @@ namespace Network
     /// <typeparam name="T">消息发送者类型</typeparam>
     public class PackageHandler<T>
     {
-        private MemoryStream stream = new MemoryStream(64 * 1024);
+        private MemoryStream stream = new MemoryStream(64 * 1024);  // 字节接收缓冲
         private int readOffset = 0;
 
         private T sender;
@@ -79,7 +80,7 @@ namespace Network
         }
 
         /// <summary>
-        /// 打包消息
+        /// 打包消息。把 NetMessage 序列化到内存，再在前面写入4 字节长度头，得到最终可发的 byte[]
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
