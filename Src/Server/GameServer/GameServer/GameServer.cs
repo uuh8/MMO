@@ -28,7 +28,7 @@ namespace GameServer
             DBService.Instance.Init();    //DBService 会初始化数据库连接，用于访问和管理数据库中的数据。
             UserService.Instance.Init();
             DataManager.Instance.Load();
-            MapManager.Instance.Init();
+            MapService.Instance.Init();
 
             thread = new Thread(new ThreadStart(this.Update));
 

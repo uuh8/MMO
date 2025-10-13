@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Common.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Models
 {
@@ -13,6 +15,9 @@ namespace Models
         /*用于存储从服务器返回的当前用户的基本信息。*/
         private SkillBridge.Message.NUserInfo userInfo;
 
+        public MapDefine CurrentMapData { get; set; }
+        public GameObject CurrentCharacterObject { get; set; }
+
         public SkillBridge.Message.NUserInfo Info
         {
             get { return userInfo; }
@@ -22,7 +27,10 @@ namespace Models
         {
             this.userInfo = info;
         }
-        /*用于管理当前登录用户的角色信息*/
+
         public SkillBridge.Message.NCharacterInfo CurrentCharacter { get; set; }
+
+        
+
     }
 }
