@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*用于更新*/
 public class UIWorldElement : MonoBehaviour
 {
+    public Transform owner;         // 用于跟踪
 
-    public Transform owner;
-
-    public float height = 1.5f;
+    public float height = 2.0f;     // 该元素距离“地面”有多高
 
     // Use this for initialization
     void Start()

@@ -12,6 +12,7 @@ namespace GameServer.Managers
     {
         Dictionary<int, Map> Maps = new Dictionary<int, Map>();
 
+        // 初始化注册地图，在服务器启动的时候就会执行
         public void Init()
         {
             foreach (var mapdefine in DataManager.Instance.Maps.Values)

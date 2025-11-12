@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*世界元素管理器：维护世界元素（添加或者删除）*/
 public class UIWorldElementManager : MonoSingleton<UIWorldElementManager>
 {
-    public GameObject nameBarPrefab;
+    public GameObject nameBarPrefab;    // 角色血条
 
+    // 用一个字典管理所有 WorldElement
     private Dictionary<Transform, GameObject> elements = new Dictionary<Transform, GameObject>();
 
     // Use this for initialization
@@ -15,13 +17,11 @@ public class UIWorldElementManager : MonoSingleton<UIWorldElementManager>
         nameBarPrefab.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
+    /// <summary>
+    /// 添加/移除角色血条
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="character"></param>
     public void AddCharacterNameBar(Transform owner, Character character)
     {
         GameObject goNameBar = Instantiate(nameBarPrefab, this.transform);
@@ -31,7 +31,6 @@ public class UIWorldElementManager : MonoSingleton<UIWorldElementManager>
         goNameBar.SetActive(true);
         this.elements[owner] = goNameBar;
     }
-
     public void RemoveCharacterNameBar(Transform owner)
     {
         if (this.elements.ContainsKey(owner))

@@ -7,7 +7,8 @@ using Network;
 using UnityEngine;
 using SkillBridge.Message;
 using Models;
-using static UnityEditor.PlayerSettings;
+using Managers;
+using System.Security.Cryptography;
 
 namespace Services
 {
@@ -33,6 +34,7 @@ namespace Services
             MessageDistributer.Instance.Subscribe<UserGameEnterResponse>(this.OnGameEnter);
             MessageDistributer.Instance.Subscribe<UserGameLeaveResponse>(this.OnGameLeave);
             MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
+            MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
         }
 
         //资源释放，解除订阅的事件和消息，防止内存泄漏或对象被销毁后仍然调用事件逻辑。
@@ -44,6 +46,7 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<UserGameEnterResponse>(this.OnGameEnter);
             MessageDistributer.Instance.Unsubscribe<UserGameLeaveResponse>(this.OnGameLeave);
             MessageDistributer.Instance.Unsubscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
+            MessageDistributer.Instance.Unsubscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
 
             NetClient.Instance.OnConnect -= OnGameServerConnect;
             NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
@@ -108,6 +111,8 @@ namespace Services
         }
 
         #endregion
+
+
 
         #region 向服务器发送请求
 
@@ -206,7 +211,21 @@ namespace Services
             message.Request.gameEnter.characterIdx = characterIdx;
             NetClient.Instance.SendMessage(message);
         }
+        
+        /// <summary>
+        /// 发送角色推出游戏的请求
+        /// </summary>
+        public void SendGameLeave()
+        {
+            Debug.Log("[UserService] UserGameLeaveRequest");
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.gameLeave = new UserGameLeaveRequest();
+            NetClient.Instance.SendMessage(message);
+        }
         #endregion
+
+
 
         #region 响应服务器发来的消息
          
@@ -300,21 +319,39 @@ namespace Services
         /// <param name="response"></param>
         void OnGameLeave(object sender, UserGameLeaveResponse response)
         {
-
+            MapService.Instance.CurrentMapId = 0;
+            User.Instance.CurrentCharacter = null;
+            Debug.LogFormat("[UserService] OnGameLeave:{0} [{1}]", response.Result, response.Errormsg);
         }
 
         /// <summary>
-        /// 处理角色进入游戏（地图）的响应
+        /// 处理角色进入地图的响应
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>
         void OnCharacterEnterMap(object sender, MapCharacterEnterResponse response)
         {
             Debug.LogFormat("[UserService] OnCharacterEnterMap:{0}", response.mapId);
-            NCharacterInfo info = response.Characters[0];
-            User.Instance.CurrentCharacter = info;  // User里面保存了当前这个玩家的信息
-            SceneManager.Instance.LoadScene(DataManager.Instance.Maps[response.mapId].Resource);
+            Debug.Log($"[UserService] OnCharacterEnterMap map={response.mapId}, frame={Time.frameCount}\n{System.Environment.StackTrace}");
 
+            NCharacterInfo info = response.Characters[0];
+            User.Instance.CurrentCharacter = info;          // User里面保存了当前这个玩家的信息
+            SceneManager.Instance.LoadScene(DataManager.Instance.Maps[response.mapId].Resource);
+        }
+
+        /// <summary>
+        /// 处理角色离开地图的响应(本人或其他人)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="response"></param>
+        void OnCharacterLeaveMap(object sender, MapCharacterLeaveResponse response)
+        {
+            Debug.LogFormat("[UserService] OnCharacterLeaveMap:{0}", response.characterId);
+            // 判断离开地图的角色是不是“本人”
+            if (response.characterId != User.Instance.CurrentCharacter.Id)
+                CharacterManager.Instance.RemoveCharacter(response.characterId); // 离开的是其他人，只移除其他人
+            else
+                CharacterManager.Instance.Clear();  // "本人"不在地图中了，直接清空
         }
         #endregion
     }

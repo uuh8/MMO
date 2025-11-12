@@ -77,7 +77,6 @@ message NEntitySync {
 	int32 id = 1;            // 发生同步的实体ID
 	ENTITY_EVENT event = 2;  // 触发的事件（移动、跳跃等）
 	NEntity entity = 3;      // 同步后的实体快照（位置/方向/速度等）
-	
 }
 
 
@@ -225,7 +224,9 @@ message MapEntitySyncRequest
 }
 message MapEntitySyncResponse
 {
-    repeated NEntitySync entitySyncs = 2; // 服务器广播的同步列表
+	// 服务器广播的同步列表
+	// repeated 是“字段基数修饰符”，表示这个字段是一个“0~N 个元素的列表”
+    repeated NEntitySync entitySyncs = 2; 
 }
 /* ———————————————————————————————————————————————————— */
 message MapTeleportRequest

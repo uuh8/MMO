@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Entities;
 using SkillBridge.Message;
+using Services;
 
 /*该控制器用于接收用户的输入*/
 public class PlayerInputController : MonoBehaviour
@@ -11,14 +12,11 @@ public class PlayerInputController : MonoBehaviour
     CharacterState state;
 
     public Character character;
+    public EntityController entityController;
 
     public float rotateSpeed = 2.0f;
     public float turnAngle = 10;
-
     public int speed;
-
-    public EntityController entityController;
-
     public bool onAir = false;
 
     // Use this for initialization
@@ -28,6 +26,7 @@ public class PlayerInputController : MonoBehaviour
         if (this.character == null)
         {
             DataManager.Instance.Load();
+
             NCharacterInfo cinfo = new NCharacterInfo();
             cinfo.Id = 1;
             cinfo.Name = "Test";
@@ -36,20 +35,22 @@ public class PlayerInputController : MonoBehaviour
             cinfo.Entity.Position = new NVector3();
             cinfo.Entity.Direction = new NVector3();
             cinfo.Entity.Direction.X = 0;
-            cinfo.Entity.Direction.Y = 100;
+            cinfo.Entity.Direction.Y = 0;
             cinfo.Entity.Direction.Z = 0;
+
             this.character = new Character(cinfo);
 
             if (entityController != null) entityController.entity = this.character;
         }
     }
 
-
+    /// <summary>
+    /// 刚体计算物理 → 位移改变
+    /// </summary>
     void FixedUpdate()
     {
         if (character == null)
             return;
-
 
         float v = Input.GetAxis("Vertical");
         if (v > 0.01)   // 向前移动（0.01为浮点误差）
@@ -57,10 +58,12 @@ public class PlayerInputController : MonoBehaviour
             if (state != CharacterState.Move)
             {
                 state = CharacterState.Move;
-                this.character.MoveForward();
+                // 这里的 MoveForward() 更新的是 “逻辑层” 变量（速度标记、事件派发）
+                this.character.MoveForward();   
+                // 通知 `EntityController` 播放“跑步”动画
                 this.SendEntityEvent(EntityEvent.MoveFwd);
             }
-            // 设置刚体速度向量
+            // 设置刚体速度。这里驱动的是 “表现层” 物理体，在屏幕上移动
             this.rb.velocity = this.rb.velocity.y * Vector3.up + GameObjectTool.LogicToWorld(character.direction) * (this.character.speed + 9.81f) / 100f;
         }
         else if (v < -0.01) // 向后移动
@@ -68,7 +71,7 @@ public class PlayerInputController : MonoBehaviour
             if (state != CharacterState.Move)
             {
                 state = CharacterState.Move;
-                this.character.MoveBack();
+                this.character.MoveBack();  // 更新逻辑层（输入层到逻辑层）
                 this.SendEntityEvent(EntityEvent.MoveBack);
             }
             this.rb.velocity = this.rb.velocity.y * Vector3.up + GameObjectTool.LogicToWorld(character.direction) * (this.character.speed + 9.81f) / 100f;
@@ -110,28 +113,38 @@ public class PlayerInputController : MonoBehaviour
 
     Vector3 lastPos;        // 记录上一帧的位置
     float lastSync = 0;     // 记录上次同步的时间
+    /// <summary>
+    /// 把最新刚体结果对齐模型 → 相机更新 → 渲染输出
+    /// </summary>
     private void LateUpdate()
     {
-        // LateUpdate是在所有Update函数调用之后(每帧结束后）被调用的，适合用于处理跟随相机、位置同步等需要确保所有对象都已更新的场景。
         if (this.character == null) return;
 
+        // 计算本地视觉速度：通过刚体位移差 offset 算出本帧的实际速度，用于 UI 显示或动画驱动
         Vector3 offset = this.rb.transform.position - lastPos;
         this.speed = (int)(offset.magnitude * 100f / Time.deltaTime);
         //Debug.LogFormat("LateUpdate velocity {0} : {1}", this.rb.velocity.magnitude, this.speed);
         this.lastPos = this.rb.transform.position;
 
-        if ((GameObjectTool.WorldToLogic(this.rb.transform.position) - this.character.position).magnitude > 50)
+        // 同步逻辑位置：如果刚体的位置与逻辑层的 character.position 差距过大（>50 单位），就认为逻辑层“落后”，把刚体位置回写回去；
+        if ((GameObjectTool.WorldToLogic(this.rb.transform.position) - this.character.position).magnitude > 100)
         {
+            // 逻辑层在 `LateUpdate()`同步阶段读取当前刚体的世界坐标回写逻辑坐标
             this.character.SetPosition(GameObjectTool.WorldToLogic(this.rb.transform.position));
             this.SendEntityEvent(EntityEvent.None);
         }
-        // 位置同步
+
+        // 把 transform.position 对齐 rb.position，确保渲染与物理一致
+        // 这一步不是同步逻辑层，而是同步渲染层。
         this.transform.position = this.rb.transform.position;
     }
 
     void SendEntityEvent(EntityEvent entityEvent)
     {
         if (entityController != null)
-            entityController.OnEntityEvent(entityEvent);
+            entityController.OnEntityEvent(entityEvent);    // 动画
+        
+        // 同步
+        MapService.Instance.SendMapEntitySync(entityEvent, this.character.EntityData);
     }
 }

@@ -22,7 +22,7 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserLoginRequest>(this.OnLogin);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserCreateCharacterRequest>(this.OnCreateCharacter);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameEnterRequest>(this.OnGameEnter);
-            //MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave);
         }
 
         public void Init()
@@ -31,62 +31,6 @@ namespace GameServer.Services
         }
 
         #region 客户端消息处理
-
-        /// <summary>
-        /// 处理客户端的登录请求
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="request"></param>
-        private void OnLogin(NetConnection<NetSession> sender, UserLoginRequest request)
-        {
-            Log.InfoFormat("[UserService] UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
-
-            NetMessage message = new NetMessage();
-            message.Response = new NetMessageResponse();
-            message.Response.userLogin = new UserLoginResponse();
-
-
-            TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
-            if (user == null)
-            {
-                message.Response.userLogin.Result = Result.Failed;
-                message.Response.userLogin.Errormsg = "用户不存在";
-            }
-            else if (user.Password != request.Password)
-            {
-                message.Response.userLogin.Result = Result.Failed;
-                message.Response.userLogin.Errormsg = "密码错误";
-            }
-            else // 登录成功
-            {
-                // 注意这儿会话里存的是 EF 跟踪的实体，而不是独立的 DTO 或数据库重新查询的结果。
-                sender.Session.User = user;
-
-                // 装配DTO
-                message.Response.userLogin.Result = Result.Success;
-                message.Response.userLogin.Errormsg = "None";           
-                message.Response.userLogin.Userinfo = new NUserInfo();  // 初始化用户信息
-                message.Response.userLogin.Userinfo.Id = 1;
-                message.Response.userLogin.Userinfo.Player = new NPlayerInfo(); // 初始化玩家信息
-                message.Response.userLogin.Userinfo.Player.Id = user.Player.ID;
-
-                /*加载玩家的角色信息*/
-                //遍历当前玩家账号下所有已创建的角色
-                foreach (var c in user.Player.Characters)
-                {
-                    //为当前遍历到的角色创建一个 NCharacterInfo 对象。NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
-                    NCharacterInfo info = new NCharacterInfo();
-                    info.Id = c.ID;
-                    info.Name = c.Name;
-                    info.Class = (CharacterClass)c.Class;
-
-                    message.Response.userLogin.Userinfo.Player.Characters.Add(info);
-                }
-            }
-
-            byte[] data = PackageHandler.PackMessage(message);  // 将 NetMessage 对象序列化为字节数组，方便通过网络发送。
-            sender.SendData(data, 0, data.Length);              // 将打包好的字节数组通过当前会话 sender 发送给客户端。
-        }
 
         /// <summary>
         /// 处理客户端的注册请求
@@ -129,6 +73,65 @@ namespace GameServer.Services
         }
 
         /// <summary>
+        /// 处理客户端的登录请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="request"></param>
+        private void OnLogin(NetConnection<NetSession> sender, UserLoginRequest request)
+        {
+            Log.InfoFormat("[UserService] UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
+
+            NetMessage message = new NetMessage();
+            message.Response = new NetMessageResponse();
+            message.Response.userLogin = new UserLoginResponse();
+
+
+            TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
+            if (user == null)
+            {
+                message.Response.userLogin.Result = Result.Failed;
+                message.Response.userLogin.Errormsg = "用户不存在";
+            }
+            else if (user.Password != request.Password)
+            {
+                message.Response.userLogin.Result = Result.Failed;
+                message.Response.userLogin.Errormsg = "密码错误";
+            }
+            else // 登录成功
+            {
+                // 注意这儿会话里存的是 EF 跟踪的实体，而不是独立的 DTO 或数据库重新查询的结果。
+                sender.Session.User = user;
+
+                // 装配DTO
+                message.Response.userLogin.Result = Result.Success;
+                message.Response.userLogin.Errormsg = "None";
+                message.Response.userLogin.Userinfo = new NUserInfo();  // 初始化用户信息
+                message.Response.userLogin.Userinfo.Id = (int)user.ID;
+                message.Response.userLogin.Userinfo.Player = new NPlayerInfo(); // 初始化玩家信息
+                message.Response.userLogin.Userinfo.Player.Id = user.Player.ID;
+
+                /*加载玩家的角色信息*/
+                // 遍历当前玩家账号下所有已创建的角色
+                foreach (var c in user.Player.Characters)
+                {
+                    // 为当前遍历到的角色创建一个 NCharacterInfo 对象。
+                    // NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
+                    NCharacterInfo info = new NCharacterInfo();
+                    info.Id = c.ID;  
+                    info.Tid = c.ID;    // 这里用数据库中的 CharacterId
+                    info.Type = CharacterType.Player;
+                    info.Class = (CharacterClass)c.Class;
+                    info.Name = c.Name;
+
+                    message.Response.userLogin.Userinfo.Player.Characters.Add(info);
+                }
+            }
+
+            byte[] data = PackageHandler.PackMessage(message);  // 将 NetMessage 对象序列化为字节数组，方便通过网络发送。
+            sender.SendData(data, 0, data.Length);              // 将打包好的字节数组通过当前会话 sender 发送给客户端。
+        }
+
+        /// <summary>
         /// 处理客户端的创建角色请求
         /// </summary>
         /// <param name="sender"></param>
@@ -155,7 +158,7 @@ namespace GameServer.Services
             // 2. 把新角色对象加入到“待插入”的集合中
             // Entities.Characters其实是DbSet<TCharacter>，相当于一个操作数据库表的“集合”。
             // Add(character)并不会立刻写入数据库，只是告诉EF有一个新对象要插入到数据库表中。
-            DBService.Instance.Entities.Characters.Add(character);
+            character = DBService.Instance.Entities.Characters.Add(character);
 
             // 3. 把角色加到玩家角色列表（服务器内存结构，不是数据库）里
             // 这只是把新角色对象加到当前登录玩家的内存角色列表，与数据库无关，属于服务端业务层数据结构。
@@ -173,6 +176,21 @@ namespace GameServer.Services
             response.Response.createChar.Result = Result.Success;
             response.Response.createChar.Errormsg = "None";
 
+            // 把当前已有的角色添加进列表（列表刷新）
+            foreach(var c in sender.Session.User.Player.Characters)
+            {
+                // 为当前遍历到的角色创建一个 NCharacterInfo 对象。
+                // NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
+                NCharacterInfo info = new NCharacterInfo();
+                info.Id = 0;    // 这里应该用 entityId 而不是数据库中的 CharacterId，但由于这个时候还没进入游戏，因此 entity 还没创建，因此这里初始化为 0 方便调试
+                info.Tid = c.ID;    // 这里用数据库中的 CharacterId
+                info.Type = CharacterType.Player;
+                info.Class = (CharacterClass)c.Class;
+                info.Name = c.Name;
+
+                response.Response.createChar.Characters.Add(info);
+            }
+
             // 消息打包成字节流发送给客户端
             byte[] data = PackageHandler.PackMessage(response);
             sender.SendData(data, 0, data.Length);
@@ -185,31 +203,54 @@ namespace GameServer.Services
         /// <param name="request"></param>
         private void OnGameEnter(NetConnection<NetSession> sender, UserGameEnterRequest request)
         {
+            // 1) 从“当前登录用户的角色列表”里取出一个 "EF实体"
+            // 这行代码不是在“新建”TCharacter实体，而是从内存中读取一个TCharacter对象，而这个对象本质上最初是从数据库加载出来的，现在常驻在内存（比如玩家登录时就查出来并放进Session.User.Player.Characters列表里）
             TCharacter dbchar = sender.Session.User.Player.Characters.ElementAt(request.characterIdx);
-            Log.InfoFormat("UserGameEnterRequest: characterID:{0}:{1} Map:{2}", dbchar.ID, dbchar.Name, dbchar.MapID);
+            Log.InfoFormat("[UserService] UserGameEnterRequest 角色进入: characterID:{0}:{1} Map:{2}", dbchar.ID, dbchar.Name, dbchar.MapID);
+
+            // 2) 把存档对象(TCharacter) 转换成运行时对象(Character)。从 DB 实体构造运行时角色，注册到内存（切断 EF 依赖）
             Character character = CharacterManager.Instance.AddCharacter(dbchar);
 
-            // 构建DTO
+            // 3) 构建响应DTO UserGameEnterResponse
             NetMessage message = new NetMessage();
             message.Response = new NetMessageResponse();
             message.Response.gameEnter = new UserGameEnterResponse();
             message.Response.gameEnter.Result = Result.Success;
             message.Response.gameEnter.Errormsg = "None";
 
-            // 发送消息给客户端
+            // 4) 发送消息给客户端
             byte[] data = PackageHandler.PackMessage(message);
             sender.SendData(data, 0, data.Length);
 
-            // 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
+            // 5) 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
             sender.Session.Character = character;
 
+            // 6) 把运行时角色丢进对应地图，开始广播出生、同步周边实体等。
             MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character);
         }
 
-        /*private void OnGameLeave(NetConnection<NetSession> sender, UserCreateCharacterRequest request)
+        /// <summary>
+        /// 处理客户端离开游戏的请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="request"></param>
+        private void OnGameLeave(NetConnection<NetSession> sender, UserGameLeaveRequest request)
         {
+            Character character = sender.Session.Character;
+            Log.InfoFormat("[UserService] UserGameLeaveRequest: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
-        }*/
+            CharacterManager.Instance.RemoveCharacter(character.Info.Id); 
+            MapManager.Instance[character.Info.mapId].CharacterLeave(character);
+
+            NetMessage message = new NetMessage();
+            message.Response = new NetMessageResponse();
+            message.Response.gameLeave = new UserGameLeaveResponse();
+            message.Response.gameLeave.Result = Result.Success;
+            message.Response.gameLeave.Errormsg = "None";
+
+            byte[] data = PackageHandler.PackMessage(message);
+            sender.SendData(data, 0, data.Length);
+        }
 
         #endregion
     }

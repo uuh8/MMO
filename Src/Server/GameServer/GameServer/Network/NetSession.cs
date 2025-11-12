@@ -17,7 +17,7 @@ namespace Network
         作用：存储当前连接的用户信息，例如用户名、密码等。*/
         public TUser User { get; set; }             // 当前登录的用户    
 
-        public Character Character { get; set; }    //当前用户选择的角色
-        public NEntity Entity { get; set; }         //当前用户选择的角色在游戏中的实体
+        public Character Character { get; set; }    // 当前用户选择的角色
+        public NEntity Entity { get; set; }         // 当前用户选择的角色在游戏中的实体
     }
 }

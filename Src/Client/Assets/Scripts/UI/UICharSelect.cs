@@ -283,6 +283,7 @@ public class UICharSelect : MonoBehaviour
         }
         UserService.Instance.SendCreateCharacter(this.char_name.text, this.charClass);
     }
+
     /// <summary>
     /// 点击创建角色按钮的回调
     /// </summary>
@@ -297,6 +298,7 @@ public class UICharSelect : MonoBehaviour
         else
             MessageBox.Show(message, "错误", MessageBoxType.Error);
     }
+
     /// <summary>
     /// 点击已创建角色按钮的回调
     /// </summary>
@@ -305,8 +307,8 @@ public class UICharSelect : MonoBehaviour
     {
         this.selectCharacterIdx = idx;
         var character = User.Instance.Info.Player.Characters[idx];
-        User.Instance.CurrentCharacter = character;
-        // Debug.LogFormat("<color=yellow>[UICharSelect]</color> 选择角色：[{0}]{1} Class: {2} (值: {3})", character.Id,character.Name, character.Class,  (int)character.Class); 
+
+        Debug.LogFormat("<color=yellow>[UICharSelect]</color> 选择角色：[{0}]{1} Class: {2} (值: {3})", character.Id,character.Name, character.Class,  (int)character.Class); 
 
         User.Instance.CurrentCharacter = character;
         characterView.CurrectCharacter = ((int)character.Class) - 1;
@@ -317,6 +319,7 @@ public class UICharSelect : MonoBehaviour
             charInfo.Selected = (idx == i);
         }
     }
+
     /// <summary>
     /// 点击开始游戏按钮的回调
     /// </summary>

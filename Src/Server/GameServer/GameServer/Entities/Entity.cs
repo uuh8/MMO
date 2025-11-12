@@ -67,6 +67,7 @@ namespace GameServer.Entities
             }
         }
 
+
         public Entity(Vector3Int pos,Vector3Int dir)
         {
             this.entityData = new NEntity();
@@ -80,11 +81,16 @@ namespace GameServer.Entities
             this.entityData = entity;
         }
 
+        /// <summary>
+        /// 把 NEntity 的值赋值给一个逻辑层的 Entity 对象
+        /// </summary>
+        /// <param name="entity"></param>
         public void SetEntityData(NEntity entity)
         {
             this.Position = entity.Position;
             this.Direction = entity.Direction;
             this.speed = entity.Speed;
         }
+
     }
 }

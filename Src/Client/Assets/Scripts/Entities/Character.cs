@@ -12,7 +12,7 @@ namespace Entities
     {
         public NCharacterInfo Info;
 
-        public CharacterDefine Define;
+        public Common.Data.CharacterDefine Define;
 
         public string Name
         {
@@ -37,35 +37,37 @@ namespace Entities
             this.Define = DataManager.Instance.Characters[info.Tid];
         }
 
+        #region 方法封装 注意这些方法都是逻辑状态，不直接操纵 Unity Transform
         // 向前移动
         public void MoveForward()
         {
-            Debug.LogFormat("MoveForward");
-            this.speed = this.Define.Speed;
+            // Debug.LogFormat("MoveForward");
+            this.speed = -this.Define.Speed;
         }
         // 向后移动
         public void MoveBack()
         {
-            Debug.LogFormat("MoveBack");
-            this.speed = -this.Define.Speed;
+            // Debug.LogFormat("MoveBack");
+            this.speed = this.Define.Speed;
         }
         // 停止
         public void Stop()
         {
-            Debug.LogFormat("Stop");
+            // Debug.LogFormat("Stop");
             this.speed = 0;
         }
         // 设置方向
         public void SetDirection(Vector3Int direction)
         {
-            Debug.LogFormat("SetDirection:{0}", direction);
+            // Debug.LogFormat("SetDirection:{0}", direction);
             this.direction = direction;
         }
         // 设置位置
         public void SetPosition(Vector3Int position)
         {
-            Debug.LogFormat("SetPosition:{0}", position);
+            // Debug.LogFormat("SetPosition:{0}", position);
             this.position = position;
         }
+        #endregion
     }
 }
