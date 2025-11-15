@@ -6,22 +6,15 @@ using UnityEngine.UI;
 using Models;
 using Services;
 
-public class UIMainCity : MonoBehaviour
+public class UIMainCity : MonoSingleton<UIMainCity>
 {
     public Text avatarName;
     public Text avatarLevel;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void OnStart()
     {
         this.UpdateAvatar();
-    }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void UpdateAvatar()

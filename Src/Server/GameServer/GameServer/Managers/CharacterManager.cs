@@ -34,12 +34,12 @@ namespace GameServer.Managers
         /// <param name="cha"></param>
         /// <returns></returns>
         public Character AddCharacter(TCharacter cha)
-        {
+        { 
             // 使用数据库中的数据创建实体(实体对象是在“进入游戏”这个过程中创建的）
             Character character = new Character(CharacterType.Player, cha);
             EntityManager.Instance.AddEntity(cha.MapID, character);
             character.Info.Id = character.Id;   // 将 Entity 的 Id 赋给网络的NCharacter的Id，否则客户端拿到的 Entity Id 是数据库的Table Id
-            this.Characters[cha.ID] = character;
+            this.Characters[character.Id] = character;
             return character;
         }
         public void RemoveCharacter(int characterId)

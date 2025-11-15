@@ -34,7 +34,7 @@ namespace Services
             MessageDistributer.Instance.Subscribe<UserGameEnterResponse>(this.OnGameEnter);
             MessageDistributer.Instance.Subscribe<UserGameLeaveResponse>(this.OnGameLeave);
             MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
-            MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
+            // MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
         }
 
         //资源释放，解除订阅的事件和消息，防止内存泄漏或对象被销毁后仍然调用事件逻辑。
@@ -46,7 +46,7 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<UserGameEnterResponse>(this.OnGameEnter);
             MessageDistributer.Instance.Unsubscribe<UserGameLeaveResponse>(this.OnGameLeave);
             MessageDistributer.Instance.Unsubscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
-            MessageDistributer.Instance.Unsubscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
+            // MessageDistributer.Instance.Unsubscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
 
             NetClient.Instance.OnConnect -= OnGameServerConnect;
             NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
@@ -331,8 +331,7 @@ namespace Services
         /// <param name="response"></param>
         void OnCharacterEnterMap(object sender, MapCharacterEnterResponse response)
         {
-            Debug.LogFormat("[UserService] OnCharacterEnterMap:{0}", response.mapId);
-            Debug.Log($"[UserService] OnCharacterEnterMap map={response.mapId}, frame={Time.frameCount}\n{System.Environment.StackTrace}");
+            Debug.LogFormat("[UserService] OnCharacterEnterMap: mapId：{0}", response.mapId);
 
             NCharacterInfo info = response.Characters[0];
             User.Instance.CurrentCharacter = info;          // User里面保存了当前这个玩家的信息
@@ -344,7 +343,7 @@ namespace Services
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>
-        void OnCharacterLeaveMap(object sender, MapCharacterLeaveResponse response)
+        /*void OnCharacterLeaveMap(object sender, MapCharacterLeaveResponse response)
         {
             Debug.LogFormat("[UserService] OnCharacterLeaveMap:{0}", response.characterId);
             // 判断离开地图的角色是不是“本人”
@@ -352,7 +351,8 @@ namespace Services
                 CharacterManager.Instance.RemoveCharacter(response.characterId); // 离开的是其他人，只移除其他人
             else
                 CharacterManager.Instance.Clear();  // "本人"不在地图中了，直接清空
-        }
+        }*/
+
         #endregion
     }
 }

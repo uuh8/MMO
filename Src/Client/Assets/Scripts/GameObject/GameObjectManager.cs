@@ -28,6 +28,19 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
     }
 
     /// <summary>
+    /// 通过一个协程查找当前场景中所有的角色，对每个角色创建游戏对象
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator InitGameObjects()
+    {
+        foreach (var cha in CharacterManager.Instance.CharactersMngr.Values)
+        {
+            CreateCharacterObject(cha);
+            yield return null;
+        }
+    }
+
+    /// <summary>
     /// 其他角色进入的初始化逻辑
     /// </summary>
     /// <param name="cha"></param>
@@ -53,26 +66,13 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
     }
 
     /// <summary>
-    /// 通过一个协程查找当前场景中所有的角色，对每个角色创建游戏对象
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator InitGameObjects()
-    {
-        foreach (var cha in CharacterManager.Instance.CharactersMngr.Values)
-        {
-            CreateCharacterObject(cha);
-            yield return null;
-        }
-    }
-
-    /// <summary>
     /// 创建单个角色（玩家自己和其他玩家都用这个）
     /// </summary>
     /// <param name="character"></param>
     private void CreateCharacterObject(Character character)
     {
         // 只有角色不存在的时候才创建
-        if (!Characters.ContainsKey(character.Info.Id) || Characters[character.Info.Id] == null)
+        if (!Characters.ContainsKey(character.entityId) || Characters[character.entityId] == null)
         {
             // 使用 Resloader 资源加载器加载配置表资源
             Object obj = Resloader.Load<Object>(character.Define.Resource);

@@ -16,7 +16,7 @@ namespace GameServer.Managers
         public Dictionary<int, List<Entity>> MapEntities = new Dictionary<int, List<Entity>>();
 
         /// <summary>
-        /// 添加实体
+        /// 添加/移除 实体
         /// </summary>
         /// <param name="mapId"></param>
         /// <param name="entity"></param>
@@ -25,7 +25,7 @@ namespace GameServer.Managers
             AllEntities.Add(entity);
 
             // 加入实体管理器，生成唯一id
-            entity.EntityData.Id = ++this.idx;
+            entity.EntityData.Id = ++idx;
 
             List<Entity> entities = null;
             if(!MapEntities.TryGetValue(mapId, out entities))
@@ -35,11 +35,6 @@ namespace GameServer.Managers
             }
             entities.Add(entity);
         }
-        /// <summary>
-        /// 移除实体
-        /// </summary>
-        /// <param name="mapId"></param>
-        /// <param name="entity"></param>
         public void RemoveEntity(int mapId, Entity entity)
         {
             this.AllEntities.Remove(entity);

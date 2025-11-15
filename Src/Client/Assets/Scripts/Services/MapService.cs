@@ -39,6 +39,7 @@ namespace Services
         }
 
         #region 发送消息给服务器
+
         /// <summary>
         /// 发送同步信息
         /// </summary>
@@ -60,9 +61,24 @@ namespace Services
             NetClient.Instance.SendMessage(message);
         }
 
+        /// <summary>
+        /// 角色进入传送点
+        /// </summary>
+        /// <param name="iD"></param>
+        public void SendMapTeleport(int teleporterID)
+        {
+            Debug.LogFormat("[MapService] MapTeleportRequest: teleporterID:{0}", teleporterID);
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.mapTeleport = new MapTeleportRequest();
+            message.Request.mapTeleport.teleporterId = teleporterID;
+            NetClient.Instance.SendMessage(message);
+        }
+
         #endregion
 
         #region 响应服务器发来的消息
+
         /// <summary>
         /// 角色进入地图响应
         /// </summary>
@@ -97,6 +113,10 @@ namespace Services
                 User.Instance.CurrentMapData = map;
                 SceneManager.Instance.LoadScene(map.Resource);
             }
+            else
+            {
+                Debug.LogErrorFormat("[MapService] EnterMap: Map {0} not existed", mapId);
+            }
         }
 
         /// <summary>
@@ -106,8 +126,16 @@ namespace Services
         /// <param name="response"></param>
         private void OnMapCharacterLeave(object sender, MapCharacterLeaveResponse response)
         {
+            Debug.LogFormat("[MapService] OnMapCharacterLeave: CharId:{0}", response.characterId);
 
-
+            if(response.characterId != User.Instance.CurrentCharacter.Id)
+            {
+                CharacterManager.Instance.RemoveCharacter(response.characterId);
+            }
+            else
+            {
+                CharacterManager.Instance.Clear();
+            }
         }
 
         /// <summary>
@@ -123,6 +151,8 @@ namespace Services
                 EntityManager.Instance.OnEntitySync(entity);
             }
         }
+
+
 
         #endregion
 

@@ -310,7 +310,6 @@ public class UICharSelect : MonoBehaviour
 
         Debug.LogFormat("<color=yellow>[UICharSelect]</color> 选择角色：[{0}]{1} Class: {2} (值: {3})", character.Id,character.Name, character.Class,  (int)character.Class); 
 
-        User.Instance.CurrentCharacter = character;
         characterView.CurrectCharacter = ((int)character.Class) - 1;
 
         for (int i = 0; i < User.Instance.Info.Player.Characters.Count; i++)

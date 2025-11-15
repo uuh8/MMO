@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Data;
 using GameServer.Entities;
 using GameServer.Managers;
 using Network;
@@ -16,7 +17,10 @@ namespace GameServer.Services
         public MapService()
         {
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<MapEntitySyncRequest>(this.OnMapEntitySync);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<MapTeleportRequest>(this.OnMapTeleport);
         }
+
+
 
         public void Init()
         {
@@ -83,6 +87,41 @@ namespace GameServer.Services
             MapManager.Instance[character.Info.mapId].UpdateEntity(request.entitySync);
         }
 
+        /// <summary>
+        /// 响应角色进入传送点
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void OnMapTeleport(NetConnection<NetSession> sender, MapTeleportRequest request)
+        {
+            Character character = sender.Session.Character;
+            Log.InfoFormat("[MapService] OnMapTeleport: characterID:{0}:{1} TeleporterId:{2}", character.Id, character.Data, request.teleporterId);
+
+            // 校验传送点存不存在
+            if (!DataManager.Instance.Teleporters.ContainsKey(request.teleporterId))
+            {
+                Log.WarningFormat("Source TeleporterID [{0}] not existed", request.teleporterId);
+                return;
+            }
+
+            // 读传送点数据，检验传送目标点是否存在
+            TeleporterDefine source = DataManager.Instance.Teleporters[request.teleporterId];
+            if (source.LinkTo == 0 || !DataManager.Instance.Teleporters.ContainsKey(source.LinkTo))
+            {
+                Log.WarningFormat("Source TeleporterID [{0}] LinkTo ID [{1}] not existed", request.teleporterId, source.LinkTo);
+            }
+
+            // 获取传送目标点
+            TeleporterDefine target = DataManager.Instance.Teleporters[source.LinkTo];
+
+            // 角色离开原地图
+            MapManager.Instance[source.MapID].CharacterLeave(character);
+            // 角色进入新地图
+            character.Position = target.Position;
+            character.Direction = target.Direction;
+            MapManager.Instance[target.MapID].CharacterEnter(sender, character);
+        }
         #endregion
     }
 }

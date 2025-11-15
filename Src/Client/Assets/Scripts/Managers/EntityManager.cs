@@ -26,11 +26,14 @@ namespace Managers
             this.notifiers[entityId] = notify;
         }
 
+        /// <summary>
+        /// Ìí¼Ó/É¾³ý entity
+        /// </summary>
+        /// <param name="entity"></param>
         public  void AddEntity(Entity entity)
         {
             entities[entity.entityId] = entity;
         }
-
         public void RemoveEntity(NEntity entity)
         {
             this.entities.Remove(entity.Id);

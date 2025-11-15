@@ -206,10 +206,11 @@ namespace GameServer.Services
             // 1) 从“当前登录用户的角色列表”里取出一个 "EF实体"
             // 这行代码不是在“新建”TCharacter实体，而是从内存中读取一个TCharacter对象，而这个对象本质上最初是从数据库加载出来的，现在常驻在内存（比如玩家登录时就查出来并放进Session.User.Player.Characters列表里）
             TCharacter dbchar = sender.Session.User.Player.Characters.ElementAt(request.characterIdx);
-            Log.InfoFormat("[UserService] UserGameEnterRequest 角色进入: characterID:{0}:{1} Map:{2}", dbchar.ID, dbchar.Name, dbchar.MapID);
 
             // 2) 把存档对象(TCharacter) 转换成运行时对象(Character)。从 DB 实体构造运行时角色，注册到内存（切断 EF 依赖）
             Character character = CharacterManager.Instance.AddCharacter(dbchar);
+
+            Log.InfoFormat("[UserService] UserGameEnterRequest 角色进入: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
             // 3) 构建响应DTO UserGameEnterResponse
             NetMessage message = new NetMessage();
@@ -236,10 +237,10 @@ namespace GameServer.Services
         /// <param name="request"></param>
         private void OnGameLeave(NetConnection<NetSession> sender, UserGameLeaveRequest request)
         {
-            Character character = sender.Session.Character;
+            Character character = sender.Session.Character; 
             Log.InfoFormat("[UserService] UserGameLeaveRequest: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
-            CharacterManager.Instance.RemoveCharacter(character.Info.Id); 
+            CharacterManager.Instance.RemoveCharacter(character.Id);
             MapManager.Instance[character.Info.mapId].CharacterLeave(character);
 
             NetMessage message = new NetMessage();

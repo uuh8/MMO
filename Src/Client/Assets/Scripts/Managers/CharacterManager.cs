@@ -33,23 +33,17 @@ namespace Managers
 
         }
 
-        public void Clear()
-        {
-            this.CharactersMngr.Clear();
-        }
-
         /// <summary>
         /// 添加角色到管理器
         /// </summary>
         /// <param name="cha"></param>
-        public void AddCharacter(SkillBridge.Message.NCharacterInfo cha)
+        public void AddCharacter(NCharacterInfo cha)
         {
             Debug.LogFormat("[CharacterManager] AddCharacter:{0}:{1} Map:{2} Entity:{3}", cha.Id, cha.Name, cha.mapId, cha.Entity.String());
 
-            Character character = new Character(cha);
-            this.CharactersMngr[cha.Id] = character;
-            EntityManager.Instance.AddEntity(character); // 角色也是entity，因此要加入entity管理器中
-
+            Character character = new Character(cha);   // 网络层 → 实体层
+            CharactersMngr[cha.Id] = character;          // 加入角色管理器
+            EntityManager.Instance.AddEntity(character); // 加入entity管理器
             if (OnCharacterEnter != null)
             {
                 OnCharacterEnter(character);
@@ -62,15 +56,25 @@ namespace Managers
         public void RemoveCharacter(int characterId)
         {
             Debug.LogFormat("[CharacterManager] RemoveCharacter:{0}", characterId);
-            if (this.CharactersMngr.ContainsKey(characterId))
+
+            if (CharactersMngr.ContainsKey(characterId))
             {
-                EntityManager.Instance.RemoveEntity(this.CharactersMngr[characterId].Info.Entity);
+                EntityManager.Instance.RemoveEntity(CharactersMngr[characterId].Info.Entity);
                 if(OnCharacterLeave != null)
                 {
-                    OnCharacterLeave(this.CharactersMngr[characterId]);
+                    OnCharacterLeave(CharactersMngr[characterId]);
                 }
-                this.CharactersMngr.Remove(characterId);
+                CharactersMngr.Remove(characterId);
             }
+        }
+        public void Clear()
+        {
+            int[] keys = this.CharactersMngr.Keys.ToArray();
+            foreach(var key in keys)
+            {
+                this.RemoveCharacter(key);
+            }
+            this.CharactersMngr.Clear();
         }
     }
 }
