@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Models;
 using Services;
 
-public class UIMainCity : MonoSingleton<UIMainCity>
+public class UIMain : MonoSingleton<UIMain>
 {
     public Text avatarName;
     public Text avatarLevel;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using GameServer;
 using GameServer.Entities;
+using GameServer.Services;
 using SkillBridge.Message;
 
 namespace Network
@@ -19,5 +20,13 @@ namespace Network
 
         public Character Character { get; set; }    // 当前用户选择的角色
         public NEntity Entity { get; set; }         // 当前用户选择的角色在游戏中的实体
+
+        internal void Disconnected()
+        {
+            if(this.Character != null)
+            {
+                UserService.Instance.CharacterLeave(this.Character);
+            }
+        }
     }
 }

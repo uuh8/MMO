@@ -40,7 +40,7 @@ public class LoadingManager : MonoBehaviour {
         //Init basic services
         MapService.Instance.Init();
         UserService.Instance.Init();
-
+        // TestManager.Instance.Init();
 
         // 加载进度条
         for (float i = 0; i < 100;)

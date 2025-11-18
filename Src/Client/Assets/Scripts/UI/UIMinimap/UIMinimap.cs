@@ -13,30 +13,30 @@ public class UIMinimap : MonoBehaviour
     public Text mapName;
 
     private Transform playerTransform;  // 角色的游戏对象
-    // Start is called before the first frame update
+
     void Start()
     {
-        InitMap();
+        MinimapManager.Instance.minimap = this; // 更新小地图管理器
+        UpdateMap();
     }
-
-    void InitMap()
+    /// <summary>
+    /// 更新小地图
+    /// </summary>
+    public void UpdateMap()
     {
         this.mapName.text = User.Instance.CurrentMapData.Name;
-        if(this.minimap.overrideSprite == null)
-        {
-            this.minimap.overrideSprite = MinimapManager.Instance.LoadCurrentMinimap();
-        };
+        this.minimap.overrideSprite = MinimapManager.Instance.LoadCurrentMinimap();
+
         this.minimap.SetNativeSize();
-        minimap.transform.localPosition = Vector3.zero;
+        this.minimap.transform.localPosition = Vector3.zero;
+        this.minimapBoundingBox = MinimapManager.Instance.MinimapBoundingBox;
+        this.playerTransform = null;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(playerTransform == null)
-        {
             playerTransform = MinimapManager.Instance.PlayerTransform;
-        }
         if (minimapBoundingBox == null || playerTransform == null) return;
 
         float realWidth = minimapBoundingBox.bounds.size.x;
@@ -57,4 +57,7 @@ public class UIMinimap : MonoBehaviour
         // 箭头转圈
         this.arrow.transform.eulerAngles = new Vector3(0, 0, -playerTransform.eulerAngles.y);
     }
+
+
+
 }

@@ -9,10 +9,9 @@ public class TeleporterObject : MonoBehaviour
     public int ID;
     Mesh mesh = null;
 
-    // Start is called before the first frame update
     void Start()
     {
-        this.mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        mesh = GetComponent<MeshFilter>().sharedMesh;
     }
 
 #if UNITY_EDITOR
