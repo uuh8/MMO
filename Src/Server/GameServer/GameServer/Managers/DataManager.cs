@@ -17,13 +17,18 @@ namespace GameServer.Managers
         internal Dictionary<int, CharacterDefine> Characters = null;
         internal Dictionary<int, TeleporterDefine> Teleporters = null;
         internal Dictionary<int, NpcDefine> Npcs = null;
-        public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
-        public Dictionary<int, Dictionary<int,SpawnRuleDefine>> SpawnRules = null;
+        internal Dictionary<int, ItemDefine> Items = null;
+        internal Dictionary<int, ShopDefine> Shops = null;
+        internal Dictionary<int, Dictionary<int, ShopItemDefice>> ShopItems = null;
+
+
+        //public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
+        //public Dictionary<int, Dictionary<int,SpawnRuleDefine>> SpawnRules = null; 
 
         public DataManager()
         {
             this.DataPath = "Data/";
-            Log.Info("DataManager > DataManager()");
+            Log.Info("[DataManager] DataManager > DataManager()");
         }
 
         internal void Load()
@@ -39,6 +44,15 @@ namespace GameServer.Managers
 
             json = File.ReadAllText(this.DataPath + "NpcDefine.txt");
             this.Npcs = JsonConvert.DeserializeObject<Dictionary<int, NpcDefine>>(json);
+
+            json = File.ReadAllText(this.DataPath + "ItemDefine.txt");
+            this.Items = JsonConvert.DeserializeObject<Dictionary<int, ItemDefine>>(json);
+
+            json = File.ReadAllText(this.DataPath + "ShopDefine.txt");
+            this.Shops = JsonConvert.DeserializeObject<Dictionary<int, ShopDefine>>(json);
+
+            json = File.ReadAllText(this.DataPath + "ShopItemDefine.txt");
+            this.ShopItems = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, ShopItemDefice>>>(json);
         }
     }
 }

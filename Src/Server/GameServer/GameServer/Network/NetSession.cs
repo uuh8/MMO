@@ -11,7 +11,7 @@ using SkillBridge.Message;
 
 namespace Network
 {
-    class NetSession
+    class NetSession : INetSession
     {
         /*1. TUser User
         定义：TUser 是一个用户对象，通常对应于数据库中的 Users 表。
@@ -27,6 +27,39 @@ namespace Network
             {
                 UserService.Instance.CharacterLeave(this.Character);
             }
+        }
+
+        private NetMessage response;    // 用于响应的详细 
+
+        public NetMessageResponse Response
+        {
+            get
+            {
+                if(response == null)
+                    response = new NetMessage();
+
+                if (response.Response == null)
+                    response.Response = new NetMessageResponse();
+
+                return response.Response;
+            }
+        }
+
+        // 实现 INetSession 接口
+        public byte[] GetResponse()
+        {
+            if(response != null)
+            {
+                if(this.Character != null && this.Character.StatusManager.HasStatus)
+                {
+                    this.Character.StatusManager.ApplyResponse(Response); 
+                }
+                byte[] data = PackageHandler.PackMessage(response);
+                // 只要消息发送给客户端，就清空这个response消息，这样就保证了response一定是在会话session一开始创建，会话session一结束清空；并且我们可以在会话session期间对response多次赋值让其包含多个消息
+                response = null; 
+                return data;
+            }
+            return null;
         }
     }
 }

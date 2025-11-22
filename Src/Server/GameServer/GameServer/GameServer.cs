@@ -28,6 +28,7 @@ namespace GameServer
             UserService.Instance.Init();
             DataManager.Instance.Load();  // 读配置文件并反序列化为字典缓存 
             MapService.Instance.Init();
+            ItemService.Instance.Init();
 
             network = new NetService();   //实例化网络服务。
             network.Init(8000);           //初始化网络服务并指定端口号 8000。

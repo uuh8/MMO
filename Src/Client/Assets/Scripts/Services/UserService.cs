@@ -306,9 +306,15 @@ namespace Services
         void OnGameEnter(object sender, UserGameEnterResponse response)
         {
             Debug.LogFormat("[UserService] OnGameEnter:{0} [{1}]", response.Result, response.Errormsg);
+
             if (response.Result == Result.Success)
             {
-
+                if(response.Result == Result.Success)
+                {
+                    // 初始化角色身上的道具管理器
+                    ItemManager.Instance.Init(response.Character.Items);
+                    BagManager.Instance.Init(response.Character.Bag);
+                }
             }
         }
 

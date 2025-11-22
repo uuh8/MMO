@@ -7,6 +7,7 @@ using System.IO;
 using SkillBridge.Message;
 using ProtoBuf;
 using Services;
+using Managers;
 
 /*客户端主入口*/
 public class LoadingManager : MonoBehaviour {
@@ -37,10 +38,11 @@ public class LoadingManager : MonoBehaviour {
 
         yield return DataManager.Instance.LoadData();
 
-        //Init basic services
+        // 初始化服务
         MapService.Instance.Init();
         UserService.Instance.Init();
-        // TestManager.Instance.Init();
+        // StatueService.Instance.Init();
+        ShopManager.Instance.Init();
 
         // 加载进度条
         for (float i = 0; i < 100;)

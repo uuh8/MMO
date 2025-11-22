@@ -10,6 +10,7 @@ using GameServer.Entities;
 using System.Security.Cryptography;
 using System.Data.SqlTypes;
 using GameServer.Managers;
+using System.Windows.Forms;
 
 namespace GameServer.Services
 {
@@ -22,7 +23,7 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserLoginRequest>(this.OnLogin);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserCreateCharacterRequest>(this.OnCreateCharacter);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameEnterRequest>(this.OnGameEnter);
-            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave); 
         }
 
         public void Init()
@@ -81,21 +82,19 @@ namespace GameServer.Services
         {
             Log.InfoFormat("[UserService] UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
 
-            NetMessage message = new NetMessage();
-            message.Response = new NetMessageResponse();
-            message.Response.userLogin = new UserLoginResponse();
+            sender.Session.Response.userLogin = new UserLoginResponse();
 
 
             TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
             if (user == null)
             {
-                message.Response.userLogin.Result = Result.Failed;
-                message.Response.userLogin.Errormsg = "用户不存在";
+                sender.Session.Response.userLogin.Result = Result.Failed;
+                sender.Session.Response.userLogin.Errormsg = "用户不存在";
             }
             else if (user.Password != request.Password)
             {
-                message.Response.userLogin.Result = Result.Failed;
-                message.Response.userLogin.Errormsg = "密码错误";
+                sender.Session.Response.userLogin.Result = Result.Failed;
+                sender.Session.Response.userLogin.Errormsg = "密码错误";
             }
             else // 登录成功
             {
@@ -103,12 +102,12 @@ namespace GameServer.Services
                 sender.Session.User = user;
 
                 // 装配DTO
-                message.Response.userLogin.Result = Result.Success;
-                message.Response.userLogin.Errormsg = "None";
-                message.Response.userLogin.Userinfo = new NUserInfo();  // 初始化用户信息
-                message.Response.userLogin.Userinfo.Id = (int)user.ID;
-                message.Response.userLogin.Userinfo.Player = new NPlayerInfo(); // 初始化玩家信息
-                message.Response.userLogin.Userinfo.Player.Id = user.Player.ID;
+                sender.Session.Response.userLogin.Result = Result.Success;
+                sender.Session.Response.userLogin.Errormsg = "None";
+                sender.Session.Response.userLogin.Userinfo = new NUserInfo();  // 初始化用户信息
+                sender.Session.Response.userLogin.Userinfo.Id = (int)user.ID;
+                sender.Session.Response.userLogin.Userinfo.Player = new NPlayerInfo(); // 初始化玩家信息
+                sender.Session.Response.userLogin.Userinfo.Player.Id = user.Player.ID;
 
                 /*加载玩家的角色信息*/
                 // 遍历当前玩家账号下所有已创建的角色
@@ -123,12 +122,11 @@ namespace GameServer.Services
                     info.Class = (CharacterClass)c.Class;
                     info.Name = c.Name;
 
-                    message.Response.userLogin.Userinfo.Player.Characters.Add(info);
+                    sender.Session.Response.userLogin.Userinfo.Player.Characters.Add(info);
                 }
             }
 
-            byte[] data = PackageHandler.PackMessage(message);  // 将 NetMessage 对象序列化为字节数组，方便通过网络发送。
-            sender.SendData(data, 0, data.Length);              // 将打包好的字节数组通过当前会话 sender 发送给客户端。
+            sender.SendResponse();
         }
 
         /// <summary>
@@ -152,8 +150,28 @@ namespace GameServer.Services
                 MapID = 1,
                 MapPosX = 5000,
                 MapPosY = 4000,
-                MapPosZ = 820
+                MapPosZ = 820,
+                Gold = 100000   // 初始10w金币
             };
+            // 背包初始化
+            var bag = new TCharacterBag();
+            bag.Owner = character;
+            bag.Items = new byte[0];
+            bag.Unlocked = 20;  // 默认最开始解锁20个格子
+            TCharacterItem it = new TCharacterItem();
+            character.Bag = DBService.Instance.Entities.CharacterBag.Add(bag);
+            character.Items.Add(new TCharacterItem()
+            {
+                Owner = character,
+                ItemID = 1,
+                ItemCount = 20,
+            });
+            character.Items.Add(new TCharacterItem()
+            {
+                Owner = character,
+                ItemID = 2,
+                ItemCount = 20,
+            });
 
             // 2. 把新角色对象加入到“待插入”的集合中
             // Entities.Characters其实是DbSet<TCharacter>，相当于一个操作数据库表的“集合”。
@@ -218,6 +236,27 @@ namespace GameServer.Services
             message.Response.gameEnter = new UserGameEnterResponse();
             message.Response.gameEnter.Result = Result.Success;
             message.Response.gameEnter.Errormsg = "None";
+            message.Response.gameEnter.Character = character.Info;
+
+            // 道具系统测试
+            int itemId = 2;
+            bool hasItem = character.ItemManager.HasItem(itemId);
+            Log.InfoFormat("[道具系统测试] HasItem:[{0}]{1}", itemId, hasItem);
+            if (hasItem)
+            {
+                // character.ItemManager.RemoveItem(itemId, 1);
+                character.ItemManager.AddItem(1, 100);  // 道具1 + 100个
+                character.ItemManager.AddItem(2, 10);
+                character.ItemManager.AddItem(3, 30);
+                character.ItemManager.AddItem(4, 120);
+            }
+            else
+            {
+                character.ItemManager.AddItem(itemId, 5);
+            }
+            Models.Item item = character.ItemManager.GetItem(itemId);
+            Log.InfoFormat("[道具系统测试] Item:[{0}][{1}]", itemId, item);
+            DBService.Instance.Save();
 
             // 4) 发送消息给客户端
             byte[] data = PackageHandler.PackMessage(message);

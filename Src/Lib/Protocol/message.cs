@@ -7,70 +7,6 @@ namespace SkillBridge.Message
 {
 
     [global::ProtoBuf.ProtoContract()]
-    public partial class NUserInfo : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
-        public int Id { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"player")]
-        public NPlayerInfo Player { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class NPlayerInfo : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
-        public int Id { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"characters")]
-        public global::System.Collections.Generic.List<NCharacterInfo> Characters { get; } = new global::System.Collections.Generic.List<NCharacterInfo>();
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class NCharacterInfo : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
-        public int Id { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"tid")]
-        public int Tid { get; set; }
-
-        [global::ProtoBuf.ProtoMember(3, Name = @"name")]
-        [global::System.ComponentModel.DefaultValue("")]
-        public string Name { get; set; } = "";
-
-        [global::ProtoBuf.ProtoMember(4, Name = @"type")]
-        public CharacterType Type { get; set; }
-
-        [global::ProtoBuf.ProtoMember(5, Name = @"class")]
-        public CharacterClass Class { get; set; }
-
-        [global::ProtoBuf.ProtoMember(6, Name = @"level")]
-        public int Level { get; set; }
-
-        [global::ProtoBuf.ProtoMember(7)]
-        public int mapId { get; set; }
-
-        [global::ProtoBuf.ProtoMember(8, Name = @"entity")]
-        public NEntity Entity { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
     public partial class NVector3 : global::ProtoBuf.IExtensible
     {
         private global::ProtoBuf.IExtension __pbn__extensionData;
@@ -173,6 +109,12 @@ namespace SkillBridge.Message
         [global::ProtoBuf.ProtoMember(9)]
         public MapTeleportRequest mapTeleport { get; set; }
 
+        [global::ProtoBuf.ProtoMember(10)]
+        public ItemBuyRequest itemBuy { get; set; }
+
+        [global::ProtoBuf.ProtoMember(11)]
+        public BagSaveRequest bagSave { get; set; }
+
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -205,6 +147,15 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(8)]
         public MapEntitySyncResponse mapEntitySync { get; set; }
+
+        [global::ProtoBuf.ProtoMember(10)]
+        public ItemBuyResponse itemBuy { get; set; }
+
+        [global::ProtoBuf.ProtoMember(11)]
+        public BagSaveResponse bagSave { get; set; }
+
+        [global::ProtoBuf.ProtoMember(100)]
+        public StatusNotify statusNotify { get; set; }
 
     }
 
@@ -241,6 +192,154 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(3, Name = @"userinfo")]
         public NUserInfo Userinfo { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NUserInfo : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
+        public int Id { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"player")]
+        public NPlayerInfo Player { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NPlayerInfo : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
+        public int Id { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"characters")]
+        public global::System.Collections.Generic.List<NCharacterInfo> Characters { get; } = new global::System.Collections.Generic.List<NCharacterInfo>();
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NCharacterInfo : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
+        public int Id { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"tid")]
+        public int Tid { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"name")]
+        [global::System.ComponentModel.DefaultValue("")]
+        public string Name { get; set; } = "";
+
+        [global::ProtoBuf.ProtoMember(4, Name = @"type")]
+        public CharacterType Type { get; set; }
+
+        [global::ProtoBuf.ProtoMember(5, Name = @"class")]
+        public CharacterClass Class { get; set; }
+
+        [global::ProtoBuf.ProtoMember(6, Name = @"level")]
+        public int Level { get; set; }
+
+        [global::ProtoBuf.ProtoMember(7)]
+        public int mapId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(8, Name = @"entity")]
+        public NEntity Entity { get; set; }
+
+        [global::ProtoBuf.ProtoMember(9, Name = @"gold")]
+        public long Gold { get; set; }
+
+        [global::ProtoBuf.ProtoMember(10, Name = @"items")]
+        public global::System.Collections.Generic.List<NItemInfo> Items { get; } = new global::System.Collections.Generic.List<NItemInfo>();
+
+        [global::ProtoBuf.ProtoMember(11, Name = @"bag")]
+        public NBagInfo Bag { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NItemInfo : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
+        public int Id { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"count")]
+        public int Count { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NBagInfo : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public int Unlocked { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"items")]
+        public byte[] Items { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NStatus : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"type")]
+        public StatusType Type { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"action")]
+        public StatusAction Action { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"id")]
+        public int Id { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4, Name = @"value")]
+        public int Value { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class StatusNotify : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"status")]
+        public global::System.Collections.Generic.List<NStatus> Status { get; } = new global::System.Collections.Generic.List<NStatus>();
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NPlayerMoveRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"x")]
+        public int X { get; set; }
 
     }
 
@@ -337,6 +436,9 @@ namespace SkillBridge.Message
         [global::ProtoBuf.ProtoMember(2, Name = @"errormsg")]
         [global::System.ComponentModel.DefaultValue("")]
         public string Errormsg { get; set; } = "";
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"character")]
+        public NCharacterInfo Character { get; set; }
 
     }
 
@@ -440,6 +542,65 @@ namespace SkillBridge.Message
 
     }
 
+    [global::ProtoBuf.ProtoContract()]
+    public partial class BagSaveRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public NBagInfo BagInfo { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class BagSaveResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"result")]
+        public Result Result { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"errormsg")]
+        [global::System.ComponentModel.DefaultValue("")]
+        public string Errormsg { get; set; } = "";
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class ItemBuyRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public int shopId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2)]
+        public int shopItemId { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class ItemBuyResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"result")]
+        public Result Result { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"errormsg")]
+        [global::System.ComponentModel.DefaultValue("")]
+        public string Errormsg { get; set; } = "";
+
+    }
+
     [global::ProtoBuf.ProtoContract(Name = @"RESULT")]
     public enum Result
     {
@@ -493,6 +654,52 @@ namespace SkillBridge.Message
         MoveBack = 3,
         [global::ProtoBuf.ProtoEnum(Name = @"JUMP")]
         Jump = 4,
+    }
+
+    [global::ProtoBuf.ProtoContract(Name = @"ITEM_TYPE")]
+    public enum ItemType
+    {
+        [global::ProtoBuf.ProtoEnum(Name = @"NORMAL")]
+        Normal = 0,
+        [global::ProtoBuf.ProtoEnum(Name = @"MATERIAL")]
+        Material = 1,
+        [global::ProtoBuf.ProtoEnum(Name = @"TASK")]
+        Task = 2,
+    }
+
+    [global::ProtoBuf.ProtoContract(Name = @"STATUS_ACTION")]
+    public enum StatusAction
+    {
+        [global::ProtoBuf.ProtoEnum(Name = @"UPDATE")]
+        Update = 0,
+        [global::ProtoBuf.ProtoEnum(Name = @"ADD")]
+        Add = 1,
+        [global::ProtoBuf.ProtoEnum(Name = @"DELETE")]
+        Delete = 2,
+    }
+
+    [global::ProtoBuf.ProtoContract(Name = @"STATUS_TYPE")]
+    public enum StatusType
+    {
+        [global::ProtoBuf.ProtoEnum(Name = @"MONEY")]
+        Money = 0,
+        [global::ProtoBuf.ProtoEnum(Name = @"EXP")]
+        Exp = 1,
+        [global::ProtoBuf.ProtoEnum(Name = @"SKILL_POINT")]
+        SkillPoint = 2,
+        [global::ProtoBuf.ProtoEnum(Name = @"ITEM")]
+        Item = 3,
+    }
+
+    [global::ProtoBuf.ProtoContract(Name = @"STATUS_SOURCE")]
+    public enum StatusSource
+    {
+        [global::ProtoBuf.ProtoEnum(Name = @"UPDATE")]
+        Update = 0,
+        [global::ProtoBuf.ProtoEnum(Name = @"ADD")]
+        Add = 1,
+        [global::ProtoBuf.ProtoEnum(Name = @"DELETE")]
+        Delete = 2,
     }
 
 }
