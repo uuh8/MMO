@@ -16,12 +16,10 @@ namespace GameServer.Services
         {
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<BagSaveRequest>(this.OnBagSave);
         }
-        
         public void Init()
         {
 
         }
-
         /// <summary>
         /// 保存客户端发来的更新的背包信息到 数据库
         /// </summary>

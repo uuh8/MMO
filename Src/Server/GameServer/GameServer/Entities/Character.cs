@@ -49,6 +49,7 @@ namespace GameServer.Entities
             this.Info.Bag = new NBagInfo();
             this.Info.Bag.Unlocked = this.Data.Bag.Unlocked;
             this.Info.Bag.Items = this.Data.Bag.Items;
+
             this.StatusManager = new StatusManager(this);
         }
 

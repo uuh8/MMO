@@ -160,18 +160,6 @@ namespace GameServer.Services
             bag.Unlocked = 20;  // 默认最开始解锁20个格子
             TCharacterItem it = new TCharacterItem();
             character.Bag = DBService.Instance.Entities.CharacterBag.Add(bag);
-            character.Items.Add(new TCharacterItem()
-            {
-                Owner = character,
-                ItemID = 1,
-                ItemCount = 20,
-            });
-            character.Items.Add(new TCharacterItem()
-            {
-                Owner = character,
-                ItemID = 2,
-                ItemCount = 20,
-            });
 
             // 2. 把新角色对象加入到“待插入”的集合中
             // Entities.Characters其实是DbSet<TCharacter>，相当于一个操作数据库表的“集合”。
@@ -239,7 +227,7 @@ namespace GameServer.Services
             message.Response.gameEnter.Character = character.Info;
 
             // 道具系统测试
-            int itemId = 2;
+            /*int itemId = 2;
             bool hasItem = character.ItemManager.HasItem(itemId);
             Log.InfoFormat("[道具系统测试] HasItem:[{0}]{1}", itemId, hasItem);
             if (hasItem)
@@ -256,7 +244,7 @@ namespace GameServer.Services
             }
             Models.Item item = character.ItemManager.GetItem(itemId);
             Log.InfoFormat("[道具系统测试] Item:[{0}][{1}]", itemId, item);
-            DBService.Instance.Save();
+            DBService.Instance.Save();*/
 
             // 4) 发送消息给客户端
             byte[] data = PackageHandler.PackMessage(message);

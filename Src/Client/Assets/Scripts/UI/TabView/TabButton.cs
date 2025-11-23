@@ -7,7 +7,6 @@ public class TabButton : MonoBehaviour
 {
     public Sprite activeImage;      // 激活时候的图片
     private Sprite normalImage;     // 正常时候的图片
-
     public TabView tabView;
 
     public int tabIndex = 0;
@@ -19,15 +18,20 @@ public class TabButton : MonoBehaviour
     {
         tabImage = this.GetComponent<Image>();
         normalImage = tabImage.sprite;
-        // 绑定点击的事件
+        // 给按钮添加事件
         this.GetComponent<Button>().onClick.AddListener(OnClick);
     }
-
-    public void Select(bool select)
+    /// <summary>
+    /// 点击按钮后切换按钮为“激活颜色”
+    /// </summary>
+    /// <param name="selected"></param>
+    public void Select(bool selected)
     {
-        tabImage.overrideSprite = select ? activeImage : normalImage;
+        tabImage.overrideSprite = selected ? activeImage : normalImage;
     }
-
+    /// <summary>
+    /// 切换页数
+    /// </summary>
     void OnClick()
     {
         this.tabView.SelectTab(this.tabIndex);

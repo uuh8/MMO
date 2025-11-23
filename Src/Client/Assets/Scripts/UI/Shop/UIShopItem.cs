@@ -13,6 +13,7 @@ public class UIShopItem : MonoBehaviour, ISelectHandler
     public Text count;
 
     public Image background;
+
     public Sprite normalBg;
     public Sprite selectedBg;
 

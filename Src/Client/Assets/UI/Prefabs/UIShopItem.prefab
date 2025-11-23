@@ -71,8 +71,8 @@ MonoBehaviour:
   price: {fileID: 5463174908795470711}
   count: {fileID: 1372457588422895527}
   background: {fileID: 8663194235918180862}
-  normalBg: {fileID: 0}
-  selectedBg: {fileID: 0}
+  normalBg: {fileID: 21300000, guid: 0d7e0e2897601624391f93eda3748a34, type: 3}
+  selectedBg: {fileID: 21300000, guid: 81faba76f16c33b4abdb68e130ef3b48, type: 3}
 --- !u!114 &8663194235918180862
 MonoBehaviour:
   m_ObjectHideFlags: 0

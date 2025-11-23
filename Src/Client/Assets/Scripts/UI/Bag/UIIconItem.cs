@@ -13,8 +13,7 @@ public class UIIconItem : MonoBehaviour
     public void SetMainIcon(string iconName, string text)
     {
         // overrideSprite: Image组件的一个属性，用于覆盖默认显示的 Sprite
-        this.mainImage.overrideSprite = Resloader.Load<Sprite>(iconName);
+        this.mainImage.overrideSprite = Resloader.Load<Sprite>(iconName); 
         this.mainText.text = text;
     }
-
 }

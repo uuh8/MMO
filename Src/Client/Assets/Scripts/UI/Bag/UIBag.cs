@@ -8,14 +8,11 @@ using UnityEngine.UI;
 public class UIBag : UIWindow
 {
     public Text money;
-
     public Transform[] pages;
-
     public GameObject bagItem;  // 一个格子里面放了什么图标 Icon\文本 等
 
     List<Image> slots;  // 整个背包共有多少个格子
 
-    // Start is called before the first frame update
     void Start()
     {
         // 共有多少个格子
@@ -29,10 +26,12 @@ public class UIBag : UIWindow
                 slots.AddRange(this.pages[page].GetComponentsInChildren<Image>(true));
             }
         }
-
         StartCoroutine(InitBags());
     }
-
+    /// <summary>
+    /// 初始化背包
+    /// </summary>
+    /// <returns></returns>
     IEnumerator InitBags()
     {
         for(int i = 0; i < BagManager.Instance.Items.Length; i++)
@@ -40,13 +39,12 @@ public class UIBag : UIWindow
             var item = BagManager.Instance.Items[i];
             if(item.ItemId > 0)
             {
-                GameObject go = Instantiate(bagItem, slots[i].transform);
-                var ui = go.GetComponent<UIIconItem>();
+                GameObject uiBagItem = Instantiate(bagItem, slots[i].transform);
+                var uiBagIconItem = uiBagItem.GetComponent<UIIconItem>();
                 var def = ItemManager.Instance.Items[item.ItemId].Define;
-                ui.SetMainIcon(def.Icon, item.Count.ToString());    // 拿两个字段：图标和数量
+                uiBagIconItem.SetMainIcon(def.Icon, item.Count.ToString());    // 拿两个字段：图标和数量
             }
         }
-
         // 把还没解锁的道具格子变灰色
         for(int i = BagManager.Instance.Items.Length; i < slots.Count; i++)
         {
@@ -59,7 +57,9 @@ public class UIBag : UIWindow
     {
         this.money.text = User.Instance.CurrentCharacter.Id.ToString();
     }
-    
+    /// <summary>
+    /// 背包整理
+    /// </summary>
     public void OnReset()
     {
         BagManager.Instance.Reset();

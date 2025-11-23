@@ -47,7 +47,7 @@ public class DataManager : Singleton<DataManager>
         json = File.ReadAllText(this.DataPath + "ShopDefine.txt");
         this.Shops = JsonConvert.DeserializeObject<Dictionary<int, ShopDefine>>(json);
 
-        json = File.ReadAllText(this.DataPath + "ShopItemDefice.txt");
+        json = File.ReadAllText(this.DataPath + "ShopItemDefine.txt");
         this.ShopItems = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, ShopItemDefice>>>(json);
 
         //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
