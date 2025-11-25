@@ -17,7 +17,7 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<BagSaveRequest>(this.OnBagSave);
         }
         public void Init()
-        {
+        { 
 
         }
         /// <summary>

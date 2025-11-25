@@ -97,6 +97,11 @@ namespace Managers
             return this.Info;
         }
 
+        /// <summary>
+        /// 道具增加/减少时，背包同步增加/减少
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <param name="count"></param>
         public void AddItem(int itemId, int count)
         {
             ushort addCount = (ushort)count;
@@ -127,6 +132,7 @@ namespace Managers
                     {
                         this.Items[i].ItemId = (ushort)itemId;
                         this.Items[i].Count = addCount;
+                        break;
                     }
                 }
             }

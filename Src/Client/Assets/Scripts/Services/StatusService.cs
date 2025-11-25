@@ -16,6 +16,17 @@ namespace Services
 
         public void Init() { }
 
+        public StatusService()
+        {
+            // 监听状态协议的response —— StatusNotify
+            MessageDistributer.Instance.Subscribe<StatusNotify>(this.OnStatusNotify);
+        }
+        public void Dispose()
+        {
+            MessageDistributer.Instance.Unsubscribe<StatusNotify>(this.OnStatusNotify);
+        }
+
+
         /// <summary>
         /// 注册状态
         /// </summary>
@@ -33,16 +44,6 @@ namespace Services
             }
         }
 
-        public StatusService()
-        {
-            // 监听状态协议的response —— StatusNotify
-            MessageDistributer.Instance.Subscribe<StatusNotify>(this.OnStatusNotify);
-        }
-        public void Dispose()
-        {
-            MessageDistributer.Instance.Unsubscribe<StatusNotify>(this.OnStatusNotify);
-        }
-
         /// <summary>
         /// 处理服务端发来的 状态协议response
         /// </summary>
@@ -56,7 +57,6 @@ namespace Services
                 Notify(status);
             }
         }
-
         private void Notify(NStatus status)
         {
             Debug.LogFormat("[StatusService] StatusNotify:[{0}][{1}]{2}:{3}", status.Type, status.Action, status.Id, status.Value);

@@ -7,7 +7,6 @@ public class UIIconItem : MonoBehaviour
 {
     public Image mainImage;
     public Text mainText;
-
     public Image secondImage;
 
     public void SetMainIcon(string iconName, string text)

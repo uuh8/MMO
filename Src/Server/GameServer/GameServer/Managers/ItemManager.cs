@@ -15,7 +15,7 @@ namespace GameServer.Managers
     class ItemManager
     {
         Character Owner;
-        // 一个自动用于维护角色身上的所有道具
+        // 维护角色身上的所有道具
         public Dictionary<int, Item> Items = new Dictionary<int, Item>();
 
         // 构造函数
@@ -106,6 +106,8 @@ namespace GameServer.Managers
                 item = new Item(dbItem);
                 this.Items.Add(itemId, item);
             }
+            // 把状态变化记录到状态管理器
+            this.Owner.StatusManager.AddItemChange(itemId, count, StatusAction.Add);
             Log.InfoFormat("[ItemManager] [{0}]AddItem[{1}] addCount:{2}", this.Owner.Data.ID, item, count);
             return true;
         }
@@ -132,7 +134,6 @@ namespace GameServer.Managers
             //道具/金币只要发生了变化，只做一件事，把变化量记录到 状态管理器StatusManager，状态管理器会自己处理后续
             this.Owner.StatusManager.AddItemChange(ItemId, count, StatusAction.Delete);
             Log.InfoFormat("[ItemManager] [{0}]RemoveItem[{1}] removeCount:{2}", this.Owner.Data.ID, item, count);
-            //DBService.Instance.Save(); 
             return true;
         }
 

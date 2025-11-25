@@ -451,8 +451,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   money: {fileID: 5040751527783392176}
   pages:
-  - {fileID: 1671048390072795033}
-  - {fileID: 8921579000743906378}
+  - {fileID: 5026699303097111224}
+  - {fileID: 2907946262622900304}
   bagItem: {fileID: 8490308094813968715, guid: bb57f168de2648a4ca30e41694cc92d9, type: 3}
 --- !u!1 &1331731423179160773
 GameObject:

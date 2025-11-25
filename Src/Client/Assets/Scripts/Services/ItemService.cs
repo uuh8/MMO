@@ -19,6 +19,11 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<ItemBuyResponse>(this.OnItemBuy);
         }
 
+        /// <summary>
+        /// 用于发送
+        /// </summary>
+        /// <param name="shopId"></param>
+        /// <param name="shopItemId"></param>
         public void SendBuyItem(int shopId, int shopItemId)
         {
             Debug.Log("SendBuyItem");
@@ -30,7 +35,11 @@ namespace Services
             message.Request.itemBuy.shopItemId = shopItemId;
             NetClient.Instance.SendMessage(message);
         }
-
+        /// <summary>
+        /// 用于处理接收
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="response"></param>
         private void OnItemBuy(object sender, ItemBuyResponse response)
         {
             MessageBox.Show("购买结果：" + response.Result + "\n" + response.Errormsg, "购买完成");

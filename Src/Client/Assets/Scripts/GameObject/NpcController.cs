@@ -18,7 +18,6 @@ public class NpcController : MonoBehaviour
 
     private NpcDefine npc;
 
-    // Start is called before the first frame update
     void Start()
     {
         renderer = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>();

@@ -8,14 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace GameServer.Entities
 {
     class Character : CharacterBase
     {
-       
         public TCharacter Data;
-
         public ItemManager ItemManager;
         public StatusManager StatusManager;
 
@@ -47,7 +44,7 @@ namespace GameServer.Entities
             this.ItemManager.GetItemInfos(this.Info.Items);
 
             this.Info.Bag = new NBagInfo();
-            this.Info.Bag.Unlocked = this.Data.Bag.Unlocked;
+            this.Info.Bag.Unlocked = this.Data.Bag.Unlocked; 
             this.Info.Bag.Items = this.Data.Bag.Items;
 
             this.StatusManager = new StatusManager(this);

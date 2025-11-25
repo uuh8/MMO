@@ -17,7 +17,7 @@ public class UIShop : UIWindow
 
     void Start()
     {
-        StartCoroutine(InitItems());    
+        StartCoroutine(InitItems());     
     }
     IEnumerator InitItems()
     {
@@ -44,7 +44,9 @@ public class UIShop : UIWindow
         this.money.text = User.Instance.CurrentCharacter.Gold.ToString();
     }
 
-    // 当前选中了谁
+    /// <summary>
+    /// 当前选中了哪个ShopItem
+    /// </summary>
     private UIShopItem selectedItem;
     public void SelectShopItem(UIShopItem item)
     {
@@ -53,6 +55,9 @@ public class UIShop : UIWindow
         selectedItem = item;
     }
 
+    /// <summary>
+    /// 点击购买按钮
+    /// </summary>
     public void OnClickBuy()
     {
         if(this.selectedItem == null)

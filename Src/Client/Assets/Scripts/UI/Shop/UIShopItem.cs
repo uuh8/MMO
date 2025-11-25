@@ -11,7 +11,6 @@ public class UIShopItem : MonoBehaviour, ISelectHandler
     public Text title;
     public Text price;
     public Text count;
-
     public Image background;
 
     public Sprite normalBg;
@@ -31,24 +30,32 @@ public class UIShopItem : MonoBehaviour, ISelectHandler
     public int ShopItemID { get; set; }
     private UIShop shop;
 
-    private ItemDefine item;
+    private ItemDefine itemDefine;
     private ShopItemDefice ShopItem { get; set; }
 
-
+    /// <summary>
+    /// UIShop使用，用于每个商品的初始化
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="shopItem"></param>
+    /// <param name="owner"></param>
     public void SetShopItem(int id, ShopItemDefice shopItem, UIShop owner)
     {
         this.shop = owner;
         this.ShopItemID = id;
         this.ShopItem = shopItem;
-        this.item = DataManager.Instance.Items[this.ShopItem.ItemID];
 
-        this.title.text = this.item.Name;
+        this.itemDefine = DataManager.Instance.Items[this.ShopItem.ItemID];
+        this.title.text = this.itemDefine.Name;
         this.count.text = shopItem.Count.ToString();
         this.price.text = shopItem.Price.ToString();
-        this.icon.overrideSprite = Resloader.Load<Sprite>(item.Icon);
+        this.icon.overrideSprite = Resloader.Load<Sprite>(itemDefine.Icon);
     }
 
-    // 重写的接口
+    /// <summary>
+    /// 重写的接口
+    /// </summary>
+    /// <param name="eventData"></param>
     public void OnSelect(BaseEventData eventData)
     {
         this.Selected = true;

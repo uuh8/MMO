@@ -157,7 +157,7 @@ namespace GameServer.Services
             var bag = new TCharacterBag();
             bag.Owner = character;
             bag.Items = new byte[0];
-            bag.Unlocked = 20;  // 默认最开始解锁20个格子
+            bag.Unlocked = 15;  // 默认最开始解锁20个格子
             TCharacterItem it = new TCharacterItem();
             character.Bag = DBService.Instance.Entities.CharacterBag.Add(bag);
 

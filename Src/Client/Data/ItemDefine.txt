@@ -147,5 +147,5 @@
     "Icon": "UI/Items/jinengshu",
     "Function": "AddSkillPoint",
     "Param": 1
-  }
+  },
 }

@@ -23,7 +23,14 @@ public class UIBag : UIWindow
             for(int page = 0; page < this.pages.Length; page++)
             {
                 // 一页有多少个格子，添加进去
-                slots.AddRange(this.pages[page].GetComponentsInChildren<Image>(true));
+                // 遍历 Content 下面第一层的所有子物体。也就是每个格子的根节点：Image、Image (1)、Image (2) ……
+                foreach (Transform child in this.pages[page])
+                {
+                    // 在当前这个子物体上去查有没有 Image 组件，如果这个子物体身上确实有 Image，就把这个 Image 当作一个“格子”加入 slots 列表。
+                    var img = child.GetComponent<Image>();
+                    if (img != null)
+                        slots.Add(img);
+                }
             }
         }
         StartCoroutine(InitBags());
