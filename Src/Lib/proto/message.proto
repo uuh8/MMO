@@ -57,6 +57,18 @@ enum ITEM_TYPE
 	NORMAL = 0;
 	MATERIAL = 1;
 	TASK = 2;	// 任务道具
+	EQUIP = 3;	// 装备道具
+}
+
+enum EQUIP_SLOT{
+	WEAPON = 0;
+	ACCESSORY = 1;
+	HELMET = 2;
+	CHEST = 3;
+	SHOULDER = 4;
+	PANTS = 5;
+	BOOTS = 6;
+	SLOT_MAX = 7;	// 最大数量
 }
 
 // 三维向量，通常表示位置/朝向（单位与缩放由客户端/服务器约定）
@@ -115,7 +127,7 @@ message NetMessageRequest{
 	MapEntitySyncRequest mapEntitySync = 8;       // 实体同步（客户端->服务器）
 	MapTeleportRequest mapTeleport = 9;           // 传送请求
 	ItemBuyRequest itemBuy = 10;                      // 购买物品
-	BagSaveRequest bagSave = 11;                      // 保存背包
+	ItemEquipRequest itemEquip = 11;                     // 装备物品
 
 
 }
@@ -135,7 +147,7 @@ message NetMessageResponse{
 	MapEntitySyncResponse mapEntitySync = 8;      // 实体同步（服务器广播）
 
 	ItemBuyResponse itemBuy = 10;                    // 购买物品结果
-	BagSaveResponse bagSave = 11;                    // 保存背包结果
+	ItemEquipResponse itemEquip = 11;                  // 装备物品结果
 
 	StatusNotify statusNotify = 100;                   // 状态通知
 }
@@ -173,6 +185,7 @@ message NCharacterInfo {
 
 	repeated NItemInfo items = 10;// 角色身上的所有道具
 	NBagInfo bag = 11;            // 角色背包信息
+	bytes Equips = 12;            // 角色穿上的装备
 }
 
 // 道具信息
@@ -322,6 +335,16 @@ message ItemBuyRequest{
 	int32 shopItemId = 2; // 商品ID
 }
 message ItemBuyResponse{
+	RESULT result = 1; // 保存结果
+	string errormsg = 2; // 错误信息
+}
+/* ——————————————————————装备相关—————————————————————————————— */
+message ItemEquipRequest{
+	int32 slot = 1; // 装备槽位
+	int32 itemId = 2; // 装备ID
+	bool isEquip = 3; // 用一个bool类型来表示穿还是脱
+}
+message ItemEquipResponse{
 	RESULT result = 1; // 保存结果
 	string errormsg = 2; // 错误信息
 }

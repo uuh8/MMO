@@ -60,6 +60,7 @@ public class UIBag : UIWindow
         yield return null;
     }
 
+
     public void SetTitle(string title)
     {
         this.money.text = User.Instance.CurrentCharacter.Id.ToString();
@@ -70,5 +71,20 @@ public class UIBag : UIWindow
     public void OnReset()
     {
         BagManager.Instance.Reset();
+        this.Clear();
+        StartCoroutine(InitBags());
+    }
+    /// <summary>
+    /// 用于背包整理
+    /// </summary>
+    void Clear()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].transform.childCount > 0)
+            {
+                Destroy(slots[i].transform.GetChild(0).gameObject);
+            }
+        }
     }
 }

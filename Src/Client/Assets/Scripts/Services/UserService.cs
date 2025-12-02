@@ -282,8 +282,8 @@ namespace Services
 
             if (message.Result == Result.Success)
             {
-                Models.User.Instance.Info.Player.Characters.Clear(); 
-                Models.User.Instance.Info.Player.Characters.AddRange(message.Characters); 
+                User.Instance.Info.Player.Characters.Clear(); 
+                User.Instance.Info.Player.Characters.AddRange(message.Characters); 
             }
             // 调用回调，通知UI层
             if (this.OnCharCreate != null)
@@ -314,6 +314,7 @@ namespace Services
                     // 初始化角色身上的道具管理器
                     ItemManager.Instance.Init(response.Character.Items);
                     BagManager.Instance.Init(response.Character.Bag);
+                    EquipManager.Instance.Init(response.Character.Equips);
                 }
             }
         }

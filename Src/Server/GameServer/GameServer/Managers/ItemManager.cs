@@ -78,7 +78,6 @@ namespace GameServer.Managers
             Log.InfoFormat("[ItemManager] [{0}]GetItem[{1}:{2}]", this.Owner.Data.ID, itemId, item);
             return item;
         }
-
         /// <summary>
         /// 增加道具
         /// </summary>

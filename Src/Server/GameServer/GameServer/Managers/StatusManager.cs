@@ -38,7 +38,7 @@ namespace GameServer.Managers
         }
 
         /// <summary>
-        /// 加金币的情况
+        /// 添加 加金币 的状态变化
         /// </summary>
         /// <param name="goldDelta"></param>
         public void AddGoldChange(int goldDelta)
@@ -52,7 +52,12 @@ namespace GameServer.Managers
                 this.AddStatus(StatusType.Money, 0, -goldDelta, StatusAction.Delete);
             }
         }
-
+        /// <summary>
+        /// 添加 物品状态变化 的状态变化
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="count"></param>
+        /// <param name="action"></param>
         public void AddItemChange(int id, int count, StatusAction action)
         {
             this.AddStatus(StatusType.Item, id, count, action);

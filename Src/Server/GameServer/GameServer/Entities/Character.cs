@@ -36,7 +36,7 @@ namespace GameServer.Entities
             this.Info.Class = (CharacterClass)cha.Class;
             this.Info.mapId = cha.MapID;
             this.Info.Gold = cha.Gold;
-            this.Info.Entity = this.EntityData;
+            this.Info.Entity = this.EntityData; 
 
             this.Define = DataManager.Instance.Characters[this.Info.Tid];
 
@@ -46,6 +46,8 @@ namespace GameServer.Entities
             this.Info.Bag = new NBagInfo();
             this.Info.Bag.Unlocked = this.Data.Bag.Unlocked; 
             this.Info.Bag.Items = this.Data.Bag.Items;
+
+            this.Info.Equips = this.Data.Equips;
 
             this.StatusManager = new StatusManager(this);
         }

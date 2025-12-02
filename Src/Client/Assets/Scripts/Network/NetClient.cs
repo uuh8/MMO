@@ -161,7 +161,7 @@ namespace Network
             Debug.Log("DoConnect");
             this.connecting = true;
             this.lastSendTime = 0;
-
+            
             this.DoConnect();
         }
 

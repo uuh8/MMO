@@ -31,9 +31,18 @@ public class UIMain : MonoSingleton<UIMain>
         SceneManager.Instance.LoadScene("CharSelect");
         UserService.Instance.SendGameLeave();
     }
-
+    /// <summary>
+    /// 点击背包按钮
+    /// </summary>
     public void OnClickBag()
     {
         UIManager.Instance.Show<UIBag>();
+    }
+    /// <summary>
+    /// 点击装备按钮
+    /// </summary>
+    public void OnClickCharEquip()
+    {
+        UIManager.Instance.Show<UICharEquip>();
     }
 }

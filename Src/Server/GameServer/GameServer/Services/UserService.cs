@@ -82,7 +82,7 @@ namespace GameServer.Services
         {
             Log.InfoFormat("[UserService] UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
 
-            sender.Session.Response.userLogin = new UserLoginResponse();
+            sender.Session.Response.userLogin = new UserLoginResponse(); 
 
 
             TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
@@ -151,7 +151,8 @@ namespace GameServer.Services
                 MapPosX = 5000,
                 MapPosY = 4000,
                 MapPosZ = 820,
-                Gold = 100000   // 初始10w金币
+                Gold = 100000,   // 初始10w金币
+                Equips = new byte[28]   // 每个装备槽4字节，共7个装备槽
             };
             // 背包初始化
             var bag = new TCharacterBag();
@@ -165,6 +166,20 @@ namespace GameServer.Services
             // Entities.Characters其实是DbSet<TCharacter>，相当于一个操作数据库表的“集合”。
             // Add(character)并不会立刻写入数据库，只是告诉EF有一个新对象要插入到数据库表中。
             character = DBService.Instance.Entities.Characters.Add(character);
+
+            // 新人送20红瓶和蓝瓶
+            character.Items.Add(new TCharacterItem()
+            {
+                Owner = character,
+                ItemID = 1,
+                ItemCount = 20
+            });
+            character.Items.Add(new TCharacterItem()
+            {
+                Owner = character,
+                ItemID = 2,
+                ItemCount = 20
+            });
 
             // 3. 把角色加到玩家角色列表（服务器内存结构，不是数据库）里
             // 这只是把新角色对象加到当前登录玩家的内存角色列表，与数据库无关，属于服务端业务层数据结构。

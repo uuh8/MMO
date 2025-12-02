@@ -11,6 +11,7 @@ namespace Models
         public int Id;
         public int Count;
         public ItemDefine Define;
+        public EquipDefine EquipInfo;
 
         /// <summary>
         /// 可以通过网络消息来构建item
@@ -28,7 +29,8 @@ namespace Models
         {
             this.Id = id;
             this.Count = count;
-            this.Define = DataManager.Instance.Items[this.Id];
+            DataManager.Instance.Items.TryGetValue(this.Id, out this.Define);
+            DataManager.Instance.Equips.TryGetValue(this.Id, out this.EquipInfo);
         }
 
         public override string ToString()

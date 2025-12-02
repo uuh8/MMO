@@ -10,6 +10,7 @@ public class UIShopItem : MonoBehaviour, ISelectHandler
     public Image icon;
     public Text title;
     public Text price;
+    public Text limitClass; // 道具的职业限制
     public Text count;
     public Image background;
 
@@ -44,11 +45,12 @@ public class UIShopItem : MonoBehaviour, ISelectHandler
         this.shop = owner;
         this.ShopItemID = id;
         this.ShopItem = shopItem;
-
         this.itemDefine = DataManager.Instance.Items[this.ShopItem.ItemID];
+
         this.title.text = this.itemDefine.Name;
-        this.count.text = shopItem.Count.ToString();
+        this.count.text = "x" + shopItem.Count.ToString();
         this.price.text = shopItem.Price.ToString();
+        this.limitClass.text = this.itemDefine.LimitClass.ToString();
         this.icon.overrideSprite = Resloader.Load<Sprite>(itemDefine.Icon);
     }
 
