@@ -311,10 +311,12 @@ namespace Services
             {
                 if(response.Result == Result.Success)
                 {
-                    // 初始化角色身上的道具管理器
+                    User.Instance.CurrentCharacter = response.Character;
+                    // 初始化角色身上的各种 Manager
                     ItemManager.Instance.Init(response.Character.Items);
                     BagManager.Instance.Init(response.Character.Bag);
                     EquipManager.Instance.Init(response.Character.Equips);
+                    QuestManager.Instance.Init(response.Character.Quests);
                 }
             }
         }

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static ListView;
+using UnityEngine.Events;
 
 public class TabView : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class TabView : MonoBehaviour
     public GameObject[] tabPages;
 
     public int index = -1;
+    public UnityAction<int> OnTabSelect;
 
     // 如果 Start 的签名是 IEnumerator Start()，Unity 会自动把它当成协程来执行，协程启动时间就是Start函数的执行时间
     IEnumerator Start()

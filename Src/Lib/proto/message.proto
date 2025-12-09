@@ -129,7 +129,9 @@ message NetMessageRequest{
 	ItemBuyRequest itemBuy = 10;                      // 购买物品
 	ItemEquipRequest itemEquip = 11;                     // 装备物品
 
-
+	QuestListRequest questList = 12;                      // 任务列表
+	QuestAcceptRequest questAccept = 13;                // 接受任务
+	QuestSubmitRequest questSubmit = 14;              // 提交任务
 }
 // NetMessageResponse 收纳服务器返回的所有响应类型
 message NetMessageResponse{
@@ -148,6 +150,9 @@ message NetMessageResponse{
 
 	ItemBuyResponse itemBuy = 10;                    // 购买物品结果
 	ItemEquipResponse itemEquip = 11;                  // 装备物品结果
+	QuestListResponse questList = 12;                  // 任务列表
+	QuestAcceptResponse questAccept = 13;                // 接受任务结果
+	QuestSubmitResponse questSubmit = 14;              // 提交任务结果
 
 	StatusNotify statusNotify = 100;                   // 状态通知
 }
@@ -186,6 +191,7 @@ message NCharacterInfo {
 	repeated NItemInfo items = 10;// 角色身上的所有道具
 	NBagInfo bag = 11;            // 角色背包信息
 	bytes Equips = 12;            // 角色穿上的装备
+	repeated NQuestInfo quests = 13;// 任务信息，可能有多条任务，因此用数组
 }
 
 // 道具信息
@@ -347,4 +353,61 @@ message ItemEquipRequest{
 message ItemEquipResponse{
 	RESULT result = 1; // 保存结果
 	string errormsg = 2; // 错误信息
+}
+
+/* ——————————————————————任务系统—————————————————————————————— */
+enum QUEST_STATUS{
+	IN_PROGRESS = 0; // 已接受，未完成
+	COMPLETED = 1; // 已完成，未提交
+	FINISHED = 2; // 已完成，已提交
+	FAILED = 3; // 已失败
+}
+
+enum QUEST_LIST_TYPE{
+    ALL = 0; // 所有任务
+	IN_PROGRESS = 1; // 进行中的任务
+	FINISHED = 2; // 已完成的任务
+}
+
+message NQuestInfo{
+	int32 quest_id = 1; // 任务ID
+	int32 quest_guid = 2; // 任务GUID
+	QUEST_STATUS status = 3; // 任务状态
+	repeated int32 targets = 4; // 任务目标
+}
+
+message QuestListRequest{
+    QUEST_LIST_TYPE listType = 1; // 任务列表类型
+}
+
+message QuestListResponse{
+    RESULT result = 1;
+	string errormsg = 2; 
+	repeated NQuestInfo quests = 3; 
+}
+// 接受任务
+message QuestAcceptRequest{
+    int32 quest_id = 1; 
+}
+message QuestAcceptResponse{
+    RESULT result = 1; 
+	string errormsg = 2; 
+	NQuestInfo quest = 3;
+}
+// 提交任务
+message QuestSubmitRequest{
+    int32 quest_id = 1; 
+}
+message QuestSubmitResponse{
+    RESULT result = 1; 
+	string errormsg = 2; 
+	NQuestInfo quest = 3;
+}
+// 拒绝任务
+message QuestAbandonRequest{
+    int32 quest_id = 1; 
+}
+message QuestAbandonResponse{
+    RESULT result = 1; 
+	string errormsg = 2; 
 }

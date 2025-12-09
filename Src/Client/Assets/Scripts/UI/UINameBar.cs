@@ -31,8 +31,7 @@ public class UINameBar : MonoBehaviour
             return;
         }
 
-        // 让血条面向摄像机（更新旋转）
-        this.transform.forward = Camera.main.transform.forward;
+        
     }
 
     void UpdateInfo()

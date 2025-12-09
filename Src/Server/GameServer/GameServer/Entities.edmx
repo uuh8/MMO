@@ -4,129 +4,158 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ExtremeWorldModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-  <EntityContainer Name="ExtremeWorldModelStoreContainer">
-    <EntitySet Name="Users" EntityType="ExtremeWorldModel.Store.Users" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="Players" EntityType="ExtremeWorldModel.Store.Players" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="Characters" EntityType="ExtremeWorldModel.Store.Characters" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="CharacterItems" EntityType="ExtremeWorldModel.Store.CharacterItems" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="CharacterBag" EntityType="ExtremeWorldModel.Store.CharacterBag" store:Type="Tables" Schema="dbo" />
-    <AssociationSet Name="UserPlayer" Association="ExtremeWorldModel.Store.UserPlayer">
-      <End Role="User" EntitySet="Users" />
-      <End Role="Player" EntitySet="Players" />
-    </AssociationSet>
-    <AssociationSet Name="PlayerCharacter" Association="ExtremeWorldModel.Store.PlayerCharacter">
-      <End Role="Player" EntitySet="Players" />
-      <End Role="Character" EntitySet="Characters" />
-    </AssociationSet>
-    <AssociationSet Name="CharacterItem" Association="ExtremeWorldModel.Store.TCharacterTCharacterItem">
-      <End Role="TCharacter" EntitySet="Characters" />
-      <End Role="TCharacterItem" EntitySet="CharacterItems" />
-    </AssociationSet>
-    <AssociationSet Name="TCharacterTCharacterBag" Association="ExtremeWorldModel.Store.TCharacterTCharacterBag">
-      <End Role="TCharacter" EntitySet="Characters" />
-      <End Role="TCharacterBag" EntitySet="CharacterBag" />
-    </AssociationSet>
-  </EntityContainer>
-  <EntityType Name="Users">
-    <Key>
-      <PropertyRef Name="ID" />
-    </Key>
-    <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="50" />
-    <Property Name="Password" Type="nvarchar" Nullable="false" MaxLength="50" />
-    <Property Name="RegisterDate" Type="datetime" Nullable="true" />
-    <Property Name="Player_ID" Type="int" Nullable="false" />
-  </EntityType>
-  <EntityType Name="Players">
-    <Key>
-      <PropertyRef Name="ID" />
-    </Key>
-    <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-  </EntityType>
-  <EntityType Name="Characters">
-    <Key>
-      <PropertyRef Name="ID" />
-    </Key>
-    <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="TID" Type="int" Nullable="false" />
-    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="Class" Type="int" Nullable="false" />
-    <Property Name="MapID" Type="int" Nullable="false" DefaultValue="1" />
-    <Property Name="MapPosX" Type="int" Nullable="false" />
-    <Property Name="MapPosY" Type="int" Nullable="false" />
-    <Property Name="MapPosZ" Type="int" Nullable="false" />
-    <Property Name="Gold" Type="bigint" Nullable="false" />
-    <Property Name="Equips" Type="binary" Nullable="false" MaxLength="28" />
-    <Property Name="Player_ID" Type="int" Nullable="false" />
-    <Property Name="Bag_Id" Type="int" Nullable="false" />
-  </EntityType>
-  <EntityType Name="CharacterItems">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="ItemID" Type="int" Nullable="false" />
-    <Property Name="ItemCount" Type="int" Nullable="false" />
-    <Property Name="CharacterID" Type="int" Nullable="false" />
-  </EntityType>
-  <EntityType Name="CharacterBag">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Items" Type="varbinary(max)" Nullable="false" />
-    <Property Name="Unlocked" Type="int" Nullable="false" />
-  </EntityType>
-  <Association Name="UserPlayer">
-    <End Role="User" Type="ExtremeWorldModel.Store.Users" Multiplicity="*" />
-    <End Role="Player" Type="ExtremeWorldModel.Store.Players" Multiplicity="1" />
-    <ReferentialConstraint>
-      <Principal Role="Player">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="User">
-        <PropertyRef Name="Player_ID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="PlayerCharacter">
-    <End Role="Player" Type="ExtremeWorldModel.Store.Players" Multiplicity="1" />
-    <End Role="Character" Type="ExtremeWorldModel.Store.Characters" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Player">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="Character">
-        <PropertyRef Name="Player_ID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="TCharacterTCharacterItem">
-    <End Role="TCharacter" Type="ExtremeWorldModel.Store.Characters" Multiplicity="1" />
-    <End Role="TCharacterItem" Type="ExtremeWorldModel.Store.CharacterItems" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="TCharacter">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="TCharacterItem">
-        <PropertyRef Name="CharacterID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="TCharacterTCharacterBag">
-    <End Role="TCharacter" Type="ExtremeWorldModel.Store.Characters" Multiplicity="*" />
-    <End Role="TCharacterBag" Type="ExtremeWorldModel.Store.CharacterBag" Multiplicity="1" />
-    <ReferentialConstraint>
-      <Principal Role="TCharacterBag">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="TCharacter">
-        <PropertyRef Name="Bag_Id" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-</Schema></edmx:StorageModels>
+    <Schema Namespace="ExtremeWorldModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CharacterBag">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Items" Type="varbinary(max)" Nullable="false" />
+          <Property Name="Unlocked" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CharacterItems">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemID" Type="int" Nullable="false" />
+          <Property Name="ItemCount" Type="int" Nullable="false" />
+          <Property Name="CharacterID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Characters">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Class" Type="int" Nullable="false" />
+          <Property Name="MapID" Type="int" Nullable="false" />
+          <Property Name="MapPosX" Type="int" Nullable="false" />
+          <Property Name="MapPosY" Type="int" Nullable="false" />
+          <Property Name="MapPosZ" Type="int" Nullable="false" />
+          <Property Name="Gold" Type="bigint" Nullable="false" />
+          <Property Name="Equips" Type="binary" MaxLength="28" Nullable="false" />
+          <Property Name="Player_ID" Type="int" Nullable="false" />
+          <Property Name="Bag_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Players">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TCharacterQuests">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TCharacterID" Type="int" Nullable="false" />
+          <Property Name="QuestID" Type="int" Nullable="false" />
+          <Property Name="Target1" Type="int" Nullable="false" />
+          <Property Name="Target2" Type="int" Nullable="false" />
+          <Property Name="Target3" Type="int" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RegisterDate" Type="datetime" />
+          <Property Name="Player_ID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_PlayerCharacter">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="Characters" Type="Self.Characters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Characters">
+              <PropertyRef Name="Player_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TCharacterQuests_Character">
+          <End Role="Characters" Type="Self.Characters" Multiplicity="1" />
+          <End Role="TCharacterQuests" Type="Self.TCharacterQuests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Characters">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TCharacterQuests">
+              <PropertyRef Name="TCharacterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TCharacterTCharacterBag">
+          <End Role="CharacterBag" Type="Self.CharacterBag" Multiplicity="1" />
+          <End Role="Characters" Type="Self.Characters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CharacterBag">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Characters">
+              <PropertyRef Name="Bag_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TCharacterTCharacterItem">
+          <End Role="Characters" Type="Self.Characters" Multiplicity="1" />
+          <End Role="CharacterItems" Type="Self.CharacterItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Characters">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="CharacterItems">
+              <PropertyRef Name="CharacterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPlayer">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Player_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ExtremeWorldModelStoreContainer">
+          <EntitySet Name="CharacterBag" EntityType="Self.CharacterBag" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CharacterItems" EntityType="Self.CharacterItems" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Characters" EntityType="Self.Characters" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Players" EntityType="Self.Players" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TCharacterQuests" EntityType="Self.TCharacterQuests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_PlayerCharacter" Association="Self.FK_PlayerCharacter">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="Characters" EntitySet="Characters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TCharacterQuests_Character" Association="Self.FK_TCharacterQuests_Character">
+            <End Role="Characters" EntitySet="Characters" />
+            <End Role="TCharacterQuests" EntitySet="TCharacterQuests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TCharacterTCharacterBag" Association="Self.FK_TCharacterTCharacterBag">
+            <End Role="CharacterBag" EntitySet="CharacterBag" />
+            <End Role="Characters" EntitySet="Characters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TCharacterTCharacterItem" Association="Self.FK_TCharacterTCharacterItem">
+            <End Role="Characters" EntitySet="Characters" />
+            <End Role="CharacterItems" EntitySet="CharacterItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPlayer" Association="Self.FK_UserPlayer">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ExtremeWorldModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -162,7 +191,12 @@
             <End EntitySet="Characters" Role="TCharacter" />
             <End EntitySet="CharacterBag" Role="TCharacterBag" />
           </AssociationSet>
-        </EntityContainer>
+          <EntitySet Name="TCharacterQuests" EntityType="ExtremeWorldModel.TCharacterQuest" />
+          <AssociationSet Name="FK_TCharacterQuests_Character" Association="ExtremeWorldModel.FK_TCharacterQuests_Character">
+            <End Role="TCharacter" EntitySet="Characters" />
+            <End Role="TCharacterQuest" EntitySet="TCharacterQuests" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="TPlayer">
           <Key>
             <PropertyRef Name="ID" />
@@ -191,7 +225,8 @@
           <NavigationProperty Name="Bag" Relationship="ExtremeWorldModel.TCharacterTCharacterBag" FromRole="TCharacter" ToRole="TCharacterBag" />
           <Property Name="Gold" Type="Int64" Nullable="false" />
           <Property Name="Equips" Type="Binary" Nullable="false" FixedLength="true" MaxLength="28" />
-        </EntityType>
+          <NavigationProperty Name="Quests" Relationship="ExtremeWorldModel.FK_TCharacterQuests_Character" FromRole="TCharacter" ToRole="TCharacterQuest" />
+          </EntityType>
         <Association Name="PlayerCharacter">
           <End Type="ExtremeWorldModel.TPlayer" Role="Player" Multiplicity="1" />
           <End Type="ExtremeWorldModel.TCharacter" Role="Character" Multiplicity="*" />
@@ -224,14 +259,39 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Owner" Relationship="ExtremeWorldModel.TCharacterTCharacterBag" FromRole="TCharacterBag" ToRole="TCharacter" />
-          <Property Name="Items" Type="Binary" Nullable="false" />
+          <Property Name="Items" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
           <Property Name="Unlocked" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="TCharacterTCharacterBag">
           <End Type="ExtremeWorldModel.TCharacter" Multiplicity="1" Role="TCharacter" />
           <End Type="ExtremeWorldModel.TCharacterBag" Multiplicity="1" Role="TCharacterBag" />
         </Association>
-      </Schema>
+        <EntityType Name="TCharacterQuest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TCharacterID" Type="Int32" Nullable="false" />
+          <Property Name="QuestID" Type="Int32" Nullable="false" />
+          <Property Name="Target1" Type="Int32" Nullable="false" />
+          <Property Name="Target2" Type="Int32" Nullable="false" />
+          <Property Name="Target3" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Owner" Relationship="ExtremeWorldModel.FK_TCharacterQuests_Character" FromRole="TCharacterQuest" ToRole="TCharacter" />
+        </EntityType>
+        <Association Name="FK_TCharacterQuests_Character">
+          <End Type="ExtremeWorldModel.TCharacter" Role="TCharacter" Multiplicity="1" />
+          <End Type="ExtremeWorldModel.TCharacterQuest" Role="TCharacterQuest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TCharacter">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TCharacterQuest">
+              <PropertyRef Name="TCharacterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -313,7 +373,20 @@
         <ScalarProperty Name="ID" ColumnName="ID" />
       </EndProperty>
     </AssociationSetMapping>
-  </EntityContainerMapping>
+          <EntitySetMapping Name="TCharacterQuests">
+            <EntityTypeMapping TypeName="ExtremeWorldModel.TCharacterQuest">
+              <MappingFragment StoreEntitySet="TCharacterQuests">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Target3" ColumnName="Target3" />
+                <ScalarProperty Name="Target2" ColumnName="Target2" />
+                <ScalarProperty Name="Target1" ColumnName="Target1" />
+                <ScalarProperty Name="QuestID" ColumnName="QuestID" />
+                <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
@@ -327,7 +400,7 @@
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
-        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
         <DesignerProperty Name="UseLegacyProvider" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
       </DesignerInfoPropertySet>

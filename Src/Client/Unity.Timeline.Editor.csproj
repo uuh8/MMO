@@ -275,9 +275,9 @@
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\Window\ViewModel\TimelineAssetViewModel.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\Playables\ControlPlayableInspector.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\Window\ViewModel\TimelineAssetViewModel_versions.cs" />
-    <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\MenuPriority.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\treeview\TrackPropertyCurvesDataSource.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\Window\TimelineWindow_PlaybackControls.cs" />
+    <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\MenuPriority.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\Analytics\TimelineAnalytics.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\treeview\Drawers\InfiniteTrackDrawer.cs" />
     <Compile Include="Library\PackageCache\com.unity.timeline@1.7.6\Editor\treeview\Snapping\SnapEngine.cs" />

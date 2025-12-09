@@ -14,6 +14,7 @@ namespace GameServer.Entities
     {
         public TCharacter Data;
         public ItemManager ItemManager;
+        public QuestManager QuestManager;
         public StatusManager StatusManager;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace GameServer.Entities
             this.Info.Type = type;
             this.Info.Id = cha.ID;
             this.Info.Name = cha.Name;
-            this.Info.Level = 1;
+            this.Info.Level = 10;
             this.Info.Tid = cha.TID;
             this.Info.Class = (CharacterClass)cha.Class;
             this.Info.mapId = cha.MapID;
@@ -48,6 +49,9 @@ namespace GameServer.Entities
             this.Info.Bag.Items = this.Data.Bag.Items;
 
             this.Info.Equips = this.Data.Equips;
+
+            this.QuestManager = new QuestManager(this);         // 构建实例
+            this.QuestManager.GetQuestInfos(this.Info.Quests);  // 从DB里把网络的数据填充上
 
             this.StatusManager = new StatusManager(this);
         }

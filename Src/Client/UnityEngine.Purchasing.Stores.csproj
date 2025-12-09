@@ -83,10 +83,10 @@
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\Android\GooglePlay\AAR\GooglePlayStoreService.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\WindowsStore\IMicrosoftConfiguration.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\Android\UDP\FakeUDPExtension.cs" />
-    <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\Android\GooglePlay\AAR\Models\GoogleRetrieveProductsFailureReason.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\Android\GooglePlay\AAR\Models\GoogleBillingConnectionState.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\FakeStore\FakeStore.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\ProductCatalog.cs" />
+    <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\Android\GooglePlay\AAR\Models\GoogleRetrieveProductsFailureReason.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\Android\GooglePlay\AAR\Interfaces\ISkuDetailsQueryResponse.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\StoreSpecificPurchaseErrorCode.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Stores\AppleAppStore\AppleStoreImpl.cs" />

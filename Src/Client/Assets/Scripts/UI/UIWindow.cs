@@ -37,6 +37,11 @@ public abstract class UIWindow : MonoBehaviour
         // 用于确认
         this.Close(WindowResult.Yes);
     }
+    public virtual void OnNoClick()
+    {
+        // 用于确认
+        this.Close(WindowResult.No);
+    }
 
     private void OnMouseDown()
     {

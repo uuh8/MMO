@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\UI\UIMessageBox.cs" />
     <Compile Include="Assets\Scripts\login.cs" />
     <Compile Include="Assets\Scripts\Network\NetClient.cs" />
+    <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestDialog.cs" />
     <Compile Include="Assets\Scripts\Models\BagItem.cs" />
     <Compile Include="Assets\Scripts\UI\UIWorldElement.cs" />
     <Compile Include="Assets\Scripts\GameObject\TeleporterObject.cs" />
@@ -73,7 +74,9 @@
     <Compile Include="Assets\Scripts\Scene\SceneManager.cs" />
     <Compile Include="Assets\Scripts\Managers\EquipManager.cs" />
     <Compile Include="Assets\Scripts\UI\Bag\UIBag.cs" />
+    <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestInfo.cs" />
     <Compile Include="Assets\Scripts\Managers\MinimapManager.cs" />
+    <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestSystem.cs" />
     <Compile Include="Assets\Scripts\UI\Shop\UIShop.cs" />
     <Compile Include="Assets\Scripts\Managers\BagManager.cs" />
     <Compile Include="Assets\Scripts\Managers\NPCManager.cs" />
@@ -81,19 +84,23 @@
     <Compile Include="Assets\Scripts\UI\CharEquip\UIEquipItem.cs" />
     <Compile Include="Assets\Scripts\GameObject\MapController.cs" />
     <Compile Include="Assets\Scripts\Entities\Entity.cs" />
+    <Compile Include="Assets\Scripts\UI\ListView\ListView.cs" />
     <Compile Include="Assets\Scripts\Models\Item.cs" />
     <Compile Include="Assets\Scripts\UI\UICharacterView.cs" />
     <Compile Include="Assets\Scripts\Managers\ItemManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIlogin.cs" />
     <Compile Include="Assets\Scripts\UI\UIRegister.cs" />
     <Compile Include="Assets\Scripts\GameObject\PlayerInputController.cs" />
+    <Compile Include="Assets\Scripts\Models\Quest.cs" />
     <Compile Include="Assets\Scripts\Utilities\GameUtil.cs" />
     <Compile Include="Assets\Scripts\UI\UIMain.cs" />
     <Compile Include="Assets\Scripts\Log\UnityLogger.cs" />
+    <Compile Include="Assets\Scripts\Managers\QuestManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\EntityController.cs" />
     <Compile Include="Assets\Scripts\UI\UITest.cs" />
     <Compile Include="Assets\Scripts\Managers\ShopManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\GameObjectTool.cs" />
+    <Compile Include="Assets\Scripts\Utilities\EnumUtil.cs" />
     <Compile Include="Assets\Scripts\UI\UIMinimap\UIMinimap.cs" />
     <Compile Include="Assets\Scripts\UI\TabView\TabView.cs" />
     <Compile Include="Assets\Scripts\UI\MessageBox.cs" />
@@ -105,6 +112,7 @@
     <Compile Include="Assets\Scripts\Services\MapService.cs" />
     <Compile Include="Assets\Scripts\UI\SliderValueDisplay.cs" />
     <Compile Include="Assets\Scripts\Services\StatusService.cs" />
+    <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestItem.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\Scripts\UI\TabView\TabButton.cs" />
     <Compile Include="Assets\Scripts\Services\UserService.cs" />
@@ -114,11 +122,13 @@
     <Compile Include="Assets\Scripts\Managers\EntityManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIWindow.cs" />
     <Compile Include="Assets\Scripts\Utilities\MonoSingleton.cs" />
+    <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestStatus.cs" />
     <Compile Include="Assets\Scripts\LoadingManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\MainPlayerCamera.cs" />
     <Compile Include="Assets\Scripts\UI\UICharSelect.cs" />
     <Compile Include="Assets\Scripts\Entities\Character.cs" />
     <Compile Include="Assets\Scripts\Utilities\Singleton.cs" />
+    <Compile Include="Assets\Scripts\Services\QuestService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

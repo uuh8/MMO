@@ -5,6 +5,7 @@ using Common.Data;
 using Managers;
 using UnityEditor;
 using Models;
+using Managers;
 
 public class NpcController : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class NpcController : MonoBehaviour
 
     private NpcDefine npc;
 
+    NpcQuestStatus questStatus;
+
     void Start()
     {
         renderer = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
@@ -25,7 +28,27 @@ public class NpcController : MonoBehaviour
         orignColor = renderer.sharedMaterial.color;
         npc = NPCManager.Instance.GetNpcDefine(this.npcID);
         this.StartCoroutine(Actions());
+        RefreshNpcStatus();
+        QuestManager.Instance.onQuestStatusChanged += OnQuestStatusChanged;
     }
+
+    private void OnQuestStatusChanged(Quest quest)
+    {
+        this.RefreshNpcStatus();
+    }
+    private void RefreshNpcStatus()
+    {
+        questStatus = QuestManager.Instance.GetQuestStatusByNpc(this.npcID);
+        UIWorldElementManager.Instance.AddNpcQuestStatus(this.transform, questStatus);
+    }
+
+    private void OnDestroy()
+    {
+        QuestManager.Instance.onQuestStatusChanged -= OnQuestStatusChanged;
+        if (UIWorldElementManager.Instance != null)
+            UIWorldElementManager.Instance.RemoveNpcQuestStatus(this.transform);
+    }
+
     IEnumerator Actions()
     {
         // npc 闲置动作协程

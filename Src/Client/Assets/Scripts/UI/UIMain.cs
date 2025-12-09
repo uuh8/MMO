@@ -45,4 +45,11 @@ public class UIMain : MonoSingleton<UIMain>
     {
         UIManager.Instance.Show<UICharEquip>();
     }
+    /// <summary>
+    /// 点击任务按钮
+    /// </summary>
+    public void OnClickQuest()
+    {
+        UIManager.Instance.Show<UIQuestSystem>();
+    }
 }

@@ -21,6 +21,7 @@ namespace GameServer.Managers
         internal Dictionary<int, ShopDefine> Shops = null;
         internal Dictionary<int, Dictionary<int, ShopItemDefice>> ShopItems = null;
         internal Dictionary<int, EquipDefine> Equips = null;
+        internal Dictionary<int, QuestDefine> Quests = null;
 
 
         //public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
@@ -57,6 +58,9 @@ namespace GameServer.Managers
 
             json = File.ReadAllText(this.DataPath + "EquipDefine.txt");
             this.Equips = JsonConvert.DeserializeObject<Dictionary<int, EquipDefine>>(json);
+
+            json = File.ReadAllText(this.DataPath + "QuestDefine.txt");
+            this.Quests = JsonConvert.DeserializeObject<Dictionary<int, QuestDefine>>(json);
         }
     }
 }
