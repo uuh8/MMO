@@ -9,7 +9,7 @@ public class TabButton : MonoBehaviour
     private Sprite normalImage;     // 正常时候的图片
     public TabView tabView;
 
-    public int tabIndex = 0;
+    public int tabIndex = 0;        // 第几页
     public bool selected = false;
 
     private Image tabImage;

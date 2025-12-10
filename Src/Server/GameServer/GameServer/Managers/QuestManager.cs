@@ -17,10 +17,15 @@ namespace GameServer.Managers
         #region 供Character初始化使用
 
         Character Owner;
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="owner"></param>
         public QuestManager(Character owner)
         {
             this.Owner = owner;
         }
+
         /// <summary>
         /// 遍历数据库中角色身上的任务列表，填充到列表，方便后续发送给客户端
         /// </summary>
@@ -32,8 +37,9 @@ namespace GameServer.Managers
                 list.Add(GetQuestInfo(quest));
             }
         }
+
         /// <summary>
-        /// 类型转换，从 TCharacterQuest 转换成 NQuestInfo
+        /// 类型转换，从 TCharacterQuest 转换成 NQuestInfo，后续打包成 protobuf 发回客户端
         /// </summary>
         /// <param name="quest"></param>
         /// <returns></returns>
@@ -86,7 +92,7 @@ namespace GameServer.Managers
                     dbquest.Status = (int)QuestStatus.InProgress;
                 }
                 // 把db中的数据转换为网络数据，存入网络消息中
-                sender.Session.Response.questAccept.Quest = this.GetQuestInfo(dbquest);
+                sender.Session.Response.questAccept.Quest = this.GetQuestInfo(dbquest); // GetQuestInfo 用于将 TCharacterQuest 转换成 NQuestInfo
                 character.Data.Quests.Add(dbquest);
                 DBService.Instance.Save();
                 return Result.Success;

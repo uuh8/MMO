@@ -213,7 +213,7 @@ namespace Managers
             return false;
         }
         /// <summary>
-        /// 处理关闭事件
+        /// 处理关闭事件（发送消息）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="result"></param>
@@ -222,9 +222,11 @@ namespace Managers
             UIQuestDialog dlg = (UIQuestDialog)sender;
             if(result == UIWindow.WindowResult.Yes)
             {
-                if (dlg.quest.Info == null) // 接受任务
+                if (dlg.quest.Info == null) 
+                    // 接受任务
                     QuestService.Instance.SendQuestAccept(dlg.quest);
-                else // 完成任务
+                else 
+                    // 完成任务
                     QuestService.Instance.SendQuestSubmit(dlg.quest);
             }
             else if(result == UIWindow.WindowResult.No)
@@ -233,8 +235,20 @@ namespace Managers
             }
         }
 
+        #region 响应服务器（QuestService调用） 
+        public void OnQuestAccepted(NQuestInfo info)
+        {
+            var quest = this.RefreshQuestStatus(info);
+            MessageBox.Show(quest.Define.DialogAccept);
+        }
+        public void OnQuestSubmited(NQuestInfo info)
+        {
+            var quest = this.RefreshQuestStatus(info);
+            MessageBox.Show(quest.Define.DialogFinish);
+        }
+
         private Quest RefreshQuestStatus(NQuestInfo quest)
-        { 
+        {
             // 要使用服务器的信息来更新npc身上的任务
             // 先清理掉npc身上的任务
             this.npcQuests.Clear();
@@ -255,7 +269,7 @@ namespace Managers
 
             CheckAvailableQuests();
 
-            foreach(var kv in this.allQuests)
+            foreach (var kv in this.allQuests)
             {
                 this.AddNpcQuest(kv.Value.Define.AcceptNPC, kv.Value);
                 this.AddNpcQuest(kv.Value.Define.SubmitNPC, kv.Value);
@@ -266,17 +280,6 @@ namespace Managers
                 onQuestStatusChanged(result);
             return result;
         }
-        
-        public void OnQuestAccepted(NQuestInfo info)
-        {
-            var quest = this.RefreshQuestStatus(info);
-            MessageBox.Show(quest.Define.DialogAccept);
-        }
-        public void OnQuestSubmited(NQuestInfo info)
-        {
-            var quest = this.RefreshQuestStatus(info);
-            MessageBox.Show(quest.Define.DialogFinish);
-        }
-
+        #endregion
     }
 }

@@ -30,17 +30,23 @@ public class UIQuestSystem : UIWindow
         this.Tabs.OnTabSelect += OnSelectTab;
         RefreshUI();
     }
-
-    void OnSelectTab(int idx)
+    public void OnQuestSelected(ListView.ListViewItem item)
     {
-        showAvailableList = idx == 1;
+        // 把抽象的 ListViewItem 转成具体的 UIQuestItem，读出它绑定的 quest，然后丢给右侧的 UIQuestInfo
+        UIQuestItem questItem = item as UIQuestItem;
+        this.questInfo.SetQuestInfo(questItem.quest);
+    }
+
+    private void OnSelectTab(int idx)
+    {
+        showAvailableList = (idx == 1);   // 0=进行中, 1=可接取
         RefreshUI();
     }
 
     private void RefreshUI()
     {
-        ClearAllQuestList();
-        InitAllQuestItems();
+        ClearAllQuestList();    // 清空主线/支线两个列表
+        InitAllQuestItems();    // 重建两个列表
     }
 
     private void InitAllQuestItems()
@@ -50,19 +56,28 @@ public class UIQuestSystem : UIWindow
             // 判断是否是一个可接任务（是否已接取）
             if (showAvailableList)
             {
+                // "可接取”界面
+                // 已接取的不显示，直接跳过
                 if (kv.Value.Info != null)  
                     continue;
             }
             else
             {
+                // “进行中”界面
+                // 未接取的不显示，直接跳过
                 if (kv.Value.Info == null)
                     continue;
             }
 
-            // 创建列表
-            GameObject go = Instantiate(itemPrefab, kv.Value.Define.Type == QuestType.Main ? this.listMain.transform : this.listBranch.transform);
+            // 再按主线/支线，决定往哪个 ListView 里塞
+            Transform parent = kv.Value.Define.Type == QuestType.Main
+                ? this.listMain.transform
+                : this.listBranch.transform;
+
+            GameObject go = Instantiate(itemPrefab, parent);
             UIQuestItem ui = go.GetComponent<UIQuestItem>();
             ui.SetQuestInfo(kv.Value);
+
             if (kv.Value.Define.Type == QuestType.Main)
                 this.listMain.AddItem(ui);
             else
@@ -73,11 +88,5 @@ public class UIQuestSystem : UIWindow
     {
         this.listMain.RemoveAll();
         this.listBranch.RemoveAll();
-    }
-
-    public void OnQuestSelected(ListView.ListViewItem item)
-    {
-        UIQuestItem questItem = item as UIQuestItem;
-        this.questInfo.SetQuestInfo(questItem.quest);
     }
 }

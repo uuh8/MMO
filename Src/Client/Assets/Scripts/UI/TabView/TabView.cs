@@ -34,9 +34,14 @@ public class TabView : MonoBehaviour
         {
             for(int i = 0; i < tabButtons.Length; i++)
             {
-                tabButtons[i].Select(i == index);
+                tabButtons[i].Select(i == index);   // 按钮变为“激活”颜色
                 tabPages[i].SetActive(i == index);
             }
+
+            this.index = index;
+
+            // 关键：把选中的 index 通知给外部（比如 UIQuestSystem）
+            OnTabSelect?.Invoke(index);
         }
     }
 }

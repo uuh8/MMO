@@ -46,6 +46,11 @@ namespace Managers
             }
             return false;
         }
+        /// <summary>
+        /// npc 交互函数，负责分发
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <returns></returns>
         public bool Interactive(NpcDefine npc)
         {
             if(DoTaskInteractive(npc))
@@ -58,7 +63,11 @@ namespace Managers
             }
             return false;
         }
-
+        /// <summary>
+        /// 任务npc的交互
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <returns></returns>
         private bool DoTaskInteractive(NpcDefine npc)
         {
             var status = QuestManager.Instance.GetQuestStatusByNpc(npc.ID);
@@ -67,7 +76,11 @@ namespace Managers
 
             return QuestManager.Instance.OpenNpcQuest(npc.ID);
         }
-
+        /// <summary>
+        /// 功能npc的交互
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <returns></returns>
         private bool DoFunctionInteractive(NpcDefine npc)
         {
             if (npc.Type != NpcType.Functional)

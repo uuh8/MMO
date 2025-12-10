@@ -139,7 +139,7 @@ public class NpcController : MonoBehaviour
         // 这个判断是为了防止用户连着点结果连着跳出窗口
         if (!inInteractive)
         {
-            inInteractive = true;
+            inInteractive = true;               // 防止连点 NPC 疯狂弹窗
             StartCoroutine(DoInteractice());
         }
     }

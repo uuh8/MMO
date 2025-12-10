@@ -29,7 +29,7 @@ namespace GameServer
             DataManager.Instance.Load();  // 读配置文件并反序列化为字典缓存 
             MapService.Instance.Init();
             ItemService.Instance.Init();
-            QuestService.Instance.Init();
+            QuestService.Instance.Init(); 
 
             network = new NetService();   //实例化网络服务。
             network.Init(8000);           //初始化网络服务并指定端口号 8000。
@@ -56,11 +56,12 @@ namespace GameServer
 
         public void Update()
         {
+            var mapManager = MapManager.Instance;
             while (running)   //当 running 为 true 时，服务器进入循环，持续更新。
             {
                 Time.Tick();  //调用 Time 的 Tick() 方法，这可能用于更新服务器的计时器、帧数或其他时间相关的逻辑。
-                Thread.Sleep(100);      //线程休眠 100 毫秒，以控制循环频率，减轻服务器的负载。
-                //Console.WriteLine("{0} {1} {2} {3} {4}", Time.deltaTime, Time.frameCount, Time.ticks, Time.time, Time.realtimeSinceStartup);
+                Thread.Sleep(100); //线程休眠 100 毫秒，以控制循环频率，减轻服务器的负载。模拟100ms/帧
+                mapManager.Update();
             }
         }
     }

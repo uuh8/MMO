@@ -46,14 +46,25 @@ namespace GameServer.Models
         // 地图上当前在线的角色集合：Key = character Id
         Dictionary<int, MapCharacter> MapCharacters = new Dictionary<int, MapCharacter>();
 
+        /// <summary>
+        /// 刷怪管理器
+        /// </summary>
+        private SpawnManager SpawnManager = new SpawnManager();
+        /// <summary>
+        /// 怪物管理器
+        /// </summary>
+        public MonsterManager MonsterManager = new MonsterManager();
+
         internal Map(MapDefine define)
         {
             this.Define = define;
+            this.SpawnManager.Init(this);
+            this.MonsterManager.Init(this);
         }
 
         internal void Update()
         {
-
+            SpawnManager.Update();
         }
 
         #region 角色行为
