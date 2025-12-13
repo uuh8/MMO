@@ -75,7 +75,7 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
         if (!Characters.ContainsKey(character.entityId) || Characters[character.entityId] == null)
         {
             // 使用 Resloader 资源加载器加载配置表资源
-            Object obj = Resloader.Load<Object>(character.Define.Resource);
+            Object obj = Resloader.Load<Object>(character.Define.Resource); 
             if(obj == null)
             {
                 Debug.LogErrorFormat("[GameObjectManager] Character[{0}] Resource[{1}] not existed.",character.Define.TID, character.Define.Resource);

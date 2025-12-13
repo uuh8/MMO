@@ -20,8 +20,8 @@ public class DataManager : Singleton<DataManager>
     internal Dictionary<int, Dictionary<int, ShopItemDefice>> ShopItems = null;
     internal Dictionary<int, EquipDefine> Equips = null;
     internal Dictionary<int, QuestDefine> Quests = null;
-
     public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
+    public Dictionary<int, Dictionary<int, SpawnRuleDefine>> SpawnRules = null;
 
     public DataManager()
     {
@@ -86,8 +86,11 @@ public class DataManager : Singleton<DataManager>
 
         yield return null;
 
-        //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
-        //this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>>(json);
+        json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
+        this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>>(json);
+
+        json = File.ReadAllText(this.DataPath + "SpawnRuleDefine.txt");
+        this.SpawnRules = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnRuleDefine>>>(json);
 
         yield return null;
     }

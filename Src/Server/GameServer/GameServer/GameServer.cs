@@ -57,9 +57,9 @@ namespace GameServer
         public void Update()
         {
             var mapManager = MapManager.Instance;
-            while (running)   //当 running 为 true 时，服务器进入循环，持续更新。
+            while (running)
             {
-                Time.Tick();  //调用 Time 的 Tick() 方法，这可能用于更新服务器的计时器、帧数或其他时间相关的逻辑。
+                Time.Tick(); 
                 Thread.Sleep(100); //线程休眠 100 毫秒，以控制循环频率，减轻服务器的负载。模拟100ms/帧
                 mapManager.Update();
             }

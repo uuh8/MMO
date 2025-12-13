@@ -43,15 +43,14 @@ namespace GameServer.Services
             Log.InfoFormat("UserRegisterRequest: User:{0}  Pass:{1}", request.User, request.Passward);
 
             //构建响应消息
-            NetMessage message = new NetMessage();
-            message.Response = new NetMessageResponse();
-            message.Response.userRegister = new UserRegisterResponse();
+            sender.Session.Response.userRegister = new UserRegisterResponse();
+
             /*查询数据库，检查用户名是否已存在。*/
             TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
             if (user != null)       // 查看注册的用户存不存在
             {
-                message.Response.userRegister.Result = Result.Failed;
-                message.Response.userRegister.Errormsg = "用户已存在.";
+                sender.Session.Response.userRegister.Result = Result.Failed;
+                sender.Session.Response.userRegister.Errormsg = "用户已存在.";
             }
             else                    // 不存在则添加到数据库中
             {
@@ -63,14 +62,10 @@ namespace GameServer.Services
                 });
                 DBService.Instance.Entities.SaveChanges();
 
-                message.Response.userRegister.Result = Result.Success;
-                message.Response.userRegister.Errormsg = "None";
+                sender.Session.Response.userRegister.Result = Result.Success;
+                sender.Session.Response.userRegister.Errormsg = "None";
             }
-
-            //使用 PackageHandler 将响应消息打包为字节数组。
-            // Protobuf 提供的序列化方法 ToByteArray()将 NetMessage 对象序列化成二进制数据
-            byte[] data = PackageHandler.PackMessage(message);
-            sender.SendData(data, 0, data.Length);
+            sender.SendResponse();
         }
 
         /// <summary>
@@ -83,7 +78,6 @@ namespace GameServer.Services
             Log.InfoFormat("[UserService] UserLoginRequest: User:{0} Pass:{1}", request.User, request.Password);
 
             sender.Session.Response.userLogin = new UserLoginResponse(); 
-
 
             TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
             if (user == null)
@@ -191,11 +185,9 @@ namespace GameServer.Services
 
             /*—————————————————————— 网络发送 ————————————————————————*/
             // 构建DTO发给客户端
-            NetMessage response = new NetMessage();
-            response.Response = new NetMessageResponse();
-            response.Response.createChar = new UserCreateCharacterResponse();
-            response.Response.createChar.Result = Result.Success;
-            response.Response.createChar.Errormsg = "None";
+            sender.Session.Response.createChar = new UserCreateCharacterResponse();
+            sender.Session.Response.createChar.Result = Result.Success;
+            sender.Session.Response.createChar.Errormsg = "None";
 
             // 把当前已有的角色添加进列表（列表刷新）
             foreach(var c in sender.Session.User.Player.Characters)
@@ -209,12 +201,9 @@ namespace GameServer.Services
                 info.Class = (CharacterClass)c.Class;
                 info.Name = c.Name;
 
-                response.Response.createChar.Characters.Add(info);
+                sender.Session.Response.createChar.Characters.Add(info);
             }
-
-            // 消息打包成字节流发送给客户端
-            byte[] data = PackageHandler.PackMessage(response);
-            sender.SendData(data, 0, data.Length);
+            sender.SendResponse();
         }
 
         /// <summary>
@@ -234,36 +223,13 @@ namespace GameServer.Services
             Log.InfoFormat("[UserService] UserGameEnterRequest 角色进入: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
             // 3) 构建响应DTO UserGameEnterResponse
-            NetMessage message = new NetMessage();
-            message.Response = new NetMessageResponse();
-            message.Response.gameEnter = new UserGameEnterResponse();
-            message.Response.gameEnter.Result = Result.Success;
-            message.Response.gameEnter.Errormsg = "None";
-            message.Response.gameEnter.Character = character.Info;
-
-            // 道具系统测试
-            /*int itemId = 2;
-            bool hasItem = character.ItemManager.HasItem(itemId);
-            Log.InfoFormat("[道具系统测试] HasItem:[{0}]{1}", itemId, hasItem);
-            if (hasItem)
-            {
-                // character.ItemManager.RemoveItem(itemId, 1);
-                character.ItemManager.AddItem(1, 100);  // 道具1 + 100个
-                character.ItemManager.AddItem(2, 10);
-                character.ItemManager.AddItem(3, 30);
-                character.ItemManager.AddItem(4, 120);
-            }
-            else
-            {
-                character.ItemManager.AddItem(itemId, 5);
-            }
-            Models.Item item = character.ItemManager.GetItem(itemId);
-            Log.InfoFormat("[道具系统测试] Item:[{0}][{1}]", itemId, item);
-            DBService.Instance.Save();*/
+            sender.Session.Response.gameEnter = new UserGameEnterResponse();
+            sender.Session.Response.gameEnter.Result = Result.Success;
+            sender.Session.Response.gameEnter.Errormsg = "None";
+            sender.Session.Response.gameEnter.Character = character.Info;
 
             // 4) 发送消息给客户端
-            byte[] data = PackageHandler.PackMessage(message);
-            sender.SendData(data, 0, data.Length);
+            sender.SendResponse();
 
             // 5) 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
             sender.Session.Character = character;
@@ -284,14 +250,11 @@ namespace GameServer.Services
 
             CharacterLeave(character);
 
-            NetMessage message = new NetMessage();
-            message.Response = new NetMessageResponse();
-            message.Response.gameLeave = new UserGameLeaveResponse();
-            message.Response.gameLeave.Result = Result.Success;
-            message.Response.gameLeave.Errormsg = "None";
+            sender.Session.Response.gameLeave = new UserGameLeaveResponse();
+            sender.Session.Response.gameLeave.Result = Result.Success;
+            sender.Session.Response.gameLeave.Errormsg = "None";
 
-            byte[] data = PackageHandler.PackMessage(message);
-            sender.SendData(data, 0, data.Length);
+            sender.SendResponse();
         }
         public void CharacterLeave(Character character)
         {

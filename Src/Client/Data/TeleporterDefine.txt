@@ -5,8 +5,16 @@
     "MapID": 1,
     "LinkTo": 6,
     "Descript": null,
-    "Position": null,
-    "Direction": null
+    "Position": {
+      "X": 610,
+      "Y": 2614,
+      "Z": 991
+    },
+    "Direction": {
+      "X": 0,
+      "Y": 100,
+      "Z": 0
+    }
   },
   "2": {
     "ID": 2,
@@ -14,8 +22,16 @@
     "MapID": 1,
     "LinkTo": 8,
     "Descript": null,
-    "Position": null,
-    "Direction": null
+    "Position": {
+      "X": 7428,
+      "Y": 2614,
+      "Z": 1073
+    },
+    "Direction": {
+      "X": 0,
+      "Y": 100,
+      "Z": 0
+    }
   },
   "3": {
     "ID": 3,
@@ -23,8 +39,16 @@
     "MapID": 1,
     "LinkTo": 0,
     "Descript": null,
-    "Position": null,
-    "Direction": null
+    "Position": {
+      "X": 1574,
+      "Y": 2544,
+      "Z": 821
+    },
+    "Direction": {
+      "X": 100,
+      "Y": 0,
+      "Z": 0
+    }
   },
   "4": {
     "ID": 4,
@@ -32,8 +56,16 @@
     "MapID": 1,
     "LinkTo": 0,
     "Descript": null,
-    "Position": null,
-    "Direction": null
+    "Position": {
+      "X": 6852,
+      "Y": 2604,
+      "Z": 810
+    },
+    "Direction": {
+      "X": -100,
+      "Y": 0,
+      "Z": 0
+    }
   },
   "5": {
     "ID": 5,
@@ -41,8 +73,16 @@
     "MapID": 2,
     "LinkTo": 3,
     "Descript": null,
-    "Position": null,
-    "Direction": null
+    "Position": {
+      "X": 2061,
+      "Y": 4077,
+      "Z": 534
+    },
+    "Direction": {
+      "X": 0,
+      "Y": 100,
+      "Z": 0
+    }
   },
   "6": {
     "ID": 6,
@@ -50,8 +90,16 @@
     "MapID": 2,
     "LinkTo": 0,
     "Descript": null,
-    "Position": null,
-    "Direction": null
+    "Position": {
+      "X": 2817,
+      "Y": 4027,
+      "Z": 17
+    },
+    "Direction": {
+      "X": 100,
+      "Y": 0,
+      "Z": 0
+    }
   },
   "7": {
     "ID": 7,

@@ -11,24 +11,24 @@
     "2": {
       "ID": 2,
       "MapID": "2",
-      "SpawnMonID": 1001,
-      "SpawnLevel": 1,
+      "SpawnMonID": 1002,
+      "SpawnLevel": 2,
       "SpawnPeriod": 60,
       "SpawnPoint": 2
     },
     "3": {
       "ID": 3,
       "MapID": "2",
-      "SpawnMonID": 1001,
-      "SpawnLevel": 1,
+      "SpawnMonID": 1003,
+      "SpawnLevel": 3,
       "SpawnPeriod": 60,
       "SpawnPoint": 3
     },
     "4": {
       "ID": 4,
       "MapID": "2",
-      "SpawnMonID": 1001,
-      "SpawnLevel": 1,
+      "SpawnMonID": 1004,
+      "SpawnLevel": 4,
       "SpawnPeriod": 60,
       "SpawnPoint": 4
     }
