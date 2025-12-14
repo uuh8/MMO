@@ -43,9 +43,8 @@ namespace GameServer.Models
             get { return this.Define.ID; }
         }
 
-        // 地图上当前在线的角色集合：Key = character Id
+        // 地图上当前在线的角色集合：Key 是 characterId
         Dictionary<int, MapCharacter> MapCharacters = new Dictionary<int, MapCharacter>();
-
 
         // 刷怪管理器
         private SpawnManager SpawnManager = new SpawnManager();
@@ -154,7 +153,7 @@ namespace GameServer.Models
         void SendCharacterLeaveMap(NetConnection<NetSession> conn, Character character)
         {
             conn.Session.Response.mapCharacterLeave = new MapCharacterLeaveResponse();
-            conn.Session.Response.mapCharacterLeave.characterId = character.Id;
+            conn.Session.Response.mapCharacterLeave.entityId = character.Id;
             conn.SendResponse();
         }
 

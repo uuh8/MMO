@@ -14,13 +14,8 @@ namespace GameServer.Entities
     class CharacterBase : Entity
     {
 
-        public int Id
-        {
-            get
-            {
-                return this.entityId;
-            }
-        }
+        public int Id { get; set; }
+
         public NCharacterInfo Info;
         public CharacterDefine Define;  // 配置表
 
@@ -29,15 +24,16 @@ namespace GameServer.Entities
 
         }
 
-        public CharacterBase(CharacterType type, int tid, int level, Vector3Int pos, Vector3Int dir) :
+        public CharacterBase(CharacterType type, int configId, int level, Vector3Int pos, Vector3Int dir) :
            base(pos, dir)
         {
             this.Info = new NCharacterInfo();
             this.Info.Type = type;
             this.Info.Level = level;
-            this.Info.Tid = tid;
+            this.Info.ConfigId = configId;          // 配置表里的id
             this.Info.Entity = this.EntityData;
-            this.Define = DataManager.Instance.Characters[this.Info.Tid];
+            this.Info.EntityId = this.entityId;     // 实体id
+            this.Define = DataManager.Instance.Characters[this.Info.ConfigId];
             this.Info.Name = this.Define.Name;
         }
     }

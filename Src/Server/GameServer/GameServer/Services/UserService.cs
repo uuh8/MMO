@@ -111,7 +111,7 @@ namespace GameServer.Services
                     // NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
                     NCharacterInfo info = new NCharacterInfo();
                     info.Id = c.ID;  
-                    info.Tid = c.ID;    // 这里用数据库中的 CharacterId
+                    info.ConfigId = c.ID;    // 这里用数据库中的 CharacterId
                     info.Type = CharacterType.Player;
                     info.Class = (CharacterClass)c.Class;
                     info.Name = c.Name;
@@ -141,6 +141,7 @@ namespace GameServer.Services
                 Name = message.Name,
                 Class = (int)message.Class,
                 TID = (int)message.Class,
+                Level = 1,
                 MapID = 1,
                 MapPosX = 5000,
                 MapPosY = 4000,
@@ -195,8 +196,8 @@ namespace GameServer.Services
                 // 为当前遍历到的角色创建一个 NCharacterInfo 对象。
                 // NCharacterInfo 是一个数据传输对象（DTO），用于传递角色信息给客户端。
                 NCharacterInfo info = new NCharacterInfo();
-                info.Id = 0;    // 这里应该用 entityId 而不是数据库中的 CharacterId，但由于这个时候还没进入游戏，因此 entity 还没创建，因此这里初始化为 0 方便调试
-                info.Tid = c.ID;    // 这里用数据库中的 CharacterId
+                info.Id = c.ID;    // 这里应该用 entityId 而不是数据库中的 CharacterId，但由于这个时候还没进入游戏，因此 entity 还没创建，因此这里初始化为 0 方便调试
+                info.ConfigId = c.ID;    // 这里用数据库中的 CharacterId
                 info.Type = CharacterType.Player;
                 info.Class = (CharacterClass)c.Class;
                 info.Name = c.Name;

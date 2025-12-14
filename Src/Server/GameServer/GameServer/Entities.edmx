@@ -13,6 +13,17 @@
           <Property Name="Items" Type="varbinary(max)" Nullable="false" />
           <Property Name="Unlocked" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="CharacterFriends">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FriendID" Type="int" Nullable="false" />
+          <Property Name="FriendName" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="Class" Type="int" Nullable="false" />
+          <Property Name="Level" Type="int" Nullable="false" />
+          <Property Name="CharacterID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="CharacterItems">
           <Key>
             <PropertyRef Name="Id" />
@@ -38,6 +49,8 @@
           <Property Name="Equips" Type="binary" MaxLength="28" Nullable="false" />
           <Property Name="Player_ID" Type="int" Nullable="false" />
           <Property Name="Bag_Id" Type="int" Nullable="false" />
+          <Property Name="Level" Type="int" Nullable="false" />
+          <Property Name="EXP" Type="bigint" Nullable="false" />
         </EntityType>
         <EntityType Name="Players">
           <Key>
@@ -67,6 +80,20 @@
           <Property Name="RegisterDate" Type="datetime" />
           <Property Name="Player_ID" Type="int" Nullable="false" />
         </EntityType>
+        <Association Name="FK_CharacterFriends_Characters">
+          <End Role="Characters" Type="Self.Characters" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CharacterFriends" Type="Self.CharacterFriends" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Characters">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="CharacterFriends">
+              <PropertyRef Name="CharacterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PlayerCharacter">
           <End Role="Players" Type="Self.Players" Multiplicity="1" />
           <End Role="Characters" Type="Self.Characters" Multiplicity="*" />
@@ -129,11 +156,16 @@
         </Association>
         <EntityContainer Name="ExtremeWorldModelStoreContainer">
           <EntitySet Name="CharacterBag" EntityType="Self.CharacterBag" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CharacterFriends" EntityType="Self.CharacterFriends" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CharacterItems" EntityType="Self.CharacterItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Characters" EntityType="Self.Characters" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Players" EntityType="Self.Players" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TCharacterQuests" EntityType="Self.TCharacterQuests" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CharacterFriends_Characters" Association="Self.FK_CharacterFriends_Characters">
+            <End Role="Characters" EntitySet="Characters" />
+            <End Role="CharacterFriends" EntitySet="CharacterFriends" />
+          </AssociationSet>
           <AssociationSet Name="FK_PlayerCharacter" Association="Self.FK_PlayerCharacter">
             <End Role="Players" EntitySet="Players" />
             <End Role="Characters" EntitySet="Characters" />
@@ -196,6 +228,11 @@
             <End Role="TCharacter" EntitySet="Characters" />
             <End Role="TCharacterQuest" EntitySet="TCharacterQuests" />
           </AssociationSet>
+          <EntitySet Name="TCharacterFriends" EntityType="ExtremeWorldModel.TCharacterFriend" />
+          <AssociationSet Name="FK_CharacterFriends_Characters" Association="ExtremeWorldModel.FK_CharacterFriends_Characters">
+            <End Role="TCharacter" EntitySet="Characters" />
+            <End Role="CharacterFriend" EntitySet="TCharacterFriends" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="TPlayer">
           <Key>
@@ -226,6 +263,9 @@
           <Property Name="Gold" Type="Int64" Nullable="false" />
           <Property Name="Equips" Type="Binary" Nullable="false" FixedLength="true" MaxLength="28" />
           <NavigationProperty Name="Quests" Relationship="ExtremeWorldModel.FK_TCharacterQuests_Character" FromRole="TCharacter" ToRole="TCharacterQuest" />
+          <NavigationProperty Name="Friends" Relationship="ExtremeWorldModel.FK_CharacterFriends_Characters" FromRole="TCharacter" ToRole="CharacterFriend" />
+          <Property Name="Level" Type="Int32" Nullable="false" />
+          <Property Name="EXP" Type="Int64" Nullable="false" />
           </EntityType>
         <Association Name="PlayerCharacter">
           <End Type="ExtremeWorldModel.TPlayer" Role="Player" Multiplicity="1" />
@@ -291,6 +331,32 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="TCharacterFriend">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FriendID" Type="Int32" Nullable="false" />
+          <Property Name="FriendName" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="Class" Type="Int32" Nullable="false" />
+          <Property Name="Level" Type="Int32" Nullable="false" />
+          <Property Name="CharacterID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Owner" Relationship="ExtremeWorldModel.FK_CharacterFriends_Characters" FromRole="CharacterFriend" ToRole="TCharacter" />
+        </EntityType>
+        <Association Name="FK_CharacterFriends_Characters">
+          <End Type="ExtremeWorldModel.TCharacter" Role="TCharacter" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="ExtremeWorldModel.TCharacterFriend" Role="CharacterFriend" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TCharacter">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="CharacterFriend">
+              <PropertyRef Name="CharacterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -317,7 +383,9 @@
     <EntitySetMapping Name="Characters">
       <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TCharacter)">
         <MappingFragment StoreEntitySet="Characters">
-          <ScalarProperty Name="ID" ColumnName="ID" />
+          <ScalarProperty Name="EXP" ColumnName="EXP" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
           <ScalarProperty Name="TID" ColumnName="TID" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Class" ColumnName="Class" />
@@ -382,6 +450,18 @@
                 <ScalarProperty Name="Target1" ColumnName="Target1" />
                 <ScalarProperty Name="QuestID" ColumnName="QuestID" />
                 <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TCharacterFriends">
+            <EntityTypeMapping TypeName="ExtremeWorldModel.TCharacterFriend">
+              <MappingFragment StoreEntitySet="CharacterFriends">
+                <ScalarProperty Name="CharacterID" ColumnName="CharacterID" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="Class" ColumnName="Class" />
+                <ScalarProperty Name="FriendName" ColumnName="FriendName" />
+                <ScalarProperty Name="FriendID" ColumnName="FriendID" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -132,6 +132,11 @@ message NetMessageRequest{
 	QuestListRequest questList = 12;                      // 任务列表
 	QuestAcceptRequest questAccept = 13;                // 接受任务
 	QuestSubmitRequest questSubmit = 14;              // 提交任务
+	
+	FriendAddRequest friendAddReq = 15;
+	FriendAddResponse friendAddRes = 16;		// 添加好友是双向操作，因此客户端也要处理response
+	FriendListRequest friendList = 17; 
+	FriendRemoveRequest friendRemove = 18;
 }
 // NetMessageResponse 收纳服务器返回的所有响应类型
 message NetMessageResponse{
@@ -154,7 +159,13 @@ message NetMessageResponse{
 	QuestAcceptResponse questAccept = 13;                // 接受任务结果
 	QuestSubmitResponse questSubmit = 14;              // 提交任务结果
 
+	FriendAddRequest friendAddReq = 15;
+	FriendAddResponse friendAddRes = 16;
+	FriendListResponse friendList = 17;
+	FriendRemoveResponse friendRemove = 18;
+	
 	StatusNotify statusNotify = 100;                   // 状态通知
+	
 }
 /* ———————————————————————————————————————————————————— */
 
@@ -178,20 +189,23 @@ message NPlayerInfo {
 	repeated NCharacterInfo characters = 2; // 该账号下的角色列表
 }
 message NCharacterInfo {
-	int32 id = 1;                 // 角色实例ID
-	int32 tid = 2;                // 角色模板ID（配置表）
-	string name = 3;              // 角色名
-	CHARACTER_TYPE type = 4;      // 类型：玩家/NPC/怪物
-	CHARACTER_CLASS class = 5;    // 职业
-	int32 level = 6;              // 等级
-	int32 mapId = 7;              // 所在地图ID
-	NEntity entity = 8;           // 实体属性（位置/方向等）
-	int64 gold = 9;
+	int32 id = 1;//db id
+	int32 config_id = 2;//config id
+	int32 entity_id = 3;//entity id
+	string name = 4;
+	CHARACTER_TYPE type = 5;
+	CHARACTER_CLASS class = 6;
+	int32 level = 7;
 
-	repeated NItemInfo items = 10;// 角色身上的所有道具
-	NBagInfo bag = 11;            // 角色背包信息
-	bytes Equips = 12;            // 角色穿上的装备
-	repeated NQuestInfo quests = 13;// 任务信息，可能有多条任务，因此用数组
+	int32 mapId = 8;
+	NEntity entity = 9;
+	int64 gold = 10;
+
+	repeated NItemInfo items = 11;// 角色身上的所有道具
+	NBagInfo Bag = 12;            // 角色背包信息
+	bytes Equips = 13;            // 角色穿上的装备
+	repeated NQuestInfo quests = 14;// 任务信息，可能有多条任务，因此用数组
+	repeated NFriendInfo friends = 15;
 }
 
 // 道具信息
@@ -306,7 +320,7 @@ message MapCharacterEnterResponse
 /* ———————————————————————————————————————————————————— */
 message MapCharacterLeaveResponse
 {
-	int32 characterId = 1; // 离开的角色ID
+	int32 entityId = 1;
 }
 /* ———————————————————————————————————————————————————— */
 message MapEntitySyncRequest
@@ -410,4 +424,53 @@ message QuestAbandonRequest{
 message QuestAbandonResponse{
     RESULT result = 1; 
 	string errormsg = 2; 
+}
+// 好友系统
+message NFriendInfo
+{
+	int32 id = 1;
+	NCharacterInfo friendInfo = 2;
+	int32 status = 3;		// 好友状态（在线/离线）
+}
+
+// 添加好友
+message FriendAddRequest
+{
+	int32 from_id = 1;		// 发起者的id
+	string from_name = 2;		// 发起者的名字
+	int32 to_id = 3;		// 目标玩家角色的id
+	string to_name = 4;		// 目标玩家觉得的名字
+}
+
+message FriendAddResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	FriendAddRequest request = 3;
+}
+
+// 请求好友列表（打开好友界面的时候）
+message FriendListRequest
+{
+}
+
+message FriendListResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	repeated NFriendInfo friends = 3;
+}
+
+// 删除好友
+message FriendRemoveRequest
+{
+	int32 id = 1;
+	int32 friendId = 2;
+}
+
+message FriendRemoveResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	int32 id = 3;
 }

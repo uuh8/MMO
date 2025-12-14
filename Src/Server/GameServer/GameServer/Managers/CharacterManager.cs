@@ -38,7 +38,7 @@ namespace GameServer.Managers
             // 使用数据库中的数据创建实体(实体对象是在“进入游戏”这个过程中创建的）
             Character character = new Character(CharacterType.Player, cha);
             EntityManager.Instance.AddEntity(cha.MapID, character);
-            character.Info.Id = character.Id;   // 将 Entity 的 Id 赋给网络的NCharacter的Id，否则客户端拿到的 Entity Id 是数据库的Table Id
+            character.Info.EntityId = character.entityId;   // 将 Entity 的 Id 赋给网络的NCharacter的Id，否则客户端拿到的 Entity Id 是数据库的Table Id
             this.Characters[character.Id] = character;
             return character;
         }
@@ -48,6 +48,18 @@ namespace GameServer.Managers
             EntityManager.Instance.RemoveEntity(cha.Data.MapID, cha);
             // 离开游戏会把角色从实体字典中删除，保证游戏服务器上都是"在线的"玩家
             this.Characters.Remove(characterId);
+        }
+
+        /// <summary>
+        /// 根据角色id查找角色
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns></returns>
+        public Character GetCharacter(int characterId)
+        {
+            Character character = null;
+            this.Characters.TryGetValue(characterId, out character);
+            return character;
         }
     }
 }

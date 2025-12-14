@@ -90,6 +90,7 @@
     <Compile Include="Assets\Scripts\Managers\ItemManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIlogin.cs" />
     <Compile Include="Assets\Scripts\UI\UIRegister.cs" />
+    <Compile Include="Assets\Scripts\UI\Friend\UIFriendItem.cs" />
     <Compile Include="Assets\Scripts\GameObject\PlayerInputController.cs" />
     <Compile Include="Assets\Scripts\Models\Quest.cs" />
     <Compile Include="Assets\Scripts\Utilities\GameUtil.cs" />
@@ -123,11 +124,14 @@
     <Compile Include="Assets\Scripts\UI\UIWindow.cs" />
     <Compile Include="Assets\Scripts\Utilities\MonoSingleton.cs" />
     <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestStatus.cs" />
+    <Compile Include="Assets\Scripts\Managers\FriendManager.cs" />
     <Compile Include="Assets\Scripts\LoadingManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\MainPlayerCamera.cs" />
+    <Compile Include="Assets\Scripts\UI\Friend\UIFriends.cs" />
     <Compile Include="Assets\Scripts\UI\UICharSelect.cs" />
     <Compile Include="Assets\Scripts\GameObject\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\Entities\Character.cs" />
+    <Compile Include="Assets\Scripts\Services\FriendService.cs" />
     <Compile Include="Assets\Scripts\Utilities\Singleton.cs" />
     <Compile Include="Assets\Scripts\Services\QuestService.cs" />
   </ItemGroup>

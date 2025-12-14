@@ -30,7 +30,8 @@ namespace GameServer.Managers
         {
             Monster monster = new Monster(spawnMonID, spawnLevel, position, direction);
             EntityManager.Instance.AddEntity(this.Map.ID, monster);
-            monster.Info.Id = monster.entityId;
+            monster.Id = monster.entityId;              // 作用不大，因为怪物不是玩家
+            monster.Info.EntityId = monster.entityId;
             monster.Info.mapId = this.Map.ID;
             Monsters[monster.Id] = monster;
 

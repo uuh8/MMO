@@ -103,7 +103,7 @@ public class MapTools
             }
             foreach (var spawnPoint in spawnPoints)
             {
-                if (!DataManager.Instance.SpawnPoints[map.Value.ID].ContainsKey(spawnPoint.ID))
+                if (!DataManager.Instance.SpawnPoints[map.Value.ID].ContainsKey(spawnPoint.ID)) 
                 {
                     DataManager.Instance.SpawnPoints[map.Value.ID][spawnPoint.ID] = new SpawnPointDefine();
                 }
