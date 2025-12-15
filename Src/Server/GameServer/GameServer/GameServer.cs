@@ -30,6 +30,7 @@ namespace GameServer
             MapService.Instance.Init();
             ItemService.Instance.Init();
             QuestService.Instance.Init(); 
+            FriendService.Instance.Init(); 
 
             network = new NetService();   //实例化网络服务。
             network.Init(8000);           //初始化网络服务并指定端口号 8000。

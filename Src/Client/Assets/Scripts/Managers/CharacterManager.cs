@@ -42,7 +42,7 @@ namespace Managers
             Debug.LogFormat("[CharacterManager] AddCharacter:{0}:{1} Map:{2} Entity:{3}", cha.Id, cha.Name, cha.mapId, cha.Entity.String());
 
             Character character = new Character(cha);   // 网络层 → 实体层
-            CharactersMngr[cha.Id] = character;          // 加入角色管理器
+            CharactersMngr[cha.EntityId] = character;          // 加入角色管理器
             EntityManager.Instance.AddEntity(character); // 加入entity管理器
             if (OnCharacterEnter != null)
             {
@@ -53,18 +53,18 @@ namespace Managers
         /// 从管理器中移除角色
         /// </summary>
         /// <param name="characterId"></param>
-        public void RemoveCharacter(int characterId)
+        public void RemoveCharacter(int entityId)
         {
-            Debug.LogFormat("[CharacterManager] RemoveCharacter:{0}", characterId);
+            Debug.LogFormat("[CharacterManager] RemoveCharacter:{0}", entityId);
 
-            if (CharactersMngr.ContainsKey(characterId))
+            if (CharactersMngr.ContainsKey(entityId))
             {
-                EntityManager.Instance.RemoveEntity(CharactersMngr[characterId].Info.Entity);
+                EntityManager.Instance.RemoveEntity(CharactersMngr[entityId].Info.Entity);
                 if(OnCharacterLeave != null)
                 {
-                    OnCharacterLeave(CharactersMngr[characterId]);
+                    OnCharacterLeave(CharactersMngr[entityId]);
                 }
-                CharactersMngr.Remove(characterId);
+                CharactersMngr.Remove(entityId);
             }
         }
         public void Clear()

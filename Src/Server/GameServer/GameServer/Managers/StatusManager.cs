@@ -67,7 +67,7 @@ namespace GameServer.Managers
         /// 把当前状态的所有变化都放到“状态通知”的这个message里面
         /// </summary>
         /// <param name="message"></param>
-        public void ApplyResponse(NetMessageResponse message)
+        public void PostProcess(NetMessageResponse message)
         {
             if (message.statusNotify == null)
                 message.statusNotify = new StatusNotify();

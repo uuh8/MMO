@@ -14,6 +14,11 @@ namespace Entities
 
         public Common.Data.CharacterDefine Define;
 
+        public int Id
+        {
+            get { return this.Info.Id; }
+        }
+
         public string Name
         {
             get
@@ -25,16 +30,32 @@ namespace Entities
             }
         }
 
-        // 判断是不是当前角色（是不是其他玩家）
+        /// <summary>
+        /// 判断是不是角色（不是怪物）
+        /// </summary>
         public bool IsPlayer
         {
-            get { return this.Info.Id == Models.User.Instance.CurrentCharacter.Id; }
+            get 
+            { 
+                return this.Info.Type == CharacterType.Player; 
+            }
+        }
+        /// <summary>
+        /// 是不是当前玩家（不是其他玩家）
+        /// </summary>
+        public bool IsCurrentPlayer
+        {
+            get
+            {
+                if (!IsPlayer) return false;
+                return this.Info.Id == Models.User.Instance.CurrentCharacter.Id;
+            }
         }
 
         public Character(NCharacterInfo info) : base(info.Entity)
         {
             this.Info = info;
-            this.Define = DataManager.Instance.Characters[info.Tid];
+            this.Define = DataManager.Instance.Characters[info.ConfigId];
         }
 
         #region 方法封装 注意这些方法都是逻辑状态，不直接操纵 Unity Transform

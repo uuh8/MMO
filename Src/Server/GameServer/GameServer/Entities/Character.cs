@@ -1,6 +1,10 @@
-﻿using Common.Data;
+﻿using Common;
+using Common.Data;
+using Common.Utils;
 using GameServer.Core;
 using GameServer.Managers;
+using GameServer.Models;
+using Network;
 using SkillBridge.Message;
 using System;
 using System.Collections.Generic;
@@ -10,12 +14,17 @@ using System.Threading.Tasks;
 
 namespace GameServer.Entities
 {
-    class Character : CharacterBase
+    /// <summary>
+    /// Character
+    /// 玩家角色类
+    /// </summary>
+    class Character : CharacterBase,IPostResponser
     {
         public TCharacter Data;
         public ItemManager ItemManager;
         public QuestManager QuestManager;
         public StatusManager StatusManager;
+        public FriendManager FriendManager;
 
         /// <summary>
         /// 初始化
@@ -27,7 +36,7 @@ namespace GameServer.Entities
             base(new Core.Vector3Int(cha.MapPosX, cha.MapPosY, cha.MapPosZ),new Core.Vector3Int(100,0,0))
         {
             this.Data = cha;    // 把 “EF的持久化实体” 塞进长期存活的运行时对象
-
+            this.Id = cha.ID;
             this.Info = new NCharacterInfo();
             this.Info.Type = type;
             this.Info.Id = cha.ID;
@@ -54,6 +63,9 @@ namespace GameServer.Entities
             this.QuestManager = new QuestManager(this);         // 构建实例
             this.QuestManager.GetQuestInfos(this.Info.Quests);  // 从DB里把网络的数据填充上
 
+            this.FriendManager = new FriendManager(this);
+            this.FriendManager.GetFriendInfos(this.Info.Friends);
+
             this.StatusManager = new StatusManager(this);
         }
 
@@ -69,6 +81,52 @@ namespace GameServer.Entities
                 this.StatusManager.AddGoldChange((int)(value - this.Data.Gold));
                 this.Data.Gold = value;
             }
+        }
+        public void PostProcess(NetMessageResponse message)
+        {
+            Log.InfoFormat("PostProcess > Character: characterID:{0}:{1}", this.Id, this.Info.Name);
+            // 好友管理器的后处理
+            this.FriendManager.PostProcess(message);
+
+            /*if (this.Team != null)
+            {
+                Log.InfoFormat("PostProcess > Team: characterID:{0}:{1}  {2}<{3}", this.Id, this.Info.Name, TeamUpdateTS, this.Team.timestamp);
+                if (TeamUpdateTS < this.Team.timestamp)
+                {
+                    TeamUpdateTS = Team.timestamp;
+                    this.Team.PostProcess(message);
+                }
+            }
+
+            if (this.Guild != null)
+            {
+                Log.InfoFormat("PostProcess > Guild: characterID:{0}:{1}  {2}<{3}", this.Id, this.Info.Name, GuildUpdateTS, this.Guild.timestamp);
+                if (this.Info.Guild == null)
+                {
+                    this.Info.Guild = this.Guild.GuildInfo(this);
+                    if (message.mapCharacterEnter != null)
+                        GuildUpdateTS = Guild.timestamp;
+                }
+                if (GuildUpdateTS < this.Guild.timestamp && message.mapCharacterEnter == null)
+                {
+                    GuildUpdateTS = Guild.timestamp;
+                    this.Guild.PostProcess(this, message);
+                }
+            }*/
+
+            // 状态管理器的后处理
+            if (this.StatusManager.HasStatus)
+            {
+                this.StatusManager.PostProcess(message);
+            }
+        }
+
+        /// <summary>
+        /// 角色离开时调用
+        /// </summary>
+        public void Clear()
+        {
+            this.FriendManager.UpdateFriendInfo(this.Info, 0);
         }
     }
 }

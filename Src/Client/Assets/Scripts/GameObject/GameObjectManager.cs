@@ -106,9 +106,15 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
         EntityController ec = go.GetComponent<EntityController>();
         PlayerInputController pc = go.GetComponent<PlayerInputController>();
 
+        if(ec != null)
+        {
+            ec.entity = character;
+            ec.isPlayer = character.IsCurrentPlayer;
+        }
+
         if(pc != null)
         {
-            if (character.Info.Id == User.Instance.CurrentCharacter.Id)
+            if (character.IsCurrentPlayer)
             {
                 // 若这是“自己”，就把自己保存到 User.Instance.CurrentCharacterObject、把相机的跟随目标指向自己，并开启本地输入
                 User.Instance.CurrentCharacterObject = go;

@@ -41,7 +41,10 @@ public class LoadingManager : MonoBehaviour {
         // 初始化服务
         MapService.Instance.Init();
         UserService.Instance.Init();
-        // StatueService.Instance.Init();
+        StatusService.Instance.Init();
+        FriendService.Instance.Init();
+
+
         ShopManager.Instance.Init();
 
         // 加载进度条

@@ -20,14 +20,15 @@ namespace Network
 
         public Character Character { get; set; }    // 当前用户选择的角色
         public NEntity Entity { get; set; }         // 当前用户选择的角色在游戏中的实体
+		public IPostResponser PostResponser { get; set; }   // 响应后处理器
 
-        internal void Disconnected()
+        public void Disconnected()
         {
-            if(this.Character != null)
-            {
+            this.PostResponser = null;  // 断开时需要清空
+            if (this.Character != null)
                 UserService.Instance.CharacterLeave(this.Character);
-            }
         }
+
 
         private NetMessage response;    // 用于响应的详细 
 
@@ -35,9 +36,10 @@ namespace Network
         {
             get
             {
-                if(response == null)
+                if (response == null)
+                {
                     response = new NetMessage();
-
+                }
                 if (response.Response == null)
                     response.Response = new NetMessageResponse();
 
@@ -48,12 +50,11 @@ namespace Network
         // 实现 INetSession 接口
         public byte[] GetResponse()
         {
-            if(response != null)
+            if (response != null)
             {
-                if(this.Character != null && this.Character.StatusManager.HasStatus)
-                {
-                    this.Character.StatusManager.ApplyResponse(Response); 
-                }
+                if (PostResponser != null)
+                    this.PostResponser.PostProcess(Response);
+
                 byte[] data = PackageHandler.PackMessage(response);
                 // 只要消息发送给客户端，就清空这个response消息，这样就保证了response一定是在会话session一开始创建，会话session一结束清空；并且我们可以在会话session期间对response多次赋值让其包含多个消息
                 response = null; 

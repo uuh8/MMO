@@ -91,7 +91,7 @@ namespace Services
             // response.Characters 代表地图上的所有角色，挨个都交给 CharacterManager 管理
             foreach (var cha in response.Characters)
             {
-                if (User.Instance.CurrentCharacter == null || User.Instance.CurrentCharacter.Id == cha.Id)
+                if (User.Instance.CurrentCharacter == null || (cha.Type == CharacterType.Player && User.Instance.CurrentCharacter.Id == cha.Id))
                 {
                     User.Instance.CurrentCharacter = cha;
                 }
@@ -126,11 +126,11 @@ namespace Services
         /// <param name="response"></param>
         private void OnMapCharacterLeave(object sender, MapCharacterLeaveResponse response)
         {
-            Debug.LogFormat("[MapService] OnMapCharacterLeave: CharId:{0}", response.characterId);
+            Debug.LogFormat("[MapService] OnMapCharacterLeave: CharId:{0}", response.entityId);
 
-            if(response.characterId != User.Instance.CurrentCharacter.Id)
+            if(response.entityId != User.Instance.CurrentCharacter.EntityId)
             {
-                CharacterManager.Instance.RemoveCharacter(response.characterId);
+                CharacterManager.Instance.RemoveCharacter(response.entityId);
             }
             else
             {

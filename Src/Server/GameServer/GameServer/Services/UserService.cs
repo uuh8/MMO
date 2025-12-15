@@ -221,19 +221,22 @@ namespace GameServer.Services
             // 2) 把存档对象(TCharacter) 转换成运行时对象(Character)。从 DB 实体构造运行时角色，注册到内存（切断 EF 依赖）
             Character character = CharacterManager.Instance.AddCharacter(dbchar);
 
+            SessionManager.Instance.AddSession(character.Id, sender);
+
             Log.InfoFormat("[UserService] UserGameEnterRequest 角色进入: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
             // 3) 构建响应DTO UserGameEnterResponse
             sender.Session.Response.gameEnter = new UserGameEnterResponse();
             sender.Session.Response.gameEnter.Result = Result.Success;
             sender.Session.Response.gameEnter.Errormsg = "None";
-            sender.Session.Response.gameEnter.Character = character.Info;
 
-            // 4) 发送消息给客户端
+            // 4) 进入成功，发送初始角色信息给客户端
+            sender.Session.Response.gameEnter.Character = character.Info;
             sender.SendResponse();
 
             // 5) 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
             sender.Session.Character = character;
+            sender.Session.PostResponser = character;   // 初始化后处理器，后处理器是由角色来执行的
 
             // 6) 把运行时角色丢进对应地图，开始广播出生、同步周边实体等。
             MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character);
@@ -249,6 +252,7 @@ namespace GameServer.Services
             Character character = sender.Session.Character;
             Log.InfoFormat("[UserService] UserGameLeaveRequest: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
+            SessionManager.Instance.RemoveSession(character.Id);
             CharacterLeave(character);
 
             sender.Session.Response.gameLeave = new UserGameLeaveResponse();
@@ -261,6 +265,7 @@ namespace GameServer.Services
         {
             CharacterManager.Instance.RemoveCharacter(character.Id);
             MapManager.Instance[character.Info.mapId].CharacterLeave(character);
+            character.Clear();
         }
 
         #endregion
