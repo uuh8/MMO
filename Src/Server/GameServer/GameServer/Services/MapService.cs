@@ -19,15 +19,10 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<MapEntitySyncRequest>(this.OnMapEntitySync);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<MapTeleportRequest>(this.OnMapTeleport); 
         }
-
-
-
         public void Init()
         {
             MapManager.Instance.Init();
         }
-
-
 
         #region 发送信息给客户端
         /// <summary>

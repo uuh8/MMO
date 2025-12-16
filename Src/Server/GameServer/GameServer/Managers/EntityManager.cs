@@ -27,6 +27,11 @@ namespace GameServer.Managers
             // 加入实体管理器，生成唯一id
             entity.EntityData.Id = ++idx;
 
+            if (entity is CharacterBase cb)
+            {
+                cb.Info.EntityId = entity.EntityData.Id;
+            }
+
             List<Entity> entities = null;
             if(!MapEntities.TryGetValue(mapId, out entities))
             {

@@ -201,14 +201,14 @@ namespace Services
         /// 发送角色进入游戏的请求
         /// </summary>
         /// <param name="characterIdx"></param>
-        public void SendGameEnter(int characterIdx)
+        public void SendGameEnter(int characterId)
         {
-            Debug.LogFormat("[UserService] UserGameEnterRequest::characterId:{0}", characterIdx);
+            Debug.LogFormat("[UserService] UserGameEnterRequest::characterId:{0}", characterId);
 
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.gameEnter = new UserGameEnterRequest();
-            message.Request.gameEnter.characterIdx = characterIdx;
+            message.Request.gameEnter.characterId = characterId;
             NetClient.Instance.SendMessage(message);
         }
         
@@ -305,6 +305,13 @@ namespace Services
         /// <param name="response"></param>
         void OnGameEnter(object sender, UserGameEnterResponse response)
         {
+            /* UserGameEnterResponse 结构
+             * message UserGameEnterResponse {
+	                RESULT result = 1;   // 进入结果
+	                string errormsg = 2; // 错误信息
+	                NCharacterInfo character = 3; // 角色信息
+                }
+             */
             Debug.LogFormat("[UserService] OnGameEnter:{0} [{1}]", response.Result, response.Errormsg);
 
             if (response.Result == Result.Success)
@@ -312,6 +319,7 @@ namespace Services
                 if(response.Result == Result.Success)
                 {
                     User.Instance.CurrentCharacter = response.Character;
+
                     // 初始化角色身上的各种 Manager
                     ItemManager.Instance.Init(response.Character.Items);
                     BagManager.Instance.Init(response.Character.Bag);
@@ -335,17 +343,65 @@ namespace Services
         }
 
         /// <summary>
-        /// 处理角色进入地图的响应
+        /// 处理角色进入地图的响应（场景加载）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>
         void OnCharacterEnterMap(object sender, MapCharacterEnterResponse response)
         {
+            /*
+             * message MapCharacterEnterResponse{
+	                int32 mapId = 1;                    // 当前地图ID
+	                repeated NCharacterInfo characters = 2; // 地图内可见角色列表
+                }
+             */
             Debug.LogFormat("[UserService] OnCharacterEnterMap: mapId：{0}", response.mapId);
 
-            NCharacterInfo info = response.Characters[0];
-            User.Instance.CurrentCharacter = info;          // User里面保存了当前这个玩家的信息
-            SceneManager.Instance.LoadScene(DataManager.Instance.Maps[response.mapId].Resource);
+            var me = User.Instance.CurrentCharacter;
+            if (me == null)
+            {
+                Debug.LogError("CurrentCharacter is null, OnGameEnter should have run first.");
+                return;
+            }
+
+            // 这条消息可能是：
+            // 1) 我自己进图的“全量列表”（含我 + 其他人 + 怪物）
+            // 2) 别人进图时服务器推给我的“增量列表”（通常只有对方 1 个）
+            // 所以必须用 dbId 精确找到“我自己那条”
+            NCharacterInfo info = null;
+            for (int i = 0; i < response.Characters.Count; i++)
+            {
+                var c = response.Characters[i];
+                if (c.Type == CharacterType.Player && c.Id == me.Id) // db id 匹配
+                {
+                    info = c;
+                    break;
+                }
+            }
+            // 如果没找到自己，说明这是“别人进入地图”的增量包：只刷新/生成对方实体，不动 CurrentCharacter
+            if (info == null)
+            {
+                return;
+            }
+
+            // 全量包：只更新“地图相关字段”，不要整包替换 CurrentCharacter（避免覆盖你在 OnGameEnter 初始化好的引用）
+            me.EntityId = info.EntityId;
+            me.Entity = info.Entity;
+            me.mapId = response.mapId;
+
+            // 只有当进入新地图时才加载场景（防止别人进图触发你反复 LoadScene）
+            if (MapService.Instance.CurrentMapId != response.mapId)
+            {
+                if (DataManager.Instance.Maps.TryGetValue(response.mapId, out var map))
+                {
+                    User.Instance.CurrentMapData = map;
+                    SceneManager.Instance.LoadScene(map.Resource);
+                }
+                else
+                {
+                    Debug.LogErrorFormat("[UserService] Map {0} not existed", response.mapId);
+                }
+            }
         }
 
         /// <summary>

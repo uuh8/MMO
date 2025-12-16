@@ -189,9 +189,9 @@ message NPlayerInfo {
 	repeated NCharacterInfo characters = 2; // 该账号下的角色列表
 }
 message NCharacterInfo {
-	int32 id = 1;//db id
-	int32 config_id = 2;//config id
-	int32 entity_id = 3;//entity id
+	int32 id = 1;			// db id
+	int32 config_id = 2;	// config id
+	int32 entity_id = 3;	// entity id
 	string name = 4;
 	CHARACTER_TYPE type = 5;
 	CHARACTER_CLASS class = 6;
@@ -289,7 +289,7 @@ message UserCreateCharacterResponse
 // 进入游戏
 message UserGameEnterRequest
 {
-	int32 characterIdx = 1; // 选中的角色下标/ID
+	int32 characterId = 1; // 选中的角色下标/ID
 }
 message UserGameEnterResponse {
 	RESULT result = 1;   // 进入结果

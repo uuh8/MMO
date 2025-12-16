@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GameServer.Services
 {
-    class FriendService : Singleton<ItemService>
+    class FriendService : Singleton<FriendService>
     {
         public FriendService()
         {
@@ -41,7 +41,7 @@ namespace GameServer.Services
             // 注意这儿查找的是在线的玩家，因为是在 CharacterManager 中的，如果要加离线的好友就需要在db中找
             if (request.ToId == 0)
             {
-                // ToId == 0 表示没有传入 ID，就按照 Name 查找
+                // ToId == 0 表示没有传入 ID，就按照 Name 查找并补齐 ToId
                 foreach (var cha in CharacterManager.Instance.Characters)
                 {
                     if(cha.Value.Data.Name == request.ToName)
@@ -57,7 +57,7 @@ namespace GameServer.Services
             // ToId > 0 表示传入了ID，就按照 ID 来查找被加好友的玩家
             if (request.ToId > 0)
             {
-                // 校验相加的玩家是否已经是好友了
+                // 校验添加对象是否已经是好友了
                 if(character.FriendManager.GetFriendInfo(request.ToId) != null)
                 {
                     sender.Session.Response.friendAddRes = new FriendAddResponse();

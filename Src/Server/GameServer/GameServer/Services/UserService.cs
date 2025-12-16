@@ -215,8 +215,9 @@ namespace GameServer.Services
         private void OnGameEnter(NetConnection<NetSession> sender, UserGameEnterRequest request)
         {
             // 1) 从“当前登录用户的角色列表”里取出一个 "EF实体"
-            // 这行代码不是在“新建”TCharacter实体，而是从内存中读取一个TCharacter对象，而这个对象本质上最初是从数据库加载出来的，现在常驻在内存（比如玩家登录时就查出来并放进Session.User.Player.Characters列表里）
-            TCharacter dbchar = sender.Session.User.Player.Characters.ElementAt(request.characterIdx);
+            // 这行代码不是在“新建”TCharacter实体，而是从内存中读取一个TCharacter对象，而这个对象本质上最初是从数据库加载出来的，现在常驻在内存
+            int characterId = request.characterId;
+            TCharacter dbchar = sender.Session.User.Player.Characters.FirstOrDefault(c => c.ID == characterId);
 
             // 2) 把存档对象(TCharacter) 转换成运行时对象(Character)。从 DB 实体构造运行时角色，注册到内存（切断 EF 依赖）
             Character character = CharacterManager.Instance.AddCharacter(dbchar);
@@ -225,18 +226,19 @@ namespace GameServer.Services
 
             Log.InfoFormat("[UserService] UserGameEnterRequest 角色进入: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
-            // 3) 构建响应DTO UserGameEnterResponse
+            // 3) 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
+            sender.Session.Character = character;
+            sender.Session.PostResponser = character;   // 初始化后处理器，后处理器是由角色来执行的
+
+            // 4) 构建响应DTO UserGameEnterResponse
             sender.Session.Response.gameEnter = new UserGameEnterResponse();
             sender.Session.Response.gameEnter.Result = Result.Success;
             sender.Session.Response.gameEnter.Errormsg = "None";
 
-            // 4) 进入成功，发送初始角色信息给客户端
+            // 5) 进入成功，发送初始角色信息给客户端
             sender.Session.Response.gameEnter.Character = character.Info;
             sender.SendResponse();
 
-            // 5) 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
-            sender.Session.Character = character;
-            sender.Session.PostResponser = character;   // 初始化后处理器，后处理器是由角色来执行的
 
             // 6) 把运行时角色丢进对应地图，开始广播出生、同步周边实体等。
             MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character);

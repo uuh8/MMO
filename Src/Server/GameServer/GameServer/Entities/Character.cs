@@ -84,35 +84,9 @@ namespace GameServer.Entities
         }
         public void PostProcess(NetMessageResponse message)
         {
-            Log.InfoFormat("PostProcess > Character: characterID:{0}:{1}", this.Id, this.Info.Name);
+            Log.InfoFormat("[Character] PostProcess > Character: characterID:{0}:{1}", this.Id, this.Info.Name);
             // 好友管理器的后处理
             this.FriendManager.PostProcess(message);
-
-            /*if (this.Team != null)
-            {
-                Log.InfoFormat("PostProcess > Team: characterID:{0}:{1}  {2}<{3}", this.Id, this.Info.Name, TeamUpdateTS, this.Team.timestamp);
-                if (TeamUpdateTS < this.Team.timestamp)
-                {
-                    TeamUpdateTS = Team.timestamp;
-                    this.Team.PostProcess(message);
-                }
-            }
-
-            if (this.Guild != null)
-            {
-                Log.InfoFormat("PostProcess > Guild: characterID:{0}:{1}  {2}<{3}", this.Id, this.Info.Name, GuildUpdateTS, this.Guild.timestamp);
-                if (this.Info.Guild == null)
-                {
-                    this.Info.Guild = this.Guild.GuildInfo(this);
-                    if (message.mapCharacterEnter != null)
-                        GuildUpdateTS = Guild.timestamp;
-                }
-                if (GuildUpdateTS < this.Guild.timestamp && message.mapCharacterEnter == null)
-                {
-                    GuildUpdateTS = Guild.timestamp;
-                    this.Guild.PostProcess(this, message);
-                }
-            }*/
 
             // 状态管理器的后处理
             if (this.StatusManager.HasStatus)

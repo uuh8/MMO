@@ -48,6 +48,7 @@ public class UICharSelect : MonoBehaviour
 
     // 当前选中的角色
     private int selectCharacterIdx = -1;
+    private int selectCharacterId = -1;
 
     // 选中角色的Render Texture
     public UICharacterView characterView;
@@ -306,7 +307,8 @@ public class UICharSelect : MonoBehaviour
     private void OnCharacterSelect(int idx)
     {
         this.selectCharacterIdx = idx;
-        var character = User.Instance.Info.Player.Characters[idx];
+        NCharacterInfo character = User.Instance.Info.Player.Characters[idx];
+        this.selectCharacterId = character.Id;
 
         Debug.LogFormat("<color=yellow>[UICharSelect]</color> 选择角色：[{0}]{1} Class: {2} (值: {3})", character.Id,character.Name, character.Class,  (int)character.Class); 
 
@@ -326,7 +328,8 @@ public class UICharSelect : MonoBehaviour
     {
         if(selectCharacterIdx >= 0)
         {
-            UserService.Instance.SendGameEnter(selectCharacterIdx);
+            Debug.LogFormat("[UICharSelect] selectCharacterIdx:{0}", selectCharacterIdx);
+            UserService.Instance.SendGameEnter(selectCharacterId);
         }
     }
 }

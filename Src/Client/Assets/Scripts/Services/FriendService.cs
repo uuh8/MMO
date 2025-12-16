@@ -5,7 +5,6 @@ using SkillBridge.Message;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -81,7 +80,13 @@ namespace Services
         /// <param name="request"></param>
         private void OnFriendAddRequest(object sender, FriendAddRequest request)
         {
-            var confirm = MessageBox.Show(string.Format("{0} 请求添加你为好友", "好友请求", MessageBoxType.Confirm, "接受", "拒绝"));
+            var confirm = MessageBox.Show(
+                string.Format("{0} 请求添加你为好友", request.FromName), 
+                "好友请求", 
+                MessageBoxType.Confirm, 
+                "接受", 
+                "拒绝"
+                );
             confirm.OnYes = () =>
             {
                 this.SendFriendAddResponse(true, request);

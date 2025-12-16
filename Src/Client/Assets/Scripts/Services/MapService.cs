@@ -80,29 +80,51 @@ namespace Services
         #region 响应服务器发来的消息
 
         /// <summary>
-        /// 角色进入地图响应
+        /// 角色进入地图响应（MapService 不负责 LoadScene，只负责实体列表管理）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>
         private void OnMapCharacterEnter(object sender, MapCharacterEnterResponse response)
         {
+            /*
+             * message MapCharacterEnterResponse{
+	                int32 mapId = 1;                    // 当前地图ID
+	                repeated NCharacterInfo characters = 2; // 地图内可见角色列表
+                }
+             */
             Debug.LogFormat("[MapService] OnMapCharacterEnter:Map:{0} Count:{1}", response.mapId, response.Characters.Count);
 
+            // 换图时先清理旧地图实体（避免残留）
+            if (CurrentMapId != 0 && CurrentMapId != response.mapId)
+            {
+                CharacterManager.Instance.Clear();
+            }
+            CurrentMapId = response.mapId;
+
             // response.Characters 代表地图上的所有角色，挨个都交给 CharacterManager 管理
-            foreach (var cha in response.Characters)
+            // 只负责把角色/怪物交给 CharacterManager 创建实体
+            /*foreach (var cha in response.Characters)
             {
                 if (User.Instance.CurrentCharacter == null || (cha.Type == CharacterType.Player && User.Instance.CurrentCharacter.Id == cha.Id))
                 {
                     User.Instance.CurrentCharacter = cha;
                 }
                 CharacterManager.Instance.AddCharacter(cha);
+            }*/
+            foreach (var cha in response.Characters)
+            {
+                // 防止同 entityId 被重复 Add 造成 EntityManager 残留
+                if (!CharacterManager.Instance.CharactersMngr.ContainsKey(cha.EntityId))
+                {
+                    CharacterManager.Instance.AddCharacter(cha);
+                }
             }
 
-            if(CurrentMapId != response.mapId)
+            /*if (CurrentMapId != response.mapId)
             {
                 this.EnterMap(response.mapId);      // 角色进入地图
                 this.CurrentMapId = response.mapId; // 设置当前地图Id
-            }
+            }*/
         }
         private void EnterMap(int mapId)
         {

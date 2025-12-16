@@ -64,7 +64,6 @@ namespace GameServer.Models
         }
 
         #region 实体行为
-
         /// <summary>
         /// 角色进入地图
         /// </summary>
@@ -87,7 +86,7 @@ namespace GameServer.Models
                 if (kv.Value.character != character)
                     this.AddCharacterEnterMap(kv.Value.connection, character.Info);
             }
-            // 把“自己”进入地图的消息广播给其他服务器的其他角色
+
             foreach (var kv in this.MonsterManager.Monsters)
             {
                 conn.Session.Response.mapCharacterEnter.Characters.Add(kv.Value.Info);
@@ -153,7 +152,7 @@ namespace GameServer.Models
         void SendCharacterLeaveMap(NetConnection<NetSession> conn, Character character)
         {
             conn.Session.Response.mapCharacterLeave = new MapCharacterLeaveResponse();
-            conn.Session.Response.mapCharacterLeave.entityId = character.Id;
+            conn.Session.Response.mapCharacterLeave.entityId = character.entityId;
             conn.SendResponse();
         }
 

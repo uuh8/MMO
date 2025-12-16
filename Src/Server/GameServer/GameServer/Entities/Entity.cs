@@ -11,14 +11,56 @@ namespace GameServer.Entities
     /*父类*/
     class Entity
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="dir"></param>
+        public Entity(Vector3Int pos, Vector3Int dir)
+        {
+            this.entityData = new NEntity();
+            this.entityData.Position = pos;
+            this.entityData.Direction = dir;
+            this.SetEntityData(this.entityData);
+        }
+        public Entity(NEntity entity)
+        {
+            this.entityData = entity;
+        }
+
         public int entityId
         {
             get { return this.entityData.Id; }
         }
 
+        // 实体
+        private NEntity entityData;
+        public NEntity EntityData
+        {
+            get
+            {
+                return entityData;
+            }
+            set
+            {
+                entityData = value;
+                this.SetEntityData(value);
+            }
+        }
+
+        /// <summary>
+        /// 把 NEntity 的值赋值给一个逻辑层的 Entity 对象
+        /// </summary>
+        /// <param name="entity"></param>
+        public void SetEntityData(NEntity entity)
+        {
+            this.Position = entity.Position;
+            this.Direction = entity.Direction;
+            this.speed = entity.Speed;
+        }
+
         // 位置
         private Vector3Int position;
-
         public Vector3Int Position
         {
             get { return position; }
@@ -51,46 +93,5 @@ namespace GameServer.Entities
                 this.entityData.Speed = speed;
             }
         }
-
-        // 实体
-        private NEntity entityData;
-        public NEntity EntityData
-        {
-            get
-            {
-                return entityData;
-            }
-            set
-            {
-                entityData = value;
-                this.SetEntityData(value);
-            }
-        }
-
-
-        public Entity(Vector3Int pos,Vector3Int dir)
-        {
-            this.entityData = new NEntity();
-            this.entityData.Position = pos;
-            this.entityData.Direction = dir;
-            this.SetEntityData(this.entityData);
-        }
-
-        public Entity(NEntity entity)
-        {
-            this.entityData = entity;
-        }
-
-        /// <summary>
-        /// 把 NEntity 的值赋值给一个逻辑层的 Entity 对象
-        /// </summary>
-        /// <param name="entity"></param>
-        public void SetEntityData(NEntity entity)
-        {
-            this.Position = entity.Position;
-            this.Direction = entity.Direction;
-            this.speed = entity.Speed;
-        }
-
     }
 }
