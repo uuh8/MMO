@@ -266,8 +266,8 @@ namespace GameServer.Services
         public void CharacterLeave(Character character)
         {
             CharacterManager.Instance.RemoveCharacter(character.Id);
+            character.Clear();  // 注意在消息发送前 Clear
             MapManager.Instance[character.Info.mapId].CharacterLeave(character);
-            character.Clear();
         }
 
         #endregion

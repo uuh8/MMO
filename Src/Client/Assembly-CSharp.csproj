@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\Models\BagItem.cs" />
     <Compile Include="Assets\Scripts\UI\UIWorldElement.cs" />
     <Compile Include="Assets\Scripts\GameObject\TeleporterObject.cs" />
+    <Compile Include="Assets\Scripts\UI\SpriteManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DataManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIWorldElementManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\NpcController.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Assets\Scripts\Managers\QuestManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\EntityController.cs" />
     <Compile Include="Assets\Scripts\UI\UITest.cs" />
+    <Compile Include="Assets\Scripts\UI\Team\UITeam.cs" />
     <Compile Include="Assets\Scripts\Managers\ShopManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\GameObjectTool.cs" />
     <Compile Include="Assets\Scripts\Utilities\EnumUtil.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="Assets\Scripts\UI\UINameBar.cs" />
     <Compile Include="Assets\Scripts\UI\Bag\UIIconItem.cs" />
     <Compile Include="Assets\Scripts\Managers\CharacterManager.cs" />
+    <Compile Include="Assets\Scripts\UI\Team\UITeamItem.cs" />
     <Compile Include="Assets\Scripts\UI\CharEquip\UICharEquip.cs" />
     <Compile Include="Assets\Scripts\Services\MapService.cs" />
     <Compile Include="Assets\Scripts\UI\SliderValueDisplay.cs" />
@@ -128,12 +131,14 @@
     <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestStatus.cs" />
     <Compile Include="Assets\Scripts\Managers\FriendManager.cs" />
     <Compile Include="Assets\Scripts\LoadingManager.cs" />
+    <Compile Include="Assets\Scripts\Services\TeamService.cs" />
     <Compile Include="Assets\Scripts\GameObject\MainPlayerCamera.cs" />
     <Compile Include="Assets\Scripts\UI\Friend\UIFriends.cs" />
     <Compile Include="Assets\Scripts\UI\UICharSelect.cs" />
     <Compile Include="Assets\Scripts\Services\FriendService.cs" />
     <Compile Include="Assets\Scripts\GameObject\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\Entities\Character.cs" />
+    <Compile Include="Assets\Scripts\Managers\TeamManager.cs" />
     <Compile Include="Assets\Scripts\Utilities\Singleton.cs" />
     <Compile Include="Assets\Scripts\Services\QuestService.cs" />
   </ItemGroup>

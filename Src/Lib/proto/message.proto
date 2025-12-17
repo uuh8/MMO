@@ -137,6 +137,12 @@ message NetMessageRequest{
 	FriendAddResponse friendAddRes = 16;		// 添加好友是双向操作，因此客户端也要处理response
 	FriendListRequest friendList = 17; 
 	FriendRemoveRequest friendRemove = 18;
+
+	TeamInviteRequest teamInviteReq = 19;
+	TeamInviteResponse teamInviteRes = 20;
+	TeamInfoRequest teamInfo = 21; 
+	TeamLeaveRequest teamLeave = 22;
+
 }
 // NetMessageResponse 收纳服务器返回的所有响应类型
 message NetMessageResponse{
@@ -163,6 +169,11 @@ message NetMessageResponse{
 	FriendAddResponse friendAddRes = 16;
 	FriendListResponse friendList = 17;
 	FriendRemoveResponse friendRemove = 18;
+
+	TeamInviteRequest teamInviteReq = 19;
+	TeamInviteResponse teamInviteRes = 20;
+	TeamInfoResponse teamInfo = 21; 
+	TeamLeaveResponse teamLeave = 22;
 	
 	StatusNotify statusNotify = 100;                   // 状态通知
 	
@@ -473,4 +484,54 @@ message FriendRemoveResponse
 	RESULT result = 1;
 	string errormsg = 2;
 	int32 id = 3;
+}
+// 组队系统
+
+message NTeamInfo
+{
+	int32 id = 1;
+	int32 leader = 2;		// 队长id
+	repeated NCharacterInfo members = 3;	// 队员信息
+}
+
+message TeamInviteRequest
+{
+	int32 team_id = 1;		// 队伍id
+	int32 from_id = 2;
+	string from_name = 3;
+	int32 to_id = 4;
+	string to_name = 5;
+}
+
+message TeamInviteResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	TeamInviteRequest request = 3;
+}
+
+// 暂时没用到（以后更新队伍的时候可以添加）
+message TeamInfoRequest
+{
+}
+
+// 队伍信息（下发给客户端使用）
+message TeamInfoResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	NTeamInfo team = 3;
+}
+
+message TeamLeaveRequest
+{
+	int32 team_id = 1;
+	int32 characterId = 2;
+}
+
+message TeamLeaveResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	int32 characterId = 3;
 }

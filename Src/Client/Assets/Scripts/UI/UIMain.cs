@@ -11,6 +11,8 @@ public class UIMain : MonoSingleton<UIMain>
     public Text avatarName;
     public Text avatarLevel;
 
+    public UITeam TeamWindow;   // 组队界面只存在于主UI上，因此直接写在 UIMain 中
+
     // Start is called before the first frame update
     protected override void OnStart()
     {
@@ -58,5 +60,13 @@ public class UIMain : MonoSingleton<UIMain>
     public void OnClickFriend()
     {
         UIManager.Instance.Show<UIFriends>();
+    }
+    /// <summary>
+    /// 管理组队界面的 显示/隐藏
+    /// </summary>
+    /// <param name="show"></param>
+    public void ShowTeamUI(bool show)
+    {
+        TeamWindow.ShowTeam(show);
     }
 }

@@ -1,4 +1,5 @@
-﻿using GameServer.Entities;
+﻿using Common;
+using GameServer.Entities;
 using GameServer.Services;
 using SkillBridge.Message;
 using System;
@@ -50,16 +51,25 @@ namespace GameServer.Managers
             }
             else
             {
-                friendInfo.friendInfo = GetBasicInfo(character.Info);
+                friendInfo.friendInfo = character.GetBasicInfo();
                 friendInfo.friendInfo.Name = character.Info.Name;
                 friendInfo.friendInfo.Class = character.Info.Class;
                 friendInfo.friendInfo.Level = character.Info.Level;
+
+                // 更新等级信息
+                if(friend.Level != character.Info.Level)
+                {
+                    friend.Level = character.Info.Level;
+                }
+
                 character.FriendManager.UpdateFriendInfo(this.Owner.Info, 1);
                 friendInfo.Status = 1;
             }
 
             return friendInfo;
         }
+
+
 
         public NFriendInfo GetFriendInfo(int friendId)
         {
@@ -71,17 +81,6 @@ namespace GameServer.Managers
                 }
             }
             return null;
-        }
-
-        NCharacterInfo GetBasicInfo(NCharacterInfo info)
-        {
-            return new NCharacterInfo()
-            {
-                Id = info.Id,
-                Name = info.Name,
-                Class = info.Class,
-                Level = info.Level
-            };
         }
 
         /// <summary>
@@ -154,6 +153,22 @@ namespace GameServer.Managers
                 }
             }
             this.friendChanged = true;
+        }
+
+        /// <summary>
+        /// 本人离线，通知在线好友
+        /// </summary>
+        public void OfflineNotify()
+        {
+            foreach(var friendInfo in this.friends)
+            {
+                var friend = CharacterManager.Instance.GetCharacter(friendInfo.friendInfo.Id);
+                if(friend != null)
+                {
+                    // status是 0 表示离线
+                    friend.FriendManager.UpdateFriendInfo(this.Owner.Info, 0);
+                }
+            }
         }
 
         public void PostProcess(NetMessageResponse message)
