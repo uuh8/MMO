@@ -5,7 +5,6 @@ using SkillBridge.Message;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -133,8 +132,15 @@ namespace Services
         /// <exception cref="NotImplementedException"></exception>
         private void OnTeamInfo(object sender, TeamInfoResponse message)
         {
-            Debug.Log("[TeamService] OnTeamInfo");
-            TeamManager.Instance.UpdateTeamInfo(message.Team);
+            try
+            {
+                Debug.Log("[TeamService] OnTeamInfo");
+                TeamManager.Instance.UpdateTeamInfo(message.Team);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
         }
 
         /// <summary>

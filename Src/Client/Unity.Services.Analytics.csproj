@@ -84,9 +84,9 @@
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\NewPlayerHelper.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\AnalyticsServiceInstance.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\Events\AdImpression\AdCompletionStatus.cs" />
-    <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\IAnalyticsService.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\Events\AcquisitionSource\AcquisitionSourceParameters.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\Events\Transaction\TransactionType.cs" />
+    <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\IAnalyticsService.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\Runtime\Persistence.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\Platform\DeviceVolume.cs" />
     <Compile Include="Library\PackageCache\com.unity.services.analytics@5.0.0\Runtime\Runtime\Consent\ConsentCheckException.cs" />

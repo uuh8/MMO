@@ -22,12 +22,15 @@ namespace GameServer.Entities
     {
         public TCharacter Data;
         public ItemManager ItemManager;
-        public QuestManager QuestManager;
+        public QuestManager QuestManager; 
         public StatusManager StatusManager;
         public FriendManager FriendManager;
 
         public Team Team;   // 由于Team没有DB，因此用Team类来管理
         public double TeamUpdateTS; // 时间戳（用于校验队伍信息是否变化）
+
+        public Guild Guild;   
+        public double GuildUpdateTS; 
 
         /// <summary>
         /// 初始化
@@ -69,6 +72,8 @@ namespace GameServer.Entities
             this.FriendManager = new FriendManager(this);
             this.FriendManager.GetFriendInfos(this.Info.Friends);
 
+            this.Guild = GuildManager.Instance.GetGuild(this.Data.GuildId);
+
             this.StatusManager = new StatusManager(this);
         }
 
@@ -93,21 +98,40 @@ namespace GameServer.Entities
         public void PostProcess(NetMessageResponse message)
         {
             Log.InfoFormat("[Character] PostProcess > Character: characterID:{0}:{1}", this.Id, this.Info.Name);
-            // 好友管理器的后处理
+
+            // 好友后处理
             this.FriendManager.PostProcess(message);
 
-            // 组队
+            // 组队后处理
             if (this.Team != null)
             {
                 Log.InfoFormat("[Character] PostProcess > Team: characterID:{0}:{1}  {2}<{3}", this.Id, this.Info.Name, TeamUpdateTS, this.Team.timestamp);
                 if (TeamUpdateTS < this.Team.timestamp)
                 {
                     // 只要角色自己的队伍时间戳 < 队伍的时间戳，说明队伍信息有变化，就执行Team中的后处理发送新的 TeamInfoResponse 给客户端更新队伍UI
-                    TeamUpdateTS = Team.timestamp;
+                    TeamUpdateTS = Team.timestamp; 
                     this.Team.PostProcess(message);
                 }
             }
-            // 状态管理器的后处理
+
+            // 公会后处理
+            if (this.Guild != null)
+            {
+                Log.InfoFormat("PostProcess > Guild: characterID:{0}:{1}  {2}<{3}", this.Id, this.Info.Name, GuildUpdateTS, this.Guild.timestamp);
+                if (this.Info.Guild == null)
+                {
+                    this.Info.Guild = this.Guild.GuildInfo(this);
+                    if (message.mapCharacterEnter != null)
+                        GuildUpdateTS = Guild.timestamp;
+                }
+                if (GuildUpdateTS < this.Guild.timestamp && message.mapCharacterEnter == null)
+                {
+                    GuildUpdateTS = Guild.timestamp;
+                    this.Guild.PostProcess(this, message);
+                }
+            }
+
+			// 状态管理器后处理
             if (this.StatusManager.HasStatus)
             {
                 this.StatusManager.PostProcess(message);

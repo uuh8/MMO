@@ -17,7 +17,7 @@ namespace GameServer.Services
         {
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<TeamInviteRequest>(this.OnTeamInviteRequest);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<TeamInviteResponse>(this.OnTeamInviteResponse);
-            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<TeamLeaveRequest>(this.OnTeamLeave);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<TeamLeaveRequest>(this.OnTeamLeave); 
         }
 
         public void Init()
@@ -71,6 +71,9 @@ namespace GameServer.Services
             Character character = sender.Session.Character;
             Log.InfoFormat("[TeamService] OnTeamInviteResponse: character:{0} Result:{1} FromId:{2} ToId:{3}", character.Id, response.Result, response.Request.FromId, response.Request.ToId);
 
+            // 先保证：给B也有一个回包可发（否则 response 为空，GetResponse 直接 null）
+            sender.Session.Response.teamInviteRes = response;
+
             // 接受了组队请求
             if (response.Result == Result.Success)
             {
@@ -85,10 +88,12 @@ namespace GameServer.Services
                 else
                 {
                     TeamManager.Instance.AddTeamMember(requester.Session.Character, character);
+                    // 客户端A 的回包
                     requester.Session.Response.teamInviteRes = response;
                     requester.SendResponse();   // 发给请求者
                 }
             }
+            // B 的回包
             sender.SendResponse();  // 发回好友自身
         }
         /// <summary>

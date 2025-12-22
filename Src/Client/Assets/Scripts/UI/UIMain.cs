@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Models;
 using Services;
+using Managers;
 
 public class UIMain : MonoSingleton<UIMain>
 {
@@ -68,5 +69,27 @@ public class UIMain : MonoSingleton<UIMain>
     public void ShowTeamUI(bool show)
     {
         TeamWindow.ShowTeam(show);
+    }
+    /// <summary>
+    /// 点击工会按钮
+    /// </summary>
+    public void OnClickGuild()
+    {
+        GuildManager.Instance.ShowGuild();
+    }
+
+    public void OnClickRide()
+    {
+
+    }
+
+    public void OnClickSetting()
+    {
+
+    }
+
+    public void OnClickSkill()
+    {
+
     }
 }

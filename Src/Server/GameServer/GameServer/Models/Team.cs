@@ -30,7 +30,7 @@ namespace GameServer.Models
             }
             this.Members.Add(member);
             member.Team = this;
-            timestamp = Time.timestamp; // Team添加成员，队伍信息发生改变，更新时间戳
+            timestamp = TimeUtil.timestamp; // Team添加成员，队伍信息发生改变，更新时间戳
         }
         public void Leave(Character member)
         {
@@ -47,7 +47,7 @@ namespace GameServer.Models
                 }
             }
             member.Team = null;
-            timestamp = Time.timestamp; // Team离开成员，队伍信息发生改变，更新时间戳
+            timestamp = TimeUtil.timestamp; // Team离开成员，队伍信息发生改变，更新时间戳
         }
 
         /// <summary>

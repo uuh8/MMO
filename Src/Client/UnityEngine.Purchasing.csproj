@@ -132,8 +132,8 @@
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\StoreListenerProxy.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Analytics\Legacy\LegacyAnalyticsAdapter.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Analytics\Models\AnalyticsTransactionReceipt.cs" />
-    <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\PurchaseProcessingResult.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Telemetry\Diagnostics\TelemetryDiagnosticParams.cs" />
+    <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\PurchaseProcessingResult.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Extension\ICatalogProvider.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Analytics\Interfaces\Legacy\ILegacyUnityAnalytics.cs" />
   </ItemGroup>

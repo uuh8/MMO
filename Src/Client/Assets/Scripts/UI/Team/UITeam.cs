@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Models;
 using Services;
+using SkillBridge.Message;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,24 +47,29 @@ public class UITeam : MonoBehaviour
 
     public void UpdateTeamUI()
     {
-        if (User.Instance.TeamInfo == null)
-            return;
-        this.teamTitle.text = string.Format("我的队伍（{0}/5）", User.Instance.TeamInfo.Members.Count);
+        NTeamInfo info = User.Instance.TeamInfo;
+        if (info == null) return;
+
+        int slotCount = Members != null ? Members.Length : 0;
+        int memberCount = info.Members != null ? info.Members.Count : 0;
+
+        this.teamTitle.text = $"我的队伍（{memberCount}/{slotCount}）";
         // 队伍最多4人
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < slotCount; i++)
         {
-            if(i < User.Instance.TeamInfo.Members.Count)
+            if(i < memberCount)
             {
                 this.Members[i].SetMemberInfo(
-                    i, 
-                    User.Instance.TeamInfo.Members[i], 
-                    User.Instance.TeamInfo.Members[i].Id == User.Instance.TeamInfo.Leader
+                    i,
+                    info.Members[i],
+                    info.Members[i].Id == info.Leader
                     );
                 this.Members[i].gameObject.SetActive(true);
             }
             else
             {
-                this.Members[i].gameObject.SetActive(true);
+                // 空槽不显示
+                this.Members[i].gameObject.SetActive(false);
             }
         }
     }

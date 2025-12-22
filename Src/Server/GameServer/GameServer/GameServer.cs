@@ -32,6 +32,7 @@ namespace GameServer
             QuestService.Instance.Init(); 
             FriendService.Instance.Init(); 
             TeamService.Instance.Init(); 
+            GuildService.Instance.Init(); 
 
             network = new NetService();   //实例化网络服务。
             network.Init(8000);           //初始化网络服务并指定端口号 8000。
@@ -61,7 +62,7 @@ namespace GameServer
             var mapManager = MapManager.Instance;
             while (running)
             {
-                Time.Tick(); 
+                TimeUtil.Tick(); 
                 Thread.Sleep(100); //线程休眠 100 毫秒，以控制循环频率，减轻服务器的负载。模拟100ms/帧
                 mapManager.Update();
             }

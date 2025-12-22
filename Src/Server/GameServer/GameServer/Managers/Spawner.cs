@@ -67,7 +67,7 @@ namespace GameServer.Managers
             if (this.spawned)
                 return false;
             // unspawnTime表示该怪物上次被kill的时间，被kill后需要SpawnPeriod再刷新
-            if (this.unspawnTime + this.Define.SpawnPeriod > Time.time)
+            if (this.unspawnTime + this.Define.SpawnPeriod > TimeUtil.time)
                 return false;
 
             return true;
