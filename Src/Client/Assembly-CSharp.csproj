@@ -74,9 +74,9 @@
     <Compile Include="Assets\Scripts\Utilities\TimeUtil.cs" />
     <Compile Include="Assets\Scripts\UI\UIWorldElementManager.cs" />
     <Compile Include="Assets\Scripts\GameObject\NpcController.cs" />
+    <Compile Include="Assets\Scripts\UI\Guild\UIGuildApplyItem.cs" />
     <Compile Include="Assets\Scripts\UI\Guild\UIGuild.cs" />
     <Compile Include="Assets\Scripts\UI\Shop\UIShopItem.cs" />
-    <Compile Include="Assets\Scripts\UI\Guild\UIGuildApplyItem.cs" />
     <Compile Include="Assets\Scripts\Managers\GuildManager.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneManager.cs" />
     <Compile Include="Assets\Scripts\UI\Guild\UIGuildMemberItem.cs" />

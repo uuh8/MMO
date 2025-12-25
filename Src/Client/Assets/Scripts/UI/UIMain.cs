@@ -75,7 +75,7 @@ public class UIMain : MonoSingleton<UIMain>
     /// </summary>
     public void OnClickGuild()
     {
-        GuildManager.Instance.ShowGuild();
+        GuildManager.Instance.ShowGuildUI();
     }
 
     public void OnClickRide()

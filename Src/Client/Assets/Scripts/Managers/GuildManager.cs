@@ -11,6 +11,8 @@ namespace Managers
     {
         public NGuildInfo guildInfo;
 
+        public NGuildMemberInfo myMemberInfo;   // “本客户端”的角色在工会中的成员信息
+
         // 判断本客户端的角色有没有加入工会
         public bool HasGuild
         {
@@ -19,6 +21,22 @@ namespace Managers
         public void Init(NGuildInfo guild)
         {
             this.guildInfo = guild;
+            // 初始化 myMemberInfo
+            if (guild == null)
+            {
+                // 如果没有公会
+                myMemberInfo = null;
+                return;
+            }
+            foreach (var mem in guild.Members)
+            {
+                // 如果有公会 
+                if(mem.characterId == User.Instance.CurrentCharacter.Id)
+                {
+                    myMemberInfo = mem;
+                    break;
+                }
+            }
         }
 
         public void ShowGuildUI()

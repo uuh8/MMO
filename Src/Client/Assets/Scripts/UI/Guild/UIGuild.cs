@@ -63,9 +63,9 @@ public class UIGuild : UIWindow
     /// <param name="input"></param>
     /// <param name="tips"></param>
     /// <returns></returns>
-    private bool OnClickLeave(string input, out string tips)
+    public void OnClickLeave()
     {
-        tips = "";
+        /*tips = "";
         int friendId = 0;
         string friendName = "";
         if (!int.TryParse(input, out friendId))
@@ -77,65 +77,156 @@ public class UIGuild : UIWindow
         }
 
         FriendService.Instance.SendFriendAddRequest(friendId, friendName);
-        return true;
+        return true;*/
     }
     /// <summary>
     /// 点击私聊按钮
     /// </summary>
+    /// <param name="input"></param>
+    /// <param name="tips"></param>
+    /// <returns></returns>
     public void OnClickChat()
     {
-        MessageBox.Show("暂未开放");
+        /*tips = "";
+        int friendId = 0;
+        string friendName = "";
+        if (!int.TryParse(input, out friendId))
+            friendName = input;
+        if (friendId == User.Instance.CurrentCharacter.Id || friendName == User.Instance.CurrentCharacter.Name)
+        {
+            tips = "不能添加自己为好友";
+            return false;
+        }
+
+        FriendService.Instance.SendFriendAddRequest(friendId, friendName);
+        return true;*/
     }
+    /// <summary>
+    /// 点击公会宣言按钮
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="tips"></param>
+    /// <returns></returns>
+    public void OnClickNotice()
+    {
+        /*tips = "";
+        int friendId = 0;
+        string friendName = "";
+        if (!int.TryParse(input, out friendId))
+            friendName = input;
+        if (friendId == User.Instance.CurrentCharacter.Id || friendName == User.Instance.CurrentCharacter.Name)
+        {
+            tips = "不能添加自己为好友";
+            return false;
+        }
+
+        FriendService.Instance.SendFriendAddRequest(friendId, friendName);
+        return true;*/
+    }
+
     /// <summary>
     /// 点击踢人按钮
     /// </summary>
     public void OnClickKickout()
     {
-        if (selectedItem == null)
+        if(selectedItem == null)
         {
-            MessageBox.Show("请选择要删除的公会成员");
+            MessageBox.Show("请选择要踢出的成员");
             return;
         }
-        MessageBox.Show(string.Format("确定要删除好友[{0}]吗？", selectedItem.memberInfo.Info.Name), "删除好友", MessageBoxType.Confirm, "删除", "取消").OnYes = () =>
-        {
-            FriendService.Instance.SendFriendRemoveRequest(this.selectedItem.memberInfo.Id, this.selectedItem.memberInfo.Info.Id);
-        };
+        MessageBox.Show(
+            string.Format("要踢[{0}]出公会吗？", this.selectedItem.memberInfo.Info.Name),
+            "踢出公会",
+            MessageBoxType.Confirm, 
+            "确定", 
+            "取消").OnYes = () =>
+            {
+                GuildService.Instance.SendAdminCommand(GuildAdminCommand.Kickout, this.selectedItem.memberInfo.Info.Id);
+            };
     }
     /// <summary>
-    /// 点击好友组队按钮
+    /// 点击申请列表按钮
+    /// </summary>
+    public void OnClickGuildApplyList()
+    {
+        UIManager.Instance.Show<UIGuildApplyList>();
+    }
+    /// <summary>
+    /// 点击晋升按钮
     /// </summary>
     public void OnClickPromote()
     {
-        // 如未选中好友
         if (selectedItem == null)
         {
-            MessageBox.Show("请选择要邀请的好友");
+            MessageBox.Show("请选择要晋升的成员");
             return;
         }
-        // 若是离线好友
-        if (selectedItem.memberInfo.Status == 0)
+        if(selectedItem.memberInfo.Title != GuildTitle.None)
         {
-            MessageBox.Show("请选择在线的好友");
+            MessageBox.Show("对方已经身份尊贵");
             return;
         }
-
-        MessageBox.Show(string.Format("确定要邀请好友【{0}】加入队伍吗？", selectedItem.memberInfo.Info.Name), "邀请好友组队", MessageBoxType.Confirm, "邀请", "取消").OnYes = () =>
-        {
-            TeamService.Instance.SendTeamInviteRequest(this.selectedItem.memberInfo.Info.Id, this.selectedItem.memberInfo.Info.Name);
-        };
+        MessageBox.Show(
+            string.Format("要晋升[{0}]为公会副会长吗？", this.selectedItem.memberInfo.Info.Name),
+            "晋升",
+            MessageBoxType.Confirm,
+            "确定",
+            "取消").OnYes = () =>
+            {
+                GuildService.Instance.SendAdminCommand(GuildAdminCommand.Promote, this.selectedItem.memberInfo.Info.Id);
+            };
     }
-
+    /// <summary>
+    /// 点击罢免按钮
+    /// </summary>
     public void OnClickDepose()
     {
-
+        if (selectedItem == null)
+        {
+            MessageBox.Show("请选择要罢免的成员");
+            return;
+        }
+        if (selectedItem.memberInfo.Title == GuildTitle.None)
+        {
+            MessageBox.Show("对方似乎无职可免");
+            return;
+        }
+        if (selectedItem.memberInfo.Title == GuildTitle.President)
+        {
+            MessageBox.Show("会长不是你能动的");
+            return;
+        }
+        MessageBox.Show(
+            string.Format("确认要罢免[{0}]的公会职务吗？", this.selectedItem.memberInfo.Info.Name),
+            "职务罢免",
+            MessageBoxType.Confirm,
+            "确定",
+            "取消").OnYes = () =>
+            {
+                GuildService.Instance.SendAdminCommand(GuildAdminCommand.Depost, this.selectedItem.memberInfo.Info.Id);
+            };
     }
+
+    /// <summary>
+    /// 点击转让按钮
+    /// </summary>
     public void OnClickTransfer()
     {
+        if (selectedItem == null)
+        {
+            MessageBox.Show("请选择把会长转让给的成员");
+            return;
+        }
 
-    }
-    public void OnClickSetNotice()
-    {
-
+        MessageBox.Show(
+            string.Format("要把会长转让给[{0}]吗？", this.selectedItem.memberInfo.Info.Name),
+            "会长转让",
+            MessageBoxType.Confirm,
+            "确定",
+            "取消").OnYes = () =>
+            {
+                GuildService.Instance.SendAdminCommand(GuildAdminCommand.Transfer, this.selectedItem.memberInfo.Info.Id);
+            };
     }
     #endregion
 

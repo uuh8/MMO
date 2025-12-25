@@ -53,7 +53,7 @@ public class UIGuildList : UIWindow
         foreach (var Item in guilds)
         {
             GameObject go = Instantiate(guildItemPrefab, this.listMain.transform);
-            UIFriendItem uiItem = go.GetComponent<UIFriendItem>();
+            UIGuildItem uiItem = go.GetComponent<UIGuildItem>();
             uiItem.SetGuildInfo(Item);
             this.listMain.AddItem(uiItem);
         }
@@ -65,6 +65,7 @@ public class UIGuildList : UIWindow
     {
         this.listMain.RemoveAll();
     }
+
     /// <summary>
     /// 点击“申请加入”按钮
     /// </summary>
@@ -75,7 +76,7 @@ public class UIGuildList : UIWindow
             MessageBox.Show("请选择要加入的工会");
             return;
         }
-        MessageBox.Show(string.Format("确定要加入工会【{0}】吗？", selectedItem.Info.GuildName), "申请加入工会", MessageBoxType.Confirm, "删除", "取消").OnYes = () =>
+        MessageBox.Show(string.Format("确定要加入工会【{0}】吗？", selectedItem.Info.GuildName), "申请加入工会", MessageBoxType.Confirm, "确认", "取消").OnYes = () =>
         {
             GuildService.Instance.SendGuildJoinRequest(this.selectedItem.Info.Id);
         };

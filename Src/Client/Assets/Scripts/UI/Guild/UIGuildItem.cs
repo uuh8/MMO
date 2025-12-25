@@ -1,15 +1,19 @@
+using Entities;
 using SkillBridge.Message;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIGuildItem : ListView.ListViewItem
 {
-    /*public Text nickname;
-    public Text @class;
-    public Text level;
-    public Text status;
+    [Header("UI")]
+    public Text guildIdText;
+    public Text guildNameText;
+    public Text membersText;
+    public Text leaderText;
 
+    [Header("Selection BG")]
     public Image background;
     public Sprite normalBg;
     public Sprite selectedBg;
@@ -19,15 +23,24 @@ public class UIGuildItem : ListView.ListViewItem
         this.background.overrideSprite = selected ? selectedBg : normalBg;
     }
 
-    // 当前的好友信息
-    public NFriendInfo Info;
+    public NGuildInfo Info { get; private set; }
 
-    public void SetFriendInfo(NFriendInfo item)
+    public void SetGuildInfo(NGuildInfo info)
     {
-        this.Info = item;
-        if (this.nickname != null) this.nickname.text = this.Info.friendInfo.Name;
-        if (this.@class != null) this.@class.text = this.Info.friendInfo.Class.ToString();
-        if (this.level != null) this.level.text = this.Info.friendInfo.Level.ToString();
-        if (this.status != null) this.status.text = this.Info.Status == 1 ? "在线" : "离线";
-    }*/
+        this.Info = info;
+
+        if (info == null)
+        {
+            if (guildIdText != null) guildIdText.text = "ID: -";
+            if (guildNameText != null) guildNameText.text = "-";
+            if (membersText != null) membersText.text = "-/-";
+            if (leaderText != null) leaderText.text = "-";
+            return;
+        }
+
+        if (guildIdText != null) guildIdText.text = $"ID:{info.Id}";
+        if (guildNameText != null) guildNameText.text = info.GuildName;
+        if (membersText != null) membersText.text = info.memberCount.ToString();
+        if (leaderText != null) leaderText.text = info.leaderName;
+    }
 }

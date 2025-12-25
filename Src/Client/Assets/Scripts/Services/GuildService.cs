@@ -32,6 +32,7 @@ namespace Services
             MessageDistributer.Instance.Subscribe<GuildJoinResponse>(this.OnGuildJoinResponse);
             MessageDistributer.Instance.Subscribe<GuildResponse>(this.OnGuild);
             MessageDistributer.Instance.Subscribe<GuildLeaveResponse>(this.OnGuildLeave);
+            MessageDistributer.Instance.Subscribe<GuildAdminResponse>(this.OnGuildAdmin);
         }
 
         public void Dispose()
@@ -42,6 +43,8 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<GuildJoinResponse>(this.OnGuildJoinResponse);
             MessageDistributer.Instance.Unsubscribe<GuildResponse>(this.OnGuild);
             MessageDistributer.Instance.Unsubscribe<GuildLeaveResponse>(this.OnGuildLeave);
+            MessageDistributer.Instance.Unsubscribe<GuildAdminResponse>(this.OnGuildAdmin);
+
         }
 
         #region 消息发送
@@ -65,7 +68,7 @@ namespace Services
         /// 发送加入工会请求
         /// </summary>
         /// <param name="guildId"></param>
-        public void SendGuildJoinRequeset(int guildId)
+        public void SendGuildJoinRequest(int guildId)
         {
             Debug.Log("[GuildService] SendGuildJoinRequeset");
             NetMessage message = new NetMessage();
@@ -76,22 +79,6 @@ namespace Services
             NetClient.Instance.SendMessage(message);
         }
 
-        /// <summary>
-        /// 发送加入工会请求回应(只有会长或者管理员才能回复)(由OnGuildJoinRequest调用)
-        /// 是否允许申请者加入自己的公会
-        /// </summary>
-        /// <param name="guildId"></param>
-        public void SendGuildJoinResponse(bool accept, GuildJoinRequest request)
-        {
-            Debug.Log("[GuildService] SendGuildJoinResponse");
-            NetMessage message = new NetMessage();
-            message.Request = new NetMessageRequest();
-            message.Request.guildJoinRes = new GuildJoinResponse();
-            message.Request.guildJoinRes.Result = Result.Success;
-            message.Request.guildJoinRes.Apply = request.Apply;
-            message.Request.guildJoinRes.Apply.Result = accept ? ApplyResult.Accept : ApplyResult.Reject;
-            NetClient.Instance.SendMessage(message);
-        }
 
         /// <summary>
         /// 发送离开队伍Request
@@ -110,15 +97,54 @@ namespace Services
         /// <summary>
         /// 申请公会列表请求
         /// </summary>
-        public void sendGuildListRequest()
+        public void SendGuildListRequest()
         {
-            Debug.Log("[GuildService] SendGuildLeaveRequest");
+            Debug.Log("[GuildService] SendGuildListRequest");
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.guildList = new GuildListRequest();
             NetClient.Instance.SendMessage(message);
         }
+
+        /// <summary>
+        /// 发送公会审批
+        /// </summary>
+        /// <param name="accept"></param>
+        /// <param name="apply"></param>
+        public void SendGuildJoinApply(bool accept, NGuildApplyInfo apply)
+        {
+            Debug.Log("[GuildService] SendGuildJoinApply");
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.guildJoinRes = new GuildJoinResponse();
+            message.Request.guildJoinRes.Result = Result.Success;
+            message.Request.guildJoinRes.Apply = apply;
+            message.Request.guildJoinRes.Apply.Result = accept ? ApplyResult.Accept : ApplyResult.Reject;
+            NetClient.Instance.SendMessage(message);
+        }
+
+        /// <summary>
+        /// 发送管理指令
+        /// </summary>
+        /// <param name="accept"></param>
+        /// <param name="apply"></param>
+        public void SendAdminCommand(GuildAdminCommand command, int characterId)
+        {
+            Debug.Log("[GuildService] SendAdminCommand");
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.guildAdmin = new GuildAdminRequest();
+            message.Request.guildAdmin.Command = command;
+            message.Request.guildAdmin.Target = characterId;
+            NetClient.Instance.SendMessage(message);
+        }
         #endregion
+
+
+
+
+
+
 
         #region 服务端消息处理
         /// <summary>
@@ -144,8 +170,9 @@ namespace Services
                 MessageBox.Show(string.Format("{0} 公会创建失败", response.guildInfo.GuildName), "公会");
             }
         }
+
         /// <summary>
-        /// 收到公会申请响应
+        /// 会长/管理员收到公会申请
         /// </summary>
         /// <param name="accept"></param>
         /// <param name="request"></param>
@@ -166,6 +193,17 @@ namespace Services
             {
                 this.SendGuildJoinResponse(false, request);
             };
+        }
+        public void SendGuildJoinResponse(bool accept, GuildJoinRequest request)
+        {
+            Debug.Log("[GuildService] SendGuildJoinResponse");
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.guildJoinRes = new GuildJoinResponse();
+            message.Request.guildJoinRes.Result = Result.Success;
+            message.Request.guildJoinRes.Apply = request.Apply;
+            message.Request.guildJoinRes.Apply.Result = accept ? ApplyResult.Accept : ApplyResult.Reject;
+            NetClient.Instance.SendMessage(message);
         }
 
         /// <summary>
@@ -231,6 +269,17 @@ namespace Services
                 // 触发事件
                 this.OnGuildListResult(response.Guilds);
             }
+        }
+
+        /// <summary>
+        /// 收到管理信息消息回复
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        private void OnGuildAdmin(object sender, GuildAdminResponse response)
+        {
+            Debug.LogFormat("[GuildService] GuildAdmin : {0} {1}", response.Command, response.Result);
+            MessageBox.Show(string.Format("执行操作:{0} 结果:{1} {2}", response.Command, response.Result, response.Errormsg));
         }
         #endregion
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common.Data;
 
 public class UIGuildInfo : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class UIGuildInfo : MonoBehaviour
             this.guildID.text = "ID:0";
             this.leader.text = "会长：无";
             this.notice.text = "";
-            this.memberNumber.text = string.Format("成员数量：0/{0}", this.info.memberCount, GameDefine.GuildMaxMemberCount);
+            this.memberNumber.text = string.Format("成员数量：0/{0}", GameDefine.GuildMaxMemberCount);
         }
         else
         {

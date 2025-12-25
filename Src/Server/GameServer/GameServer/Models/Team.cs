@@ -15,7 +15,7 @@ namespace GameServer.Models
 
         public List<Character> Members = new List<Character>();
 
-        public int timestamp;  // 由于队伍是公用的，因此不能像好友那样使用一个bool friendChanged来触发后处理，使用时间戳代表队伍信息发生变化的时间，以此来触发后处理 PostProcess
+        public double timestamp;  // 由于队伍是公用的，因此不能像好友那样使用一个bool friendChanged来触发后处理，使用时间戳代表队伍信息发生变化的时间，以此来触发后处理 PostProcess
 
         public Team(Character leader)
         {

@@ -21,7 +21,9 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildJoinRequest>(this.OnGuildJoinRequest);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildJoinResponse>(this.OnGuildJoinResponse);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildLeaveRequest>(this.OnGuildLeaveRequest);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildAdminRequest>(this.OnGuildAdmin);
         }
+
 
         public void Init()
         {
@@ -147,12 +149,17 @@ namespace GameServer.Services
             {
                 requester.Session.Character.Guild = guild;
 
-                sender.Session.Response.guildJoinRes = new GuildJoinResponse();
-                sender.Session.Response.guildJoinRes.Result = Result.Success;
-                sender.SendResponse();
+                requester.Session.Response.guildJoinRes = response;
+                requester.Session.Response.guildJoinRes.Result = Result.Success;
+                requester.Session.Response.guildJoinRes.Errormsg = "加入公会成功";
+                requester.SendResponse();
             }
         }
-
+        /// <summary>
+        /// 离开公会
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="request"></param>
         public void OnGuildLeaveRequest(NetConnection<NetSession> sender, GuildLeaveRequest request)
         {
             Character character = sender.Session.Character;
@@ -166,6 +173,44 @@ namespace GameServer.Services
             DBService.Instance.Save();
 
             sender.SendResponse();
+        }
+        /// <summary>
+        /// 工会管理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void OnGuildAdmin(NetConnection<NetSession> sender, GuildAdminRequest request)
+        {
+            Character character = sender.Session.Character;
+            Log.InfoFormat("[GuildService] OnGuildAdmin: characterId:{0}", character.Id);
+            sender.Session.Response.guildAdmin = new GuildAdminResponse();
+
+            // 校验当前角色有没有公会
+            if (character.Guild == null)
+            {
+                sender.Session.Response.guildAdmin.Result = Result.Failed;
+                sender.Session.Response.guildAdmin.Errormsg = "[GuildService] 你没公会可管理";
+                sender.SendResponse();
+                return;
+            }
+
+            character.Guild.ExecuteAdmin(request.Command, request.Target, character.Id);
+
+            // 校验目标在不在线
+            var target = SessionManager.Instance.GetSession(request.Target);
+            if (target == null)
+            {
+                target.Session.Response.guildAdmin = new GuildAdminResponse();
+                target.Session.Response.guildAdmin.Result = Result.Success;
+                target.Session.Response.guildAdmin.Command = request;
+                target.SendResponse();
+                return;
+            }
+
+            target.Session.Response.guildAdmin.Result = Result.Success;
+            target.Session.Response.guildAdmin.Command = request;
+            target.SendResponse();
         }
         #endregion
     }
