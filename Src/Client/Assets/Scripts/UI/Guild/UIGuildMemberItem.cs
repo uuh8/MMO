@@ -33,6 +33,6 @@ public class UIGuildMemberItem : ListView.ListViewItem
         if (this.level != null) this.level.text = this.memberInfo.Info.Level.ToString();
         if (this.title != null) this.title.text = this.memberInfo.Title.ToString();
         if (this.joinTime != null) this.joinTime.text = TimeUtil.GetTime(this.memberInfo.joinTime).ToShortDateString();
-        if (this.status != null) this.status.text = this.memberInfo.Status == 1 ? "在线" : TimeUtil.GetTime(this.memberInfo.joinTime).ToShortDateString();
+        if (this.status != null) this.status.text = this.memberInfo.Status == 1 ? "在线" : "离线";
     }
 }

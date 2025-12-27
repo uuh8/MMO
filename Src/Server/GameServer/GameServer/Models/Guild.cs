@@ -59,7 +59,10 @@ namespace GameServer.Models
         // 1) 申请入会：写入申请表（TGuildApply），并更新内存数据结构
         // --------------------------------------------------------------------
         /// <summary>
-        /// 加入公会申请
+        /// 写入一条待审批申请的入口，做三件事：
+        /// 1）校验是否重复申请/是否已经是成员/是否满员；
+        /// 2）把申请写进 TGuildApply 并挂到 Data.TGuildApplies；
+        /// 3）Save() 落库并更新 timestamp，让后处理知道“公会信息变了”
         /// </summary>
         /// <param name="apply"></param>
         /// <returns></returns>
@@ -67,6 +70,7 @@ namespace GameServer.Models
         {
             // 校验是否申请过，一个角色只能申请一次
             var oldApply = this.Data.TGuildApplies.FirstOrDefault(v => v.CharacterId == apply.characterId);
+            // 数据库中已经有这个角色之前的申请了，不能重复申请，直接return false
             if(oldApply != null)
             {
                 return false;
@@ -98,36 +102,46 @@ namespace GameServer.Models
         // 2) 会长审批：更新申请状态；如果同意则把成员加入公会
         // --------------------------------------------------------------------
         /// <summary>
-        /// 会长/管理员审批入会申请。
+        /// 审批一条申请的入口，会长/管理员审批入会申请。做四件事：
+        /// 1）找到数据库里那条 Result==None 的申请记录；
+        /// 2）把这条申请的 Result 改成 Accept/Reject；
+        /// 3）如果 Accept，则调用 AddMember(...) 插入 TGuildMember 并更新角色 GuildId；
+        /// 4）Save() 落库并更新 timestamp。
         /// </summary>
         /// <param name="apply"></param>
         /// <returns></returns>
         internal bool JoinApprove(NGuildApplyInfo apply)
         {
-            // 校验是否申请过，一个角色只能申请一次(v.Result == 0 表示还没申请过)
+            // 1. 校验是否申请过，一个角色只能申请一次(v.Result == 0 表示还没申请过)
+            // this.Data 是当前公会对应的数据库实体（TGuild），TGuildApplies 是它的导航集合，对应数据库表 TGuildApply 里“属于这个公会的所有入会申请”
+            // oldApply 就是旧的申请记录，也就是“这个角色以前有没有提交过申请”
             var oldApply = this.Data.TGuildApplies.FirstOrDefault(v => v.CharacterId == apply.characterId && v.Result == 0);
-            if (oldApply != null)
+            // // 没有这条申请，审批不了
+            if (oldApply == null)
             {
                 return false;
             }
 
-            // 把数据库里这条申请标记为 Accept/Reject
+            // 2. 把数据库里这条申请标记为 Accept/Reject
             oldApply.Result = (int)apply.Result;
 
-            // 如果同意，真正把玩家加入公会
+            // 3. 如果同意，真正把玩家加入公会
             if (apply.Result == ApplyResult.Accept)
             {
                 this.AddMember(apply.characterId, apply.Name, apply.Class, apply.Level, GuildTitle.None);
             }
 
-            // 保存数据库
+            // 4. 保存数据库
             DBService.Instance.Save();
 
             this.timestamp = TimeUtil.timestamp;
             return true;
         }
         /// <summary>
-        /// 把角色加入公会成员表，并同步角色 GuildId。
+        /// 成员真正加入公会的落地函数，做两件事：
+        /// 1）往 TGuildMember 插入一条成员记录（这决定了数据库里有没有成员）
+        /// 2）把角色的 GuildId 写对（在线改内存，离线改数据库）
+        /// 3）更新 timestamp，用于后续后处理触发UI变化
         /// </summary>
         public void AddMember(int characterId, string name, int @class, int level, GuildTitle title)
         {

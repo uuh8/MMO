@@ -11,6 +11,8 @@ public abstract class UIWindow : MonoBehaviour
 
     public virtual Type type { get { return this.GetType(); } }
 
+    public GameObject Root; // 该窗口的父节点(Panel)
+
     public enum WindowResult
     {
         None = 0,

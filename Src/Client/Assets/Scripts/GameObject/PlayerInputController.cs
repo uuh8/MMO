@@ -52,6 +52,9 @@ public class PlayerInputController : MonoBehaviour
         if (character == null)
             return;
 
+        // 如果在输入模式（聊天模式），不执行移动
+        if (InputManager.Instance.IsInputMode) return;
+
         float v = Input.GetAxis("Vertical");
         if (v > 0.01)   // 向前移动（0.01为浮点误差）
         {

@@ -43,7 +43,7 @@ namespace Network
                 if (response.Response == null)
                     response.Response = new NetMessageResponse();
 
-                return response.Response;
+                return response.Response; 
             }
         }
 

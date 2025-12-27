@@ -27,14 +27,6 @@ public class UIMain : MonoSingleton<UIMain>
     }
 
     /// <summary>
-    /// 返回角色选择界面（按钮）
-    /// </summary>
-    public void BackToCharSelect()
-    {
-        SceneManager.Instance.LoadScene("CharSelect");
-        UserService.Instance.SendGameLeave();
-    }
-    /// <summary>
     /// 点击背包按钮
     /// </summary>
     public void OnClickBag()
@@ -85,7 +77,7 @@ public class UIMain : MonoSingleton<UIMain>
 
     public void OnClickSetting()
     {
-
+        UIManager.Instance.Show<UISetting>();
     }
 
     public void OnClickSkill()

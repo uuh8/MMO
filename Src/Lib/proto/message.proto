@@ -151,7 +151,7 @@ message NetMessageRequest{
 	GuildListRequest guildList = 28;
 	GuildAdminRequest guildAdmin = 29;
 	
-	
+	ChatRequest chat = 30;
 }
 // NetMessageResponse 收纳服务器返回的所有响应类型
 message NetMessageResponse{
@@ -191,6 +191,7 @@ message NetMessageResponse{
 	GuildLeaveResponse guildLeave = 27;
 	GuildListResponse guildList = 28;
 	GuildAdminResponse guildAdmin = 29;
+	ChatResponse chat = 30;
 	
 	StatusNotify statusNotify = 100;                   // 状态通知
 	

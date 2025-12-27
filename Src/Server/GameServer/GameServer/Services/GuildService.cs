@@ -24,7 +24,7 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildAdminRequest>(this.OnGuildAdmin);
         }
 
-
+         
         public void Init()
         {
             GuildManager.Instance.Init();
@@ -127,7 +127,7 @@ namespace GameServer.Services
             }
         }
         /// <summary>
-        /// 收到了会长/管理员的回复
+        /// 收到了会长/管理员的回复，服务端负责把“会长审批结果”落地
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>
@@ -139,7 +139,7 @@ namespace GameServer.Services
             var guild = GuildManager.Instance.GetGuild(response.Apply.GuildId);
             if (response.Result == Result.Success)
             {
-                // 公会的审批
+                // 让 Guild 模型去完成“更新申请状态、同意则加入成员、保存数据库、更新 timestamp”等一整套状态变化。
                 guild.JoinApprove(response.Apply);
             }
 
@@ -174,6 +174,7 @@ namespace GameServer.Services
 
             sender.SendResponse();
         }
+
         /// <summary>
         /// 工会管理
         /// </summary>
@@ -212,6 +213,7 @@ namespace GameServer.Services
             target.Session.Response.guildAdmin.Command = request;
             target.SendResponse();
         }
+
         #endregion
     }
 }

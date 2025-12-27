@@ -21,6 +21,8 @@ namespace Services
         NetMessage pendingMessage = null;      //网络消息的缓存变量，用来保存尚未发送的消息（例如当网络断开时）。
         bool connected = false;
 
+        bool isQuitGame = false;
+
         //构造函数
         public UserService()
         {
@@ -215,8 +217,9 @@ namespace Services
         /// <summary>
         /// 发送角色推出游戏的请求
         /// </summary>
-        public void SendGameLeave()
+        public void SendGameLeave(bool isQuitGame = false)
         {
+            this.isQuitGame = isQuitGame;
             Debug.Log("[UserService] UserGameLeaveRequest");
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
@@ -341,6 +344,24 @@ namespace Services
             MapService.Instance.CurrentMapId = 0;
             User.Instance.CurrentCharacter = null;
             Debug.LogFormat("[UserService] OnGameLeave:{0} [{1}]", response.Result, response.Errormsg);
+
+            if (this.isQuitGame)
+            {
+                // 如果当前是在 Unity 编辑器里运行（Play 模式）
+                // UNITY_EDITOR 这个编译符号会被 Unity 自动定义，于是编译器只保留：
+                // UnityEditor.EditorApplication.isPlaying = false;
+                // 也就是：停止 Play 模式。
+
+                // 如果是打包后的真机 / PC 可执行程序（.exe）
+                // UNITY_EDITOR 不存在，于是编译器只保留：
+                // Application.Quit();
+                // 也就是：退出应用程序进程。
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+            }
         }
 
         /// <summary>
@@ -420,6 +441,6 @@ namespace Services
                 CharacterManager.Instance.Clear();  // "本人"不在地图中了，直接清空
         }*/
 
-        #endregion
+#endregion
     }
 }
