@@ -67,9 +67,9 @@
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Interfaces\ISceneGUIContext.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\GUI\SceneGUI.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\PopupDrawer.cs" />
+    <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\InflectedFormDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\HyperTextLinkStyleDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Gizmos\EditorGizmos.cs" />
-    <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\InflectedFormDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\PropertyBackingFieldDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\GUI\EditorGUIXRedistributable.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\HyperTextProcessorDrawer.cs" />

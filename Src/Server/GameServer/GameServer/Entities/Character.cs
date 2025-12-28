@@ -30,7 +30,9 @@ namespace GameServer.Entities
         public double TeamUpdateTS; // 时间戳（用于校验队伍信息是否变化）
 
         public Guild Guild;   
-        public double GuildUpdateTS; 
+        public double GuildUpdateTS;
+
+        public Chat Chat;   // 聊天不需要保存db，因此和聊天相关的内容都是保存在内存中
 
         /// <summary>
         /// 初始化
@@ -73,6 +75,8 @@ namespace GameServer.Entities
             this.FriendManager.GetFriendInfos(this.Info.Friends);
 
             this.Guild = GuildManager.Instance.GetGuild(this.Data.GuildId);
+
+            this.Chat = new Chat(this);
 
             this.StatusManager = new StatusManager(this);
         }
@@ -136,6 +140,9 @@ namespace GameServer.Entities
             {
                 this.StatusManager.PostProcess(message);
             }
+
+            // 聊天管理器后处理
+            this.Chat.PostProcess(message);
         }
 
         /// <summary>

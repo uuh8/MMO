@@ -17733,7 +17733,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 212.18109, y: -303.1713}
+  m_AnchoredPosition: {x: 212.18056, y: -303.1713}
   m_SizeDelta: {x: 410, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &420277915
@@ -17783,7 +17783,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: <a name = "c:1001:Name" class="player">Name</a>
+  m_Text: 
   m_DefaultStyles: {fileID: 0}
   m_QuadRenderersPool: []
   m_Interactable: 1
@@ -17825,11 +17825,11 @@ MonoBehaviour:
   m_ShouldOverrideStylesLinkHitboxPadding: 0
   m_TextProcessor:
     m_LinkKeywordCollections: []
-    m_InputText: <a name = "c:1001:Name" class="player">Name</a>
+    m_InputText: 
     m_InputTextSourceObject: {fileID: 0}
     m_IsDynamicFontDesired: 1
     m_IsRichTextDesired: 1
-    m_OutputText: Name
+    m_OutputText: 
     m_QuadKeywordCollections: []
     m_ReferenceFontSize: 20
     m_ShouldOverrideStylesFontSize: 0
@@ -55108,7 +55108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -68490,7 +68490,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -736.94617, y: -347.59802}
+  m_AnchoredPosition: {x: -736.95, y: -347.6}
   m_SizeDelta: {x: -1473.8922, y: -695.196}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1709095766

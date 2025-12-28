@@ -76,5 +76,12 @@ namespace Managers
             }
             this.CharactersMngr.Clear();
         }
+
+        public Character GetCharacter(int id)
+        {
+            Character character;
+            this.CharactersMngr.TryGetValue(id, out character);
+            return character;
+        }
     }
 }

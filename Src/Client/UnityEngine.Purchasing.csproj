@@ -115,8 +115,8 @@
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\IStoreListener.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Telemetry\Metrics\TelemetryMetricsService.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\CoreServices\Environment\CoreServicesEnvironmentSubject.cs" />
-    <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\ProductType.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Telemetry\TelemetryQueue.cs" />
+    <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\ProductType.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\IInternalStoreListener.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Telemetry\Metrics\Interfaces\ITelemetryMetricsInstanceWrapper.cs" />
     <Compile Include="Library\PackageCache\com.unity.purchasing@4.11.0\Runtime\Purchasing\Utilites\ILoggerExtensions.cs" />

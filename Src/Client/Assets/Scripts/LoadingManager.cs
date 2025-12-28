@@ -45,6 +45,7 @@ public class LoadingManager : MonoBehaviour {
         FriendService.Instance.Init();
         TeamService.Instance.Init();
         GuildService.Instance.Init();
+        ChatService.Instance.Init();
 
 
         ShopManager.Instance.Init();

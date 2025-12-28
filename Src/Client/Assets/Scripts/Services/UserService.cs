@@ -207,6 +207,8 @@ namespace Services
         {
             Debug.LogFormat("[UserService] UserGameEnterRequest::characterId:{0}", characterId);
 
+            ChatManager.Instance.Init();    // 聊天系统初始化
+
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.gameEnter = new UserGameEnterRequest();

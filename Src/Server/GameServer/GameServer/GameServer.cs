@@ -23,6 +23,9 @@ namespace GameServer
 
         public bool Init()
         {
+            int Port = Properties.Settings.Default.ServerPort;
+            network = new NetService();
+            network.Init(Port);
 
             DBService.Instance.Init();    //DBService 会初始化数据库连接，用于访问和管理数据库中的数据。
             UserService.Instance.Init();
@@ -33,9 +36,7 @@ namespace GameServer
             FriendService.Instance.Init(); 
             TeamService.Instance.Init(); 
             GuildService.Instance.Init(); 
-
-            network = new NetService();   //实例化网络服务。
-            network.Init(8000);           //初始化网络服务并指定端口号 8000。
+            ChatService.Instance.Init(); 
 
             thread = new Thread(new ThreadStart(this.Update));
 
