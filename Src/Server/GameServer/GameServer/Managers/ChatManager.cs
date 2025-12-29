@@ -62,12 +62,12 @@ namespace GameServer.Managers
 
         private void AddWorldMessage(ChatMessage message)
         {
-            this.System.Add(message);
+            this.World.Add(message);
         }
 
         private void AddSystemMessage(ChatMessage message)
         {
-            this.World.Add(message);
+            this.System.Add(message);
         }
 
         private void AddTeamMessage(int teamId, ChatMessage message)
@@ -120,12 +120,12 @@ namespace GameServer.Managers
         }
         public int GetGuildMessages(int guildId, int idx, List<ChatMessage> result)
         {
-            if (!this.Local.TryGetValue(guildId, out List<ChatMessage> messages))
-            {
+            if (!this.Guild.TryGetValue(guildId, out List<ChatMessage> messages))
                 return 0;
-            }
+
             return GetNewMessages(idx, result, messages);
         }
+
 
         private int GetNewMessages(int idx, List<ChatMessage> result, List<ChatMessage> messages)
         {

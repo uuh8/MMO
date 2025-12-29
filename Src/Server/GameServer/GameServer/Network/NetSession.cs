@@ -22,6 +22,12 @@ namespace Network
         public NEntity Entity { get; set; }         // 当前用户选择的角色在游戏中的实体
 		public IPostResponser PostResponser { get; set; }   // 响应后处理器
 
+        private const int MinSendIntervalMs = 100;
+        private long lastSendTick = 0;
+        // 某些关键消息想绕过限频（登录/切图/强提示等）
+        public bool ForceFlush { get; set; } = false;
+
+
         public void Disconnected()
         {
             this.PostResponser = null;  // 断开时需要清空
@@ -50,17 +56,29 @@ namespace Network
         // 实现 INetSession 接口
         public byte[] GetResponse()
         {
-            if (response != null)
-            {
-                if (PostResponser != null)
-                    this.PostResponser.PostProcess(Response);
+            if (response == null) return null;
 
-                byte[] data = PackageHandler.PackMessage(response);
-                // 只要消息发送给客户端，就清空这个response消息，这样就保证了response一定是在会话session一开始创建，会话session一结束清空；并且我们可以在会话session期间对response多次赋值让其包含多个消息
-                response = null; 
-                return data;
+            // 1) 限频判断：距离上次真正发包不足 100ms，就先不发（把 response 留着继续累计）
+            long now = Environment.TickCount;
+            if (!ForceFlush && now - lastSendTick < MinSendIntervalMs)
+            {
+                // 注意：这里不能清空 response，否则累计的包会丢
+                return null;
             }
-            return null;
+
+            // 2) 允许发送：先跑后处理，把“顺便发送”的系统消息塞进 Response
+            if (PostResponser != null)
+                this.PostResponser.PostProcess(Response);
+
+            // 3) 打包并清空缓冲
+            byte[] data = PackageHandler.PackMessage(response);
+            response = null;
+
+            // 4) 记录真正发包时间，并清除强制标记
+            lastSendTick = now;
+            ForceFlush = false;
+
+            return data;
         }
     }
 }

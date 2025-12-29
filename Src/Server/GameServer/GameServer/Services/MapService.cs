@@ -31,17 +31,31 @@ namespace GameServer.Services
         /// <param name="connection"></param>
         /// <param name="entitySync"></param>
         /// <exception cref="NotImplementedException"></exception>
-        internal void SendEntityUpdate(NetConnection<NetSession> connection, NEntitySync entitySync)
+        internal void SendEntityUpdate(NetConnection<NetSession> sender, NEntitySync entitySync)
         {
-            NetMessage message = new NetMessage();
+            // 1) 不要每次 new：Response 是“累加器”
+            //    同一个网络 tick / 同一次要发的响应里，可能会塞多个 entitySync。
+            //    如果每次都 new，会把之前已经塞进去的列表覆盖掉（丢同步）。
+            if (sender.Session.Response.mapEntitySync == null)
+                sender.Session.Response.mapEntitySync = new MapEntitySyncResponse();
+
+            // 2) 把这一次的 entitySync 追加到列表里（增量）
+            sender.Session.Response.mapEntitySync.entitySyncs.Add(entitySync);
+
+            // 3) 立刻触发一次发送
+            //    重点：SendResponse() 会调用 session.GetResponse()
+            //    而 GetResponse() 会触发 Character.PostProcess()
+            //    从而 Chat.PostProcess() 才能“顺便把聊天增量塞进这次回包”。
+            sender.SendResponse();
+        }
+
+        /*NetMessage message = new NetMessage();
             message.Response = new NetMessageResponse();
             message.Response.mapEntitySync = new MapEntitySyncResponse();
             message.Response.mapEntitySync.entitySyncs.Add(entitySync);
 
             byte[] data = PackageHandler.PackMessage(message);
-            connection.SendData(data, 0, data.Length);
-        }
-
+            sender.SendData(data, 0, data.Length);*/
         #endregion
 
         #region 响应客户端请求
@@ -52,20 +66,22 @@ namespace GameServer.Services
         /// <param name="request"></param>
         private void OnMapEntitySync(NetConnection<NetSession> sender, MapEntitySyncRequest request)
         {
-            // 1. 验证会话的有效性（避免还没进游戏就开始同步）
-            if(sender.Session == null)
+            // 1) 会话校验：避免客户端还没完成登录/进入地图就开始发同步包
+            if (sender.Session == null)
             {
                 Log.Warning("[MapService] OnMapEntitySync: 会话为 null, drop");
                 return;
             }
-            // 2. 验证角色是否已绑定到会话
+
+            // 2) 角色校验：服务器权威必须有“这条连接对应的角色”
             Character cha = sender.Session.Character;
             if(cha == null)
             {
                 Log.Warning($"[MapService] OnMapEntitySync: state={sender.Session} 但是 Character==null, drop.");
                 return;
             }
-            // 3. 验证地图是否绑定
+
+            // 3) 地图校验：角色必须已经绑定到某张地图实例
             var mapId = cha.Info.mapId;
             var map = MapManager.Instance[mapId];
             if (map == null)
@@ -74,12 +90,13 @@ namespace GameServer.Services
                 return;
             }
 
-            // 4. 正常处理
-            Character character = sender.Session.Character;
+            // 4) 更新服务端权威状态
+            //    注意：这里是“收客户端输入 → 服务器校验/裁决 → 更新服务器状态”
+            map.UpdateEntity(request.entitySync);
 
-            // Log.InfoFormat("[MapService] OnMapEntitySync: characterID:{0}:{1} Entity.Id:{2} Evt:{3} Entity:{4}", character.Id, character.Info.Name, request.entitySync.Id, request.entitySync.Event, request.entitySync.Entity.String());
-
-            MapManager.Instance[character.Info.mapId].UpdateEntity(request.entitySync);
+            // 5) 触发一次回包，让“后处理”有机会把聊天/队伍/公会等增量顺带发回客户端
+            //    否则如果移动链路不回包，客户端可能长时间收不到聊天（你遇到的现象）
+            sender.SendResponse();
         }
 
         /// <summary>
@@ -116,7 +133,10 @@ namespace GameServer.Services
             // 角色进入新地图
             character.Position = target.Position;
             character.Direction = target.Direction;
-            MapManager.Instance[target.MapID].CharacterEnter(sender, character);
+            // 进入目标地图：传送属于“强即时反馈”的关键行为
+            // 必须立刻把 mapCharacterEnter 发给客户端，否则会出现：客户端不切图/位置不刷新/要等下一次网络包才更新
+            MapManager.Instance[target.MapID].CharacterEnter(sender, character, sendNow: true);
+
         }
         #endregion
     }

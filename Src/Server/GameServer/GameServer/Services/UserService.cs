@@ -214,6 +214,19 @@ namespace GameServer.Services
         /// <param name="request"></param>
         private void OnGameEnter(NetConnection<NetSession> sender, UserGameEnterRequest request)
         {
+            // 0) 幂等保护：同一连接已经进入过游戏，就不要再进一次
+            //    否则重复 AddCharacter / CharacterEnter 会导致客户端出现两个角色
+            if (sender.Session.Character != null)
+            {
+                Log.WarningFormat("[UserService] Duplicate GameEnter ignored. character:{0}:{1}",
+                    sender.Session.Character.Id, sender.Session.Character.Info.Name);
+
+                // 进入游戏属于关键消息：如果你有“限频/合包”，这里必须强制发（否则客户端可能一直等）
+                sender.Session.ForceFlush = true;
+                sender.SendResponse();
+                return;
+            }
+
             // 1) 从“当前登录用户的角色列表”里取出一个 "EF实体"
             // 这行代码不是在“新建”TCharacter实体，而是从内存中读取一个TCharacter对象，而这个对象本质上最初是从数据库加载出来的，现在常驻在内存
             int characterId = request.characterId;
@@ -233,13 +246,20 @@ namespace GameServer.Services
             // 4) 将角色赋值给会话，此后随时可以通过Session的Character获取当前是在对哪一个角色操作
             sender.Session.Character = character;
             sender.Session.PostResponser = character;   // 初始化后处理器，后处理器是由角色来执行的
+            
+            sender.Session.Response.gameEnter.Character = character.Info;
 
             // 5) 进入成功，发送初始角色信息给客户端
-            sender.Session.Response.gameEnter.Character = character.Info;
+            sender.Session.ForceFlush = true;   // 进入游戏是重要消息，不要限制，直接发
             sender.SendResponse();
 
-            // 6) 把运行时角色丢进对应地图，开始广播出生、同步周边实体等。
-            MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character);
+            // 6) 让地图进入也“只填充 response”，不要在里面自己 SendResponse
+            //    核心：把 mapCharacterEnter 也塞进同一个 response，最终一次发出去
+            MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character, sendNow: false);
+
+            // 7) 最后统一强制发送（进入游戏是关键链路，不受 100ms 限频影响）
+            sender.Session.ForceFlush = true;
+            sender.SendResponse();
         }
 
         /// <summary>

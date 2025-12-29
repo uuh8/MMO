@@ -3,6 +3,7 @@ using SkillBridge.Message;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,6 +34,7 @@ public class UIChat : MonoBehaviour
         ChatManager.Instance.OnChat -= RefreshUI;
     }
 
+
     private void OnDisplayChannelSelected(int idx)
     {
         // 告诉聊天管理器当前选择频道改变
@@ -44,6 +46,7 @@ public class UIChat : MonoBehaviour
     {
         this.textAera.text = ChatManager.Instance.GetCurrentMessages();
         this.channelSelect.value = (int)ChatManager.Instance.sendChannel - 1;
+
         // 如果是私聊模式需要单独设置“私聊对象”的信息
         if(ChatManager.Instance.SendChannel == ChatChannel.Private)
         {
@@ -71,17 +74,31 @@ public class UIChat : MonoBehaviour
     /// <param name="link"></param>
     public void OnClickChatLink(HyperText text, HyperText.LinkInfo link)
     {
+        Debug.Log($"[HyperTextClick] Name='{link.Name}', Class='{link.ClassName}', Index={link.Index}");
+
+        // 1) link.Name 就是 <a name="..."> 的值
         if (string.IsNullOrEmpty(link.Name))
             return;
 
-        // <a name = "c:1001:Name" class="player">Name</a>
-        if (link.Name.StartsWith("c:"))
-        {
-            string[] strs = link.Name.Split(":".ToCharArray());
-            UIPopCharMenu menu = UIManager.Instance.Show<UIPopCharMenu>();
-            menu.targetId = int.Parse(strs[1]);
-            menu.targetName = strs[2];
-        }
+        // 2) 我们规定 name 格式为 "c:<id>"
+        if (!link.Name.StartsWith("c:"))
+            return;
+
+        // 3) 解析 id
+        string idStr = link.Name.Substring(2);
+        if (!int.TryParse(idStr, out int id))
+            return;
+
+        // 4) 通过缓存取玩家名
+        //    如果取不到，说明缓存还没被更新（例如你点的是很早的历史消息但没走 AddMessage）
+        string displayName = ChatManager.Instance.GetPlayerName(id);
+        if (string.IsNullOrEmpty(displayName))
+            displayName = $"玩家{id}"; // 兜底显示，避免 menu 里空白
+
+        // 5) 弹出菜单并赋值
+        var menu = UIManager.Instance.Show<UIPopCharMenu>();
+        menu.targetId = id;
+        menu.targetName = displayName;
     }
 
     /// <summary>
@@ -89,17 +106,21 @@ public class UIChat : MonoBehaviour
     /// </summary>
     public void OnClickSend()
     {
-        OnEndInput(this.chatText.text);
+        Debug.Log("[UIChat] OnClickSend");
+        OnEndInput();
     }
-    // 该方法还需要绑定给 InputField，当失去焦点的时候也判定为结束输入，要绑定InputField的OnEndEditor事件
-    private void OnEndInput(string text)
+    public void OnEndInput()
     {
-        if (!string.IsNullOrEmpty(text.Trim()))
+        // 直接从 InputField 读值，不用回调参数
+        string text = this.chatText.text;
+
+        if (!string.IsNullOrWhiteSpace(text))
         {
             ChatManager.Instance.SendChat(text, ChatManager.Instance.PrivateID, ChatManager.Instance.PrivateName);
         }
 
         this.chatText.text = "";
+        this.chatText.ActivateInputField(); // 继续保持输入状态（可选但推荐）
     }
 
     public void OnSendChannelChanged(int idx)

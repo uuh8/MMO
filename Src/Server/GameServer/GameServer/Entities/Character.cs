@@ -101,7 +101,7 @@ namespace GameServer.Entities
         /// <param name="message"></param>
         public void PostProcess(NetMessageResponse message)
         {
-            Log.InfoFormat("[Character] PostProcess > Character: characterID:{0}:{1}", this.Id, this.Info.Name);
+            // Log.InfoFormat("[Character] PostProcess > Character: characterID:{0}:{1}", this.Id, this.Info.Name);
 
             // 好友后处理
             this.FriendManager.PostProcess(message);

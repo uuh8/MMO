@@ -132,6 +132,11 @@ namespace Network
         public void SendResponse()
         {
             byte[] data = session.GetResponse();
+
+            // GetResponse() 可能因为限频返回 null（表示：缓冲里有东西，但暂时不发）
+            if (data == null || data.Length == 0)
+                return;
+
             this.SendData(data, 0, data.Length);
         }
 

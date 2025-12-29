@@ -20,24 +20,28 @@ public class ChatManager : Singleton<ChatManager>
     }
     private ChatChannel[] ChannelFilter = new ChatChannel[6]
     {
-        ChatChannel.Local | ChatChannel.World | ChatChannel.Guild | ChatChannel.Team | ChatChannel.Private | ChatChannel.System,    // all频道包含所有
-        ChatChannel.Local,
-        ChatChannel.World,
-        ChatChannel.Guild,
-        ChatChannel.Team,
-        ChatChannel.Private
+        ChatChannel.Local | ChatChannel.World | ChatChannel.Guild | ChatChannel.Team | ChatChannel.Private | ChatChannel.System, // all
+        ChatChannel.Local,  // 1 Local
+        ChatChannel.World,  // 2 World
+        ChatChannel.Team,   // 3 Team   
+        ChatChannel.Guild,  // 4 Guild  
+        ChatChannel.Private // 5 Private
     };
 
     // 当前本地所有聊天信息
     public List<ChatMessage>[] Messages = new List<ChatMessage>[6]
     {
-        new List<ChatMessage>(),
-        new List<ChatMessage>(),
-        new List<ChatMessage>(),
-        new List<ChatMessage>(),
-        new List<ChatMessage>(),
-        new List<ChatMessage>()
+        new List<ChatMessage>(),    // all
+        new List<ChatMessage>(),    // local
+        new List<ChatMessage>(),    // world
+        new List<ChatMessage>(),    // guild
+        new List<ChatMessage>(),    // team
+        new List<ChatMessage>()     // private
     };
+
+    // 角色ID -> 角色名 缓存
+    // 目的：HyperText.LinkInfo 没有 Text，所以点击时只能拿到 id，名字要靠我们自己保存。
+    private readonly Dictionary<int, string> _playerNameCache = new Dictionary<int, string>();
 
     public LocalChannel displayChannel;
 
@@ -72,6 +76,24 @@ public class ChatManager : Singleton<ChatManager>
             messages.Clear();
         }
     }
+    /// <summary>
+    /// 写入/更新缓存。任何收到的聊天消息都可以顺手更新一次。
+    /// </summary>
+    private void CachePlayerName(int id, string name)
+    {
+        if (id <= 0) return;
+        if (string.IsNullOrEmpty(name)) return;
+
+        // 直接覆盖即可：同一个 id 以后可能改名
+        _playerNameCache[id] = name;
+    }
+    /// <summary>
+    /// 给外部用：通过 id 取名字。取不到就返回空串。
+    /// </summary>
+    public string GetPlayerName(int id)
+    {
+        return _playerNameCache.TryGetValue(id, out var name) ? name : "";
+    }
 
     /// <summary>
     /// 发起私聊
@@ -99,20 +121,23 @@ public class ChatManager : Singleton<ChatManager>
 
     public bool SetSendChannel(LocalChannel channel)
     {
-        if(channel == LocalChannel.Team)
+        if (channel == LocalChannel.Team)
         {
-            if(User.Instance.TeamInfo == null)
+            if (User.Instance.TeamInfo == null)
             {
-                this.AddSystemMessage("你没有加入任何队伍");
-                return false;
-            }
-            if (User.Instance.CurrentCharacter.Guild == null)
-            {
-                this.AddSystemMessage("你没有加入任何公会");
+                AddSystemMessage("你没有加入任何队伍");
                 return false;
             }
         }
-        // 没问题,则设置为所选择的频道
+        else if (channel == LocalChannel.Guild)
+        {
+            if (User.Instance.CurrentCharacter.Guild == null)
+            {
+                AddSystemMessage("你没有加入任何公会");
+                return false;
+            }
+        }
+
         this.sendChannel = channel;
         Debug.LogFormat("[ChatManager] SetChannel:{0}", this.sendChannel);
         return true;
@@ -120,15 +145,19 @@ public class ChatManager : Singleton<ChatManager>
 
     internal void AddMessages(ChatChannel channel, List<ChatMessage> messages)
     {
-        for(int ch = 0; ch < 6; ch++)
+        // 缓存角色名：保证点击链接时能通过 id 找到 name
+        foreach (var m in messages)
+            CachePlayerName(m.FromId, m.FromName);
+
+        for (int ch = 0; ch < 6; ch++)
         {
-            if ((this.ChannelFilter[ch] & channel) == channel)
+            if ((this.ChannelFilter[ch] & channel) != 0)
             {
                 this.Messages[ch].AddRange(messages);
             }
         }
-        if (this.OnChat != null)
-            this.OnChat();
+
+        this.OnChat?.Invoke();
     }
 
     /// <summary>
@@ -157,7 +186,8 @@ public class ChatManager : Singleton<ChatManager>
         StringBuilder sb = new StringBuilder();
         foreach(var message in this.Messages[(int)displayChannel])
         {
-            sb.AppendLine(FormatMessage(message));
+            sb.Append(FormatMessage(message));
+            sb.Append('\n');
         }
         return sb.ToString();
     }
@@ -168,20 +198,23 @@ public class ChatManager : Singleton<ChatManager>
     /// <returns></returns>
     private string FormatMessage(ChatMessage message)
     {
+        string name = FormatFromPlayer(message);
+        string body = Escape(message.Message);
+
         switch (message.Channel)
         {
             case ChatChannel.Local:
-                return string.Format("[本地]{0}{1}", FormatFromPlayer(message), message.Message);
+                return $"[本地]{name}: {body}";
             case ChatChannel.World:
-                return string.Format("<color=cyan>[世界]{0}{1}</color>", FormatFromPlayer(message), message.Message);
+                return $"<color=cyan>[世界]{name}: {body}</color>";
             case ChatChannel.System:
-                return string.Format("<color=yellow>[系统]{0}</color>", message.Message);
+                return $"<color=yellow>[系统]{body}</color>";
             case ChatChannel.Private:
-                return string.Format("<color=magenta>[私聊]{0}{1}</color>", FormatFromPlayer(message), message.Message);
+                return $"<color=magenta>[私聊]{name}: {body}</color>";
             case ChatChannel.Team:
-                return string.Format("<color=green>[队伍]{0}{1}</color>", FormatFromPlayer(message), message.Message);
+                return $"<color=green>[队伍]{name}: {body}</color>";
             case ChatChannel.Guild:
-                return string.Format("<color=blue>[公会]{0}{1}</color>", FormatFromPlayer(message), message.Message);
+                return $"<color=blue>[公会]{name}: {body}</color>";
         }
         return "";
     }
@@ -193,13 +226,33 @@ public class ChatManager : Singleton<ChatManager>
     /// <exception cref="NotImplementedException"></exception>
     private string FormatFromPlayer(ChatMessage message)
     {
-        if(message.FromId == User.Instance.CurrentCharacter.Id)
+        // 自己发的消息：你可以继续显示 [我]
+        if (message.FromId == User.Instance.CurrentCharacter.Id)
         {
-            return "<a name=\"\" class=\"player\">[我]</a>";
+            // 注意：name 仍然给一个可解析的 id（例如用真实 id 更好）
+            // 用真实 id 的好处：点“我”也能弹菜单（可选）
+            int myId = User.Instance.CurrentCharacter.Id;
+            return $"<a name=\"c:{myId}\" class=\"player\">[我]</a>";
+
         }
-        else
-        {
-            return string.Format("<a name=\"c:{0}:{1}\" class=\"player\">[{1}]</a>", message.FromId, message.FromName);
-        }
+
+        // 其他玩家：name 只放 id，显示文本仍显示名字（但要 Escape 防止富文本注入）
+        return $"<a name=\"c:{message.FromId}\" class=\"player\">[{Escape(message.FromName)}]</a>";
     }
+    /// <summary>
+    /// 对名字和 message 内容做最基本的转义
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    static string Escape(string s)
+    {
+        if (string.IsNullOrEmpty(s)) 
+            return "";
+
+        return s.Replace("&", "&amp;")
+                .Replace("<", "&lt;")
+                .Replace(">", "&gt;")
+                .Replace("\"", "&quot;");
+    }
+
 }

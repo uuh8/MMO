@@ -68,21 +68,27 @@ namespace GameServer.Models
         /// 角色进入地图
         /// </summary>
         /// <param name="character"></param>
-        internal void CharacterEnter(NetConnection<NetSession> conn, Character character)
+        internal void CharacterEnter(NetConnection<NetSession> conn, Character character, bool sendNow)
         {
             Log.InfoFormat("[Map] CharacterEnter: Map:{0} characterId:{1}", this.Define.ID, character.Id);
 
             // 角色进入的是哪一张地图
             character.Info.mapId = this.ID;
+
             // 把“自己”存进“地图中的角色”容器
             this.MapCharacters[character.Id] = new MapCharacter(conn, character);
 
+            // 1) 给“进入者”准备完整的进入地图列表（自己 + 地图已有玩家 + 地图怪物）
+            //    注意：这里只是“填充 response”，不要在这里强行 SendResponse（由上层决定何时发送）
             conn.Session.Response.mapCharacterEnter = new MapCharacterEnterResponse();
             conn.Session.Response.mapCharacterEnter.mapId = this.Define.ID;
 
-            foreach(var kv in this.MapCharacters)
+            foreach (var kv in this.MapCharacters)
             {
+                // 进入者收到：地图上所有角色（包含自己）
                 conn.Session.Response.mapCharacterEnter.Characters.Add(kv.Value.character.Info);
+
+                // 其他在线玩家收到：这个新角色进入（增量广播）
                 if (kv.Value.character != character)
                     this.AddCharacterEnterMap(kv.Value.connection, character.Info);
             }
@@ -91,7 +97,16 @@ namespace GameServer.Models
             {
                 conn.Session.Response.mapCharacterEnter.Characters.Add(kv.Value.Info);
             }
-            conn.SendResponse();
+
+            // 2) 是否立刻发给进入者？
+            //    - 进入游戏：sendNow = false（让 UserService.OnGameEnter 最后一次性发出 gameEnter + mapCharacterEnter）
+            //    - 传送/切图：sendNow = true（希望立即看到切图结果）
+            if (sendNow)
+            {
+                // 进入地图属于关键消息，如果有“限频/合包”，建议强制 flush，避免被 100ms 规则吞掉
+                conn.Session.ForceFlush = true;
+                conn.SendResponse();
+            }
         }
 
         /// <summary>
