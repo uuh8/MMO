@@ -26,6 +26,10 @@ public class EntityController : MonoBehaviour, IEntityNotify
 
     public bool isPlayer = false;
 
+    public RideController rideController;
+    public int currentRide = 0;
+    public Transform rideBone;  // 设定一个位置和坐骑绑定(一般是臀部）
+
     // Use this for initialization
     void Start () {
         if (entity != null)
@@ -99,7 +103,7 @@ public class EntityController : MonoBehaviour, IEntityNotify
     /// 状态改变
     /// </summary>
     /// <param name="entityEvent"></param>
-    public void OnEntityEvent(EntityEvent entityEvent)
+    public void OnEntityEvent(EntityEvent entityEvent, int param)
     {
         switch(entityEvent)
         {
@@ -116,8 +120,50 @@ public class EntityController : MonoBehaviour, IEntityNotify
             case EntityEvent.Jump:
                 anim.SetTrigger("Jump");
                 break;
+            case EntityEvent.Ride:
+                this.Ride(param);
+                break;
+        }
+        if (this.rideController != null)
+            this.rideController.OnEntityEvent(entityEvent, param);  // 角色做了动作坐骑也要跟着做动作
+    }
+
+    public void Ride(int rideId)
+    {
+        if (currentRide == rideId) return;
+        currentRide = rideId;
+        if(rideId > 0)
+        {
+            // 上坐骑
+            this.rideController = GameObjectManager.Instance.LoadRide(rideId, this.transform);
+        }
+        else
+        {
+            // 下坐骑
+            Destroy(this.rideController.gameObject);
+            this.rideController = null;
+        }
+
+        if(this.rideController == null)
+        {
+            this.anim.transform.localPosition = Vector3.zero;
+            this.anim.SetLayerWeight(1, 0);
+        }
+        else
+        {
+            this.rideController.SetRider(this);
+            this.anim.SetLayerWeight(1, 1);
         }
     }
+    /// <summary>
+    /// 设置角色乘坐坐骑的状态
+    /// </summary>
+    /// <param name="position"></param>
+    public void SetRidePosition(Vector3 position)
+    {
+        this.anim.transform.position = position + (this.anim.transform.position - this.rideBone.position);
+    }
+
     /// <summary>
     /// 数据改变
     /// </summary>
@@ -127,4 +173,6 @@ public class EntityController : MonoBehaviour, IEntityNotify
     {
         // Debug.LogFormat("[EntityController] OnEntityChanged :ID:{0} POS:{1} DIR:{2} SPD:{3} ", entity.entityId, entity.position, entity.direction, entity.speed);
     }
+
+
 }

@@ -46,8 +46,6 @@ public class LoadingManager : MonoBehaviour {
         TeamService.Instance.Init();
         GuildService.Instance.Init();
         ChatService.Instance.Init();
-
-
         ShopManager.Instance.Init();
 
         // 加载进度条

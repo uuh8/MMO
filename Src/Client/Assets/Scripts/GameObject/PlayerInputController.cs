@@ -19,6 +19,18 @@ public class PlayerInputController : MonoBehaviour
     public int speed;
     public bool onAir = false;
 
+    void Awake()
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+
+        if (rb == null)
+        {
+            Debug.LogError($"[{name}] PlayerInputController 缺少 Rigidbody");
+            enabled = false; // 直接禁用，防止刷屏
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -142,12 +154,12 @@ public class PlayerInputController : MonoBehaviour
         this.transform.position = this.rb.transform.position;
     }
 
-    void SendEntityEvent(EntityEvent entityEvent)
+    public void SendEntityEvent(EntityEvent entityEvent, int param = 0)
     {
         if (entityController != null)
-            entityController.OnEntityEvent(entityEvent);    // 动画
+            entityController.OnEntityEvent(entityEvent, param);    // 动画
         
         // 同步
-        MapService.Instance.SendMapEntitySync(entityEvent, this.character.EntityData);
+        MapService.Instance.SendMapEntitySync(entityEvent, this.character.EntityData, param);
     }
 }

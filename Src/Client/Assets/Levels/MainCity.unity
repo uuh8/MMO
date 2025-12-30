@@ -17551,7 +17551,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 212.18056, y: -303.1712}
+  m_AnchoredPosition: {x: 212.18056, y: -303.1713}
   m_SizeDelta: {x: 410, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &420277915
@@ -32226,6 +32226,7 @@ Transform:
   - {fileID: 1724384033}
   - {fileID: 1467461606}
   - {fileID: 1231930726}
+  - {fileID: 894312561}
   m_Father: {fileID: 400089077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &780421374
@@ -37963,6 +37964,121 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1285895248}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &894312560
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 779201742}
+    m_Modifications:
+    - target: {fileID: 3489903069154052395, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_Name
+      value: NPC5_Ride
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16.992
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.8299999
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.611
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.6973959
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7166861
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 268.437
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7325719268110297561, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: NpcID
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7325719268110297561, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      propertyPath: npcID
+      value: 5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3489903069154052395, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 894312563}
+  m_SourcePrefab: {fileID: 100100000, guid: 0b4fc35298568cc44b5bde918fa79bd8, type: 3}
+--- !u!4 &894312561 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+    type: 3}
+  m_PrefabInstance: {fileID: 894312560}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &894312562 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3489903069154052395, guid: 0b4fc35298568cc44b5bde918fa79bd8,
+    type: 3}
+  m_PrefabInstance: {fileID: 894312560}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &894312563
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894312562}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.8381176, z: 1}
+  m_Center: {x: 0, y: 0.89346695, z: 0}
 --- !u!1001 &897573626
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -77479,7 +77595,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1415483401}
         m_TargetAssemblyTypeName: UIMain, Assembly-CSharp
-        m_MethodName: OnClickFriend
+        m_MethodName: OnClickRide
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -86144,7 +86260,7 @@ PrefabInstance:
     - target: {fileID: 5130455569493102130, guid: e04e2fa97a1a7df4996c7fb7dffbb285,
         type: 3}
       propertyPath: m_Name
-      value: taskNPC
+      value: NPC3_Task
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -86193,7 +86309,7 @@ PrefabInstance:
     - target: {fileID: 5898603585058981441, guid: c61efbe62cc39684a94b630af7825ea9,
         type: 3}
       propertyPath: m_Name
-      value: Treasure_poter
+      value: NPC4_Equip
       objectReference: {fileID: 0}
     - target: {fileID: 5898603585059347041, guid: c61efbe62cc39684a94b630af7825ea9,
         type: 3}
@@ -86302,7 +86418,7 @@ PrefabInstance:
     - target: {fileID: 3489903069154052395, guid: 0b4fc35298568cc44b5bde918fa79bd8,
         type: 3}
       propertyPath: m_Name
-      value: DeliveryNPC2
+      value: NPC2_Shop
       objectReference: {fileID: 0}
     - target: {fileID: 3489903069154415883, guid: 0b4fc35298568cc44b5bde918fa79bd8,
         type: 3}
@@ -86595,7 +86711,7 @@ PrefabInstance:
     - target: {fileID: 3041221244181223478, guid: 00cd4ba1533473847809eb6d7e7d4209,
         type: 3}
       propertyPath: m_Name
-      value: DeliveryNPC1
+      value: NPC1_Task
       objectReference: {fileID: 0}
     - target: {fileID: 3041221244181316630, guid: 00cd4ba1533473847809eb6d7e7d4209,
         type: 3}

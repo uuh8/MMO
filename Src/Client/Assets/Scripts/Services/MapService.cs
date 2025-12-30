@@ -45,7 +45,7 @@ namespace Services
         /// </summary>
         /// <param name="entityEvent"></param>
         /// <param name="nEntity"></param>
-        public void SendMapEntitySync(EntityEvent entityEvent, NEntity nEntity)
+        public void SendMapEntitySync(EntityEvent entityEvent, NEntity nEntity, int param)
         {
             // Debug.LogFormat("[MapService] MapEntityUpdateRequest :ID:{0} POS:{1} DIR:{2} SPD:{3} ", nEntity.Id, nEntity.Position.String(), nEntity.Direction.String(), nEntity.Speed);
 
@@ -56,7 +56,8 @@ namespace Services
             {
                 Id = nEntity.Id,
                 Event = entityEvent,
-                Entity = nEntity
+                Entity = nEntity,
+                Param = param
             };
             NetClient.Instance.SendMessage(message);
         }

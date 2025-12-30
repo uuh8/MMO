@@ -859,6 +859,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec7a416333634e488741cf39701c4d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Root: {fileID: 0}
   title: {fileID: 7410448776028337715}
   itemPrefab: {fileID: 2368252256140518369, guid: aeeeaf097a5e62b468a22f9953f0a498,
     type: 3}
@@ -3065,8 +3066,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 3.5688477, y: 355.83}
-  m_SizeDelta: {x: 1134.5496, y: 94.513}
+  m_AnchoredPosition: {x: 3.5688477, y: 353.64243}
+  m_SizeDelta: {x: 1134.5496, y: 98.8881}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8328925149844032324
 CanvasRenderer:
@@ -3096,7 +3097,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 83f1bd63456ebfa40ab78ad4a33be89b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7a2184962000f934eb96c103b1199b9b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

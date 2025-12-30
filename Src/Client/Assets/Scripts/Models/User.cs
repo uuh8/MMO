@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Services;
 
 namespace Models
 {
@@ -20,7 +21,7 @@ namespace Models
         public NTeamInfo TeamInfo { get; set; } // 角色当前队伍
 
         public MapDefine CurrentMapData { get; set; }   // 当前在哪一张地图
-        public GameObject CurrentCharacterObject { get; set; }  // 当前角色对象
+        public PlayerInputController CurrentCharacterObject { get; set; }  // 当前角色对象
 
 
 
@@ -33,6 +34,21 @@ namespace Models
         public void AddGold(int gold)
         {
             this.CurrentCharacter.Gold += gold;
+        }
+
+        public int CurrentRide = 0;
+        internal void Ride(int id)
+        {
+            if(CurrentRide != id)
+            {
+                CurrentRide = id;
+                CurrentCharacterObject.SendEntityEvent(EntityEvent.Ride, CurrentRide);
+            }
+            else
+            {
+                CurrentRide = 0;
+                CurrentCharacterObject.SendEntityEvent(EntityEvent.Ride, 0);
+            }
         }
     }
 }

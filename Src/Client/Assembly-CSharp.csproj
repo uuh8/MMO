@@ -90,6 +90,7 @@
     <Compile Include="Assets\Scripts\UI\Bag\UIBag.cs" />
     <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestInfo.cs" />
     <Compile Include="Assets\Scripts\Services\GuildService.cs" />
+    <Compile Include="Assets\Scripts\UI\Ride\UIRide.cs" />
     <Compile Include="Assets\Scripts\Managers\MinimapManager.cs" />
     <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestSystem.cs" />
     <Compile Include="Assets\Scripts\UI\UISetting.cs" />
@@ -164,8 +165,10 @@
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\GUIHelpers.cs" />
     <Compile Include="Assets\Scripts\UI\TabView\TabButton.cs" />
     <Compile Include="Assets\Scripts\Services\UserService.cs" />
+    <Compile Include="Assets\Scripts\GameObject\RideController.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\Property Attributes\PropertyBackingFieldAttribute.cs" />
     <Compile Include="Assets\Scripts\Models\User.cs" />
+    <Compile Include="Assets\Scripts\UI\Ride\UIRideItem.cs" />
     <Compile Include="Assets\Scripts\GameObject\GameObjectManager.cs" />
     <Compile Include="Assets\Scripts\Services\ItemService.cs" />
     <Compile Include="Assets\Scripts\Managers\EntityManager.cs" />

@@ -67,19 +67,25 @@ public class UIMain : MonoSingleton<UIMain>
     /// </summary>
     public void OnClickGuild()
     {
-        GuildManager.Instance.ShowGuildUI();
+        GuildManager.Instance.ShowGuildUI(); 
     }
-
+    /// <summary>
+    /// 点击坐骑按钮
+    /// </summary>
     public void OnClickRide()
     {
-
+        UIManager.Instance.Show<UIRide>();
     }
-
+    /// <summary>
+    /// 点击设置按钮
+    /// </summary>
     public void OnClickSetting()
     {
         UIManager.Instance.Show<UISetting>();
     }
-
+    /// <summary>
+    /// 点击技能按钮
+    /// </summary>
     public void OnClickSkill()
     {
 

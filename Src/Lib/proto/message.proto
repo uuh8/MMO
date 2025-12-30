@@ -49,6 +49,7 @@ enum ENTITY_EVENT
 	MOVE_FWD = 2;
 	MOVE_BACK = 3;
 	JUMP = 4;
+	RIDE = 5;
 }
 
 // 道具
@@ -56,8 +57,9 @@ enum ITEM_TYPE
 {
 	NORMAL = 0;
 	MATERIAL = 1;
-	TASK = 2;	// 任务道具
-	EQUIP = 3;	// 装备道具
+	TASK = 2;  //任务道具
+	EQUIP = 3;
+	RIDE = 4;
 }
 
 enum EQUIP_SLOT{
@@ -97,6 +99,7 @@ message NEntitySync {
 	int32 id = 1;            // 发生同步的实体ID
 	ENTITY_EVENT event = 2;  // 触发的事件（移动、跳跃等）
 	NEntity entity = 3;      // 同步后的实体快照（位置/方向/速度等）
+	int32 param = 4;	// 
 }
 
 
