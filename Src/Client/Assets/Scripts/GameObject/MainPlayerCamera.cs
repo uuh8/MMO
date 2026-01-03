@@ -17,6 +17,6 @@ public class MainPlayerCamera : MonoSingleton<MainPlayerCamera>
             return;
 
         this.transform.position = player.transform.position;
-        this.transform.rotation = player.transform.rotation;
+        this.transform.rotation = player.transform.rotation; 
     }
 }

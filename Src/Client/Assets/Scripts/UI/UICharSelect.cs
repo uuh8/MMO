@@ -282,6 +282,7 @@ public class UICharSelect : MonoBehaviour
             MessageBox.Show("请输入角色名");
             return;
         }
+        SoundManager.Instance.PlaySound(SoundDefine.SFX_UI_Click);
         UserService.Instance.SendCreateCharacter(this.char_name.text, this.charClass);
     }
 
@@ -319,6 +320,7 @@ public class UICharSelect : MonoBehaviour
             UICharInfo charInfo = this.uiChars[i].GetComponent<UICharInfo>();
             charInfo.Selected = (idx == i);
         }
+        SoundManager.Instance.PlaySound(SoundDefine.SFX_UI_Click);
     }
 
     /// <summary>
@@ -326,7 +328,8 @@ public class UICharSelect : MonoBehaviour
     /// </summary>
     public void OnClickPlay()
     {
-        if(selectCharacterIdx >= 0)
+        SoundManager.Instance.PlaySound(SoundDefine.SFX_UI_Click);
+        if (selectCharacterIdx >= 0)
         {
             Debug.LogFormat("[UICharSelect] selectCharacterIdx:{0}", selectCharacterIdx);
             UserService.Instance.SendGameEnter(selectCharacterId);

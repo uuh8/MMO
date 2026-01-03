@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\UI\Guild\UIGuildApplyItem.cs" />
     <Compile Include="Assets\Scripts\UI\Guild\UIGuild.cs" />
     <Compile Include="Assets\Scripts\UI\Shop\UIShopItem.cs" />
+    <Compile Include="Assets\Scripts\UI\UISystemConfig.cs" />
     <Compile Include="Assets\Scripts\Managers\GuildManager.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\TextAnchorX.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneManager.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Assets\Scripts\UI\Team\UITeamItem.cs" />
     <Compile Include="Assets\Scripts\UI\CharEquip\UICharEquip.cs" />
     <Compile Include="Assets\Scripts\Services\MapService.cs" />
+    <Compile Include="Assets\Scripts\Sound\SoundDefine.cs" />
     <Compile Include="Assets\Scripts\Services\ChatService.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\KeywordCollection.cs" />
     <Compile Include="Assets\Scripts\UI\SliderValueDisplay.cs" />
@@ -158,6 +160,8 @@
     <Compile Include="Assets\Scripts\UI\QuestSystem\UIQuestItem.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\Visuals\ColorHSV.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
+    <Compile Include="Assets\Scripts\Sound\SoundManager.cs" />
+    <Compile Include="Assets\Scripts\Config\Config.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\Interfaces\IIdentifiable.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\Interfaces\ITextSource.cs" />
     <Compile Include="Assets\Scripts\Managers\InputManager.cs" />

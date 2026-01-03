@@ -47,6 +47,7 @@ public class LoadingManager : MonoBehaviour {
         GuildService.Instance.Init();
         ChatService.Instance.Init();
         ShopManager.Instance.Init();
+        SoundManager.Instance.PlayMusic(SoundDefine.Music_Login);
 
         // 加载进度条
         for (float i = 0; i < 100;)

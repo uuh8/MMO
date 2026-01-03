@@ -33,11 +33,14 @@ public class UIManager:Singleton<UIManager>
         this.UIResources.Add(typeof(UIGuildApplyList), new UIElement() { Resources = "UI/Guild/UIGuildApplyList", Cache = false });
         this.UIResources.Add(typeof(UIPopCharMenu), new UIElement() { Resources = "UI/UIPopCharMenu", Cache = false });
         this.UIResources.Add(typeof(UIRide), new UIElement() { Resources = "UI/UIRide", Cache = false });
+        this.UIResources.Add(typeof(UISystemConfig), new UIElement() { Resources = "UI/UISystemConfig", Cache = false });
     }
 
     public T Show<T>()
     {
-        // SoundManager.Instance.PlaySound("ui_open");
+        // 窗口显示的时候播放一个窗口打开的声音
+        SoundManager.Instance.PlaySound("SoundDefine.SFX_UI_Win_Open");
+
         Type type = typeof(T);
         if (this.UIResources.ContainsKey(type))
         {
