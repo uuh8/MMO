@@ -1183,7 +1183,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f613cfbb12a418042a5df210a17ccf9a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6499978ba815c9041a826b348551ac3a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1484,6 +1484,7 @@ MonoBehaviour:
   rewardItems: {fileID: 0}
   rewardMoney: {fileID: 2177907565897311930}
   rewardExp: {fileID: 2028989723919953247}
+  navButton: {fileID: 0}
 --- !u!1 &2679892092659354278
 GameObject:
   m_ObjectHideFlags: 0
@@ -3286,7 +3287,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f613cfbb12a418042a5df210a17ccf9a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2c5623243a815cb43b89adacca408352, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3949,7 +3950,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u653E\u5F03\u4EFB\u52A1"
+  m_Text: "\u524D\u5F80\u9886\u53D6"
 --- !u!1 &7757714982519723274
 GameObject:
   m_ObjectHideFlags: 0
@@ -4455,8 +4456,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 275.77, y: -244}
-  m_SizeDelta: {x: 157.6534, y: 56.8971}
+  m_AnchoredPosition: {x: 255.95105, y: -242.89124}
+  m_SizeDelta: {x: 147.257, y: 61.1146}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3197335760513911294
 CanvasRenderer:
@@ -4539,7 +4540,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2399928576255088984}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3450651090121304923}
+        m_TargetAssemblyTypeName: UIQuestInfo, Assembly-CSharp
+        m_MethodName: OnClickNav
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1164463579664920240
 MonoBehaviour:
   m_ObjectHideFlags: 0

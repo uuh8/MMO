@@ -98,6 +98,7 @@
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\FontUpdateTracker.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\LocalizableText.cs" />
     <Compile Include="Assets\Scripts\UI\Shop\UIShop.cs" />
+    <Compile Include="Assets\Scripts\GameObject\NavPathRenderer.cs" />
     <Compile Include="Assets\Scripts\Managers\BagManager.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\KeywordsGlossary.cs" />
     <Compile Include="Assets\Scripts\Managers\NPCManager.cs" />

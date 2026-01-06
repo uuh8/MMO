@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Services;
+using SkillBridge.Message;
 
 public class UIRegister : MonoBehaviour {
 
@@ -11,6 +12,9 @@ public class UIRegister : MonoBehaviour {
     public InputField passwordConfirm;
     public Button buttonRegister;
 
+    public GameObject loginPanel;   // 注册完后返回登录界面
+    public GameObject registerPanel;
+
     void Start () {
         UserService.Instance.OnRegister = this.OnRegister;
     }
@@ -18,9 +22,26 @@ public class UIRegister : MonoBehaviour {
 		
 	}
 
-    void OnRegister(SkillBridge.Message.Result result, string msg)
+    void OnRegister(Result result, string msg)
     {
-        MessageBox.Show(string.Format("结果：{0} msg:{1}", result, msg));
+        if (result == Result.Success)
+        {
+            MessageBox.Show("注册成功!");
+
+            // 切回登录界面
+            registerPanel.SetActive(false);
+            loginPanel.SetActive(true);
+
+
+            // 清空输入框，避免下次打开残留
+            username.text = "";
+            password.text = "";
+            passwordConfirm.text = "";
+            return;
+        }
+
+        // 失败提示
+        MessageBox.Show(string.Format("[UIRegister] 注册失败：{0}", msg));
     }
 
     //直接给Unity中的组件绑定的方法

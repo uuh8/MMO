@@ -12,21 +12,26 @@ using Models;
 
 public class UICharSelect : MonoBehaviour
 {
+    // 两个Panel
     public GameObject panelCreate;
     public GameObject panelSelect;
 
+    // 角色GameObject
     public GameObject warriorModel;
     public GameObject archerModel;
     public GameObject magicianModel;
 
+    // 创建角色时角色按钮
     public Button warrior_bt;
     public Button archer_bt;
     public Button magician_bt;
 
-    // 创建角色
+    // 创建角色按钮
     public Button create_char_bt;
 
+    // 创建角色界面-角色介绍文本
     public Text char_intros;
+
     // 角色名
     public InputField char_name;
 
@@ -244,6 +249,7 @@ public class UICharSelect : MonoBehaviour
         // 处理角色选择逻辑
         ChangeChar(charClass);
     }
+
     /* 切换角色按钮 */
     private void ChangeChar(CharacterClass characterClass)
     {

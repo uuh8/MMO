@@ -15,7 +15,7 @@ public class UIlogin : MonoBehaviour
 
     void Start()
     {
-        UserService.Instance.OnLogin = this.Login;
+        UserService.Instance.OnLogin = this.Login; 
 
         buttonlogin.onClick.AddListener(OnClickLogin);
     }
@@ -30,7 +30,7 @@ public class UIlogin : MonoBehaviour
             SoundManager.Instance.PlayMusic(SoundDefine.Music_Login);
         }
         else
-            MessageBox.Show(message, "错误", MessageBoxType.Error);
+            MessageBox.Show(message, "错误", MessageBoxType.Error); 
     }
 
     //直接给Unity中的按钮绑定的方法

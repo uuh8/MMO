@@ -11,7 +11,11 @@ namespace Managers
     {
         public delegate bool NpcActionHandler(NpcDefine npc);
 
+        // NPC的功能信息
         Dictionary<NpcFunction, NpcActionHandler> eventMap = new Dictionary<NpcFunction, NpcActionHandler>();
+
+        // NPC的位置信息
+        Dictionary<int, Vector3> npcPositions = new Dictionary<int, Vector3>();
 
         public void RegisterNpcEvent(NpcFunction function, NpcActionHandler action)
         {
@@ -92,6 +96,25 @@ namespace Managers
             }
 
             return eventMap[npc.Function](npc);
+        }
+
+        /// <summary>
+        /// 设置NPC的位置
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="pos"></param>
+        internal void UpdateNpcPosition(int npc, Vector3 pos)
+        {
+            this.npcPositions[npc] = pos;
+        }
+        /// <summary>
+        /// 获取NPC的位置
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <returns></returns>
+        internal Vector3 GetNpcPosition(int npc)
+        {
+            return this.npcPositions[npc];
         }
     }
 }

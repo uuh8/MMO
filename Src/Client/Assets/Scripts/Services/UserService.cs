@@ -29,19 +29,21 @@ namespace Services
             NetClient.Instance.OnConnect += OnGameServerConnect;
             NetClient.Instance.OnDisconnect += OnGameServerDisconnect;
 
-            // 监听来自服务器的消息。当服务器返回用户注册结果时，触发对应的方法。
-            MessageDistributer.Instance.Subscribe<UserRegisterResponse>(this.OnUserRegister); 
-            MessageDistributer.Instance.Subscribe<UserLoginResponse>(this.OnUserLogin);
-            MessageDistributer.Instance.Subscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
-            MessageDistributer.Instance.Subscribe<UserGameEnterResponse>(this.OnGameEnter);
-            MessageDistributer.Instance.Subscribe<UserGameLeaveResponse>(this.OnGameLeave);
-            MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
-            // MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
+            MessageDistributer.Instance.Subscribe<UserRegisterResponse>(this.OnUserRegister);                   // 注册
+            MessageDistributer.Instance.Subscribe<UserLoginResponse>(this.OnUserLogin);                         // 登录
+            MessageDistributer.Instance.Subscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);     // 创建角色
+            MessageDistributer.Instance.Subscribe<UserGameEnterResponse>(this.OnGameEnter);                     // 进入游戏
+            MessageDistributer.Instance.Subscribe<UserGameLeaveResponse>(this.OnGameLeave);                     // 离开游戏
+            MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);         // 进入地图
+            // MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);      // 离开地图
         }
 
         //资源释放，解除订阅的事件和消息，防止内存泄漏或对象被销毁后仍然调用事件逻辑。
         public void Dispose()
         {
+            NetClient.Instance.OnConnect -= OnGameServerConnect;
+            NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
+
             MessageDistributer.Instance.Unsubscribe<UserRegisterResponse>(this.OnUserRegister);
             MessageDistributer.Instance.Unsubscribe<UserLoginResponse>(this.OnUserLogin);
             MessageDistributer.Instance.Unsubscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
@@ -49,9 +51,6 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<UserGameLeaveResponse>(this.OnGameLeave);
             MessageDistributer.Instance.Unsubscribe<MapCharacterEnterResponse>(this.OnCharacterEnterMap);
             // MessageDistributer.Instance.Unsubscribe<MapCharacterLeaveResponse>(this.OnCharacterLeaveMap);
-
-            NetClient.Instance.OnConnect -= OnGameServerConnect;
-            NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
         }
 
         public void Init()
@@ -104,7 +103,7 @@ namespace Services
                 {
                     if (this.OnRegister != null)
                     {
-                        this.OnRegister(Result.Failed, string.Format("服务器断开！\n RESULT:{0} ERROR:{1}", result, reason));
+                        this.OnRegister(Result.Failed, string.Format("[UserService] 服务器断开！\n RESULT:{0} ERROR:{1}", result, reason));
                     }
                 }
                 return true;
@@ -125,12 +124,11 @@ namespace Services
         /// <param name="psw"></param>
         public void SendLogin(string user, string psw) 
         {
-            Debug.LogFormat("UserLoginRequest::user :{0} psw:{1}", user, psw);
+            Debug.LogFormat("[UserService] UserLoginRequest::user :{0} psw:{1}", user, psw);
 
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.userLogin = new UserLoginRequest();
-
             message.Request.userLogin.User = user;
             message.Request.userLogin.Password = psw;
 
@@ -153,12 +151,11 @@ namespace Services
         /// <param name="psw"></param>
         public void SendRegister(string user, string psw) 
         {
-            Debug.LogFormat("UserRegisterRequest::user :{0} psw:{1}", user, psw);
+            Debug.LogFormat("[UserService] UserRegisterRequest::user :{0} psw:{1}", user, psw);
 
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.userRegister = new UserRegisterRequest();
-
             message.Request.userRegister.User = user;
             message.Request.userRegister.Passward = psw;
 
@@ -262,7 +259,7 @@ namespace Services
         }
 
         /// <summary>
-        /// 注册事件响应
+        /// 注册事件的响应
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>

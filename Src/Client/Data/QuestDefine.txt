@@ -23,7 +23,9 @@
     "Target3ID": 0,
     "Target3Num": 0,
     "RewardGold": 1000,
-    "RewardExp": 2000
+    "RewardExp": 2000,
+    "RewardItem1": 3,
+    "RewardItem1Count": 5
   },
   "1002": {
     "ID": 1002,
@@ -48,7 +50,11 @@
     "Target3": "None",
     "Target3ID": 0,
     "Target3Num": 0,
-    "RewardExp": 2000
+    "RewardExp": 2000,
+    "RewardItem1": 2,
+    "RewardItem1Count": 1,
+    "RewardItem2": 1,
+    "RewardItem2Count": 1
   },
   "1003": {
     "ID": 1003,
