@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -18,7 +19,10 @@ public class SoundManager : MonoSingleton<SoundManager>
     public AudioSource musicAudioSource;   // BGM 专用播放器（通常单曲循环）
     public AudioSource soundAudioSource;   // SFX 专用播放器（用 PlayOneShot 叠加短音效）
 
-    // Resources 下的路径前缀（你用的是 Resloader.Load，底层通常也会走 Resources）
+    private readonly Dictionary<string, AudioClip> _clipCache
+    = new Dictionary<string, AudioClip>();  // 首次加载后缓存
+
+    // Resources 下的路径前缀（用的是 Resloader.Load，底层也会走 Resources）
     private const string MusicPath = "Music/";
     private const string SoundPath = "Sound/";
 
@@ -132,6 +136,7 @@ public class SoundManager : MonoSingleton<SoundManager>
         SoundOn = Config.SoundOn;
     }
 
+
     /// <summary>
     /// BGM 静音/恢复：
     /// - 静音：写入 MinDb（-80dB）
@@ -140,9 +145,9 @@ public class SoundManager : MonoSingleton<SoundManager>
     public void MusicMute(bool mute)
     {
         if (mute)
-            SetMixerDb(MixerMusicVolume, MinDb);
+            SetMixerDb(MixerMusicVolume, MinDb);    // -80dB = 静音
         else
-            SetVolume01ToMixerDb(MixerMusicVolume, musicVolume);
+            SetVolume01ToMixerDb(MixerMusicVolume, musicVolume);    // 恢复
     }
 
     public void SoundMute(bool mute)
@@ -178,7 +183,7 @@ public class SoundManager : MonoSingleton<SoundManager>
     /// </summary>
     private void SetMixerDb(string paramName, float db)
     {
-        Debug.Log($"[Sound] {gameObject.scene.name} id={GetInstanceID()} Set {paramName}={db}");
+        Debug.Log($"[SoundManager] {gameObject.scene.name} id={GetInstanceID()} Set {paramName}={db}");
 
         if (audioMixer == null)
         {
@@ -189,37 +194,41 @@ public class SoundManager : MonoSingleton<SoundManager>
         if (!audioMixer.SetFloat(paramName, db))
             Debug.LogError($"[SoundManager] SetFloat failed: '{paramName}' not exposed?");
     }
+    private AudioClip GetClip(string fullPath)
+    {
+        if (_clipCache.TryGetValue(fullPath, out AudioClip clip))
+            return clip; // 命中缓存，零开销
 
+        clip = Resources.Load<AudioClip>(fullPath);
+        if (clip != null)
+            _clipCache[fullPath] = clip;
+        else
+            Debug.LogError($"[SoundManager] Clip not found: {fullPath}");
+        return clip;
+    }
+    // BGM
     public void PlayMusic(string name)
     {
         // 从资源加载 BGM：Resources/Music/name
-        AudioClip clip = Resloader.Load<AudioClip>(MusicPath + name);
-        if (clip == null)
-        {
-            Debug.LogWarningFormat("PlayMusic : {0} not existed.", name);
-            return;
-        }
+        AudioClip clip = GetClip(MusicPath + name);
+        if (clip == null) return;
+        if (musicAudioSource.clip == clip) return; // 已经在播，不重复切换
 
-        // BGM 一般同一时间只播一首
-        if (musicAudioSource.isPlaying)
-            musicAudioSource.Stop();
-
+        musicAudioSource.Stop();
         musicAudioSource.clip = clip;
         musicAudioSource.Play();
     }
-
+    // SFX：PlayOneShot 允许同一个 AudioSource 叠加多个短音效
+    // 比如连续点击按钮，声音不会被截断
     public void PlaySound(string name)
     {
         // 从资源加载 SFX：Resources/Sound/name
-        AudioClip clip = Resloader.Load<AudioClip>(SoundPath + name);
-        if (clip == null)
-        {
-            Debug.LogWarningFormat("PlaySound : {0} not existed.", name);
-            return;
-        }
-
-        // OneShot：适合 UI 点击/技能等短音效叠加播放
-        soundAudioSource.PlayOneShot(clip);
+        AudioClip clip = GetClip(SoundPath + name);
+        if (clip != null)
+            soundAudioSource.PlayOneShot(clip);
     }
-
+    /*
+     * Play()：打断当前正在播的 clip，只能同时播一个
+     * PlayOneShot(clip)：叠加播放，不打断其他声音，适合 SFX 密集触发
+     */
 }

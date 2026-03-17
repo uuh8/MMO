@@ -1,65 +1,93 @@
-using Candlelight.UI;
 using SkillBridge.Message;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UIChat : MonoBehaviour
 {
-    public HyperText textAera;  // 聊天内容显示区域
+    public Text textAera;           // 聊天内容显示区域（普通 Text）
+    public TabView channelTab;      // 频道切换 Tab 控件
+    public InputField chatText;     // 聊天输入框
+    public Text chatTarget;         // 私聊目标名显示（仅私聊频道可见）
+    public Dropdown channelSelect;  // 发送频道下拉选择
 
-    public TabView channelTab;
-
-    public InputField chatText; // 聊天输入控件
-    public Text chatTarget;
-
-    public Dropdown channelSelect;
-    
-    // Start is called before the first frame update
     void Start()
     {
+        // 订阅频道 Tab 切换事件
         this.channelTab.OnTabSelect += OnDisplayChannelSelected;
-        ChatManager.Instance.OnChat += RefreshUI;   // 订阅事件，当有消息发回来的时候更新UI
+
+        // 订阅 ChatManager 的消息刷新事件
+        // 每当收到新消息或频道切换时，自动刷新 UI
+        ChatManager.Instance.OnChat += RefreshUI;
+
+        // 用 InputField 的 onSubmit 事件处理发送
+        // 这样 Unity 内部的 Enter 处理和我们的发送逻辑走同一条路，不会冲突
+        chatText.onSubmit.AddListener(OnInputSubmit);
     }
-    void Update()
-    {
-        // 每一帧都检查是不是在聊天输入模式（避免按键冲突）
-        InputManager.Instance.IsInputMode = chatText.isFocused; // 有焦点说明在聊天模式
-    }
+
     void OnDestroy()
     {
+        // 解除所有订阅，防止对象销毁后仍然收到回调导致空引用
         ChatManager.Instance.OnChat -= RefreshUI;
+        chatText.onSubmit.RemoveListener(OnInputSubmit);
     }
 
+    void Update()
+    {
+        bool enterPressed = Input.GetKeyDown(KeyCode.Return)
+                         || Input.GetKeyDown(KeyCode.KeypadEnter);
 
+        // Enter 键：只在输入框没有焦点时激活输入框
+        // 有焦点时的发送逻辑交给 onSubmit 处理，避免同帧双重触发
+        if (enterPressed && !chatText.isFocused)
+        {
+            chatText.ActivateInputField();
+            chatText.Select();
+        }
+
+        // 只在状态变化时才更新 IsInputMode，避免每帧都写
+        if (chatText.isFocused != InputManager.Instance.IsInputMode)
+        {
+            InputManager.Instance.IsInputMode = chatText.isFocused;
+            InputManager.Instance.UpdateCursor();
+        }
+    }
+
+    /// <summary>
+    /// InputField 的 onSubmit 回调（按下 Enter 且输入框有焦点时触发）
+    /// </summary>
+    private void OnInputSubmit(string text)
+    {
+        DoSend();
+    }
+
+    /// <summary>
+    /// 切换显示频道时触发
+    /// </summary>
     private void OnDisplayChannelSelected(int idx)
     {
-        // 告诉聊天管理器当前选择频道改变
         ChatManager.Instance.displayChannel = (ChatManager.LocalChannel)idx;
         RefreshUI();
     }
 
+    /// <summary>
+    /// 刷新聊天 UI
+    /// 更新消息文本、发送频道选择、私聊目标显示
+    /// </summary>
     private void RefreshUI()
     {
         this.textAera.text = ChatManager.Instance.GetCurrentMessages();
         this.channelSelect.value = (int)ChatManager.Instance.sendChannel - 1;
 
-        // 如果是私聊模式需要单独设置“私聊对象”的信息
-        if(ChatManager.Instance.SendChannel == ChatChannel.Private)
+        // 私聊频道需要额外显示私聊对象名
+        if (ChatManager.Instance.SendChannel == ChatChannel.Private)
         {
             this.chatTarget.gameObject.SetActive(true);
-            // 开启私聊模式后校验有没有私聊对象
-            if(ChatManager.Instance.PrivateID != 0)
-            {
-                this.chatTarget.text = ChatManager.Instance.PrivateName + ":";
-            }
-            else
-            {
-                this.chatTarget.text = "<无>";
-            }
+            this.chatTarget.text = ChatManager.Instance.PrivateID != 0
+                ? ChatManager.Instance.PrivateName + ":"
+                : "<无>";
         }
         else
         {
@@ -68,73 +96,46 @@ public class UIChat : MonoBehaviour
     }
 
     /// <summary>
-    /// 点击聊天中的链接link（会弹出UIPopCharMenu）
-    /// </summary>
-    /// <param name="text"></param>
-    /// <param name="link"></param>
-    public void OnClickChatLink(HyperText text, HyperText.LinkInfo link)
-    {
-        Debug.Log($"[HyperTextClick] Name='{link.Name}', Class='{link.ClassName}', Index={link.Index}");
-
-        // 1) link.Name 就是 <a name="..."> 的值
-        if (string.IsNullOrEmpty(link.Name))
-            return;
-
-        // 2) 我们规定 name 格式为 "c:<id>"
-        if (!link.Name.StartsWith("c:"))
-            return;
-
-        // 3) 解析 id
-        string idStr = link.Name.Substring(2);
-        if (!int.TryParse(idStr, out int id))
-            return;
-
-        // 4) 通过缓存取玩家名
-        //    如果取不到，说明缓存还没被更新（例如你点的是很早的历史消息但没走 AddMessage）
-        string displayName = ChatManager.Instance.GetPlayerName(id);
-        if (string.IsNullOrEmpty(displayName))
-            displayName = $"玩家{id}"; // 兜底显示，避免 menu 里空白
-
-        // 5) 弹出菜单并赋值
-        var menu = UIManager.Instance.Show<UIPopCharMenu>();
-        menu.targetId = id;
-        menu.targetName = displayName;
-    }
-
-    /// <summary>
-    /// 点击发送 
+    /// 点击发送按钮
     /// </summary>
     public void OnClickSend()
     {
-        Debug.Log("[UIChat] OnClickSend");
-        OnEndInput();
+        DoSend();
     }
-    public void OnEndInput()
+
+    /// <summary>
+    /// 统一的发送逻辑，Enter 键（onSubmit）和点击发送按钮都走这里
+    /// </summary>
+    private void DoSend()
     {
-        // 直接从 InputField 读值，不用回调参数
         string text = this.chatText.text;
 
         if (!string.IsNullOrWhiteSpace(text))
-        {
             ChatManager.Instance.SendChat(text, ChatManager.Instance.PrivateID, ChatManager.Instance.PrivateName);
-        }
 
         this.chatText.text = "";
-        this.chatText.ActivateInputField(); // 继续保持输入状态（可选但推荐）
+
+        // 取消焦点，退出输入模式
+        this.chatText.DeactivateInputField();
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
+    /// <summary>
+    /// 发送频道下拉选择变化时触发
+    /// idx + 1 是因为 Dropdown 没有"综合"选项，索引从 Local(1) 开始
+    /// </summary>
     public void OnSendChannelChanged(int idx)
     {
-        // 不能在all（也就是“综合”）中发消息，Dropdown中也没有“综合”选项，因此idx + 1表示偏移量
         if (ChatManager.Instance.sendChannel == (ChatManager.LocalChannel)(idx + 1))
             return;
 
-        // 校验切换频道有没有出错，例如没有加入队伍就不能切换到队伍频道
+        // SetSendChannel 内部会校验条件（如未入队不能切队伍频道）
+        // 校验失败则把 Dropdown 还原回当前实际频道
         if (!ChatManager.Instance.SetSendChannel((ChatManager.LocalChannel)idx + 1))
             this.channelSelect.value = (int)ChatManager.Instance.sendChannel - 1;
         else
             this.RefreshUI();
     }
 
-
+    public void OnEndInput() { }
 }

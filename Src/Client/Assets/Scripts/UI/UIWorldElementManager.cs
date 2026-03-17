@@ -9,15 +9,20 @@ public class UIWorldElementManager : MonoSingleton<UIWorldElementManager>
 {
     public GameObject nameBarPrefab;    // 角色血条
     public GameObject npcStatusPrefab;
+    public GameObject npcInteractTipPrefab; // "按 E 与npc交互"的预制体
 
     // 用一个字典管理所有 WorldElement
     private Dictionary<Transform, GameObject> elementNames = new Dictionary<Transform, GameObject>();
     private Dictionary<Transform, GameObject> elementStatus = new Dictionary<Transform, GameObject>();
+    private GameObject currentInteractTip = null; // 当前显示的交互提示，同时只有一个
 
     // Use this for initialization
     protected override void OnStart()
     {
         nameBarPrefab.SetActive(false);
+        // 预创建唯一的交互Tip，默认隐藏
+        currentInteractTip = Instantiate(npcInteractTipPrefab, this.transform);
+        currentInteractTip.SetActive(false);
     }
 
     #region 血条相关
@@ -75,6 +80,27 @@ public class UIWorldElementManager : MonoSingleton<UIWorldElementManager>
             Destroy(this.elementStatus[owner]);
             this.elementStatus.Remove(owner);
         }
+    }
+    #endregion
+
+    #region 交互提示相关
+    /// <summary>
+    /// 在指定 NPC 头顶显示"按 E 交互"提示
+    /// </summary>
+    public void ShowInteractTip(Transform owner)
+    {
+        currentInteractTip.GetComponent<UIWorldElement>().owner = owner;
+        currentInteractTip.GetComponent<UIWorldElement>().height = 2.5f;
+        currentInteractTip.SetActive(true);
+    }
+
+    /// <summary>
+    /// 隐藏交互提示
+    /// </summary>
+    public void HideInteractTip()
+    {
+        if (currentInteractTip != null)
+            currentInteractTip.SetActive(false);
     }
     #endregion
 }

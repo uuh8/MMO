@@ -320,15 +320,16 @@ namespace Services
             {
                 if(response.Result == Result.Success)
                 {
+                    // 1. 把服务器下发的角色信息存到全局单例
                     User.Instance.CurrentCharacter = response.Character;
 
-                    // 初始化角色身上的各种 Manager
+                    // 2. 用角色数据初始化各个本地 Manager（纯内存操作）
                     ItemManager.Instance.Init(response.Character.Items);
                     BagManager.Instance.Init(response.Character.Bag);
                     EquipManager.Instance.Init(response.Character.Equips);
                     QuestManager.Instance.Init(response.Character.Quests);
                     FriendManager.Instance.Init(response.Character.Friends);
-                    GuildManager.Instance.Init(response.Character.Guild);
+                    GuildManager.Instance.Init(response.Character.Guild);  
                 }
             }
         }
@@ -417,12 +418,17 @@ namespace Services
                 {
                     User.Instance.CurrentMapData = map;
                     SceneManager.Instance.LoadScene(map.Resource);
+
+                    // 进入游戏场景后锁定并隐藏鼠标
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
                 }
                 else
                 {
                     Debug.LogErrorFormat("[UserService] Map {0} not existed", response.mapId);
                 }
             }
+
         }
 
         /// <summary>

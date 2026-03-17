@@ -5,24 +5,17 @@ using UnityEngine;
 using Entities;
 using Managers;
 
-/*所有游戏对象都要绑这个脚本，负责把逻辑实体映射为可视 Transform，也负责接收输入层/网络层发来的“实体事件”切动画*/
+/*负责把逻辑层的数据翻译成玩家看得见的东西。*/
 public class EntityController : MonoBehaviour, IEntityNotify
 {
     public Animator anim;
     public Rigidbody rb;
-    private AnimatorStateInfo currentBaseState;
 
     public Entity entity;
 
     public Vector3 position;
     public Vector3 direction;
-    Quaternion rotation;
-    public Vector3 lastPosition;
-    Quaternion lastRotation;
-
     public float speed;
-    public float animSpeed = 1.5f;
-    public float jumpPower = 3.0f;
 
     public bool isPlayer = false;
 
@@ -32,6 +25,9 @@ public class EntityController : MonoBehaviour, IEntityNotify
 
     // Use this for initialization
     void Start () {
+        // 全局关闭 Root Motion，所有动画的位移都由物理层负责
+        anim.applyRootMotion = false;
+
         if (entity != null)
         {
             // 注册事件的接收者
@@ -52,11 +48,24 @@ public class EntityController : MonoBehaviour, IEntityNotify
         this.entity.OnUpdate(Time.fixedDeltaTime);
 
         // 不是本地玩家，把逻辑投影到可视层
-        // 本地玩家的可视层由 PlayerInputController 的 Rigidbody 驱动，EntityController 则避免覆盖本地刚体
+        // 只对其他玩家执行，本地玩家的位置由 Rigidbody 物理驱动，不走这里
         if (!this.isPlayer)
         {
             this.UpdateTransform();
         }
+    }
+
+    /// <summary>
+    /// 把逻辑坐标映射到 Unity 的可视 Transform
+    /// </summary>
+    void UpdateTransform()
+    {
+        // 从逻辑坐标转换到世界坐标
+        this.position = GameObjectTool.LogicToWorld(entity.position);   // 整数→浮点
+        this.direction = GameObjectTool.LogicToWorld(entity.direction);
+
+        this.rb.MovePosition(this.position);        // 更新物理位置
+        this.transform.forward = this.direction;    // 更新模型朝向
     }
 
     void OnDestroy()
@@ -84,20 +93,7 @@ public class EntityController : MonoBehaviour, IEntityNotify
         Destroy(this.gameObject);
     }
 
-    /// <summary>
-    /// 逻辑到世界的映射（把逻辑层“落地”到可视层）
-    /// </summary>
-    void UpdateTransform()
-    {
-        // 从逻辑坐标转换到世界坐标
-        this.position = GameObjectTool.LogicToWorld(entity.position);
-        this.direction = GameObjectTool.LogicToWorld(entity.direction);
 
-        this.rb.MovePosition(this.position);
-        this.transform.forward = this.direction;
-        this.lastPosition = this.position;
-        this.lastRotation = this.rotation;
-    }
 
     /// <summary>
     /// 状态改变
@@ -118,12 +114,27 @@ public class EntityController : MonoBehaviour, IEntityNotify
                 anim.SetBool("Move", true);
                 break;
             case EntityEvent.Jump:
-                anim.SetTrigger("Jump");
                 break;
             case EntityEvent.Ride:
                 this.Ride(param);
                 break;
+            case EntityEvent.AtkA:
+                anim.SetTrigger("AttackA");
+                break;
+            case EntityEvent.AtkB:
+                anim.SetTrigger("AttackB");
+                break;
+            case EntityEvent.SkillA:
+                anim.SetTrigger("SkillA");
+                break;
+            case EntityEvent.SkillB:
+                anim.SetTrigger("SkillB");
+                break;
+            case EntityEvent.SkillC:
+                anim.SetTrigger("SkillC");
+                break;
         }
+
         if (this.rideController != null)
             this.rideController.OnEntityEvent(entityEvent, param);  // 角色做了动作坐骑也要跟着做动作
     }
@@ -157,10 +168,11 @@ public class EntityController : MonoBehaviour, IEntityNotify
     }
     /// <summary>
     /// 设置角色乘坐坐骑的状态
-    /// </summary>
+    /// </summary>  
     /// <param name="position"></param>
     public void SetRidePosition(Vector3 position)
     {
+        // 全部用世界坐标，让 rideBone 对齐到 mountPoint
         this.anim.transform.position = position + (this.anim.transform.position - this.rideBone.position);
     }
 

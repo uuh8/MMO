@@ -52,7 +52,7 @@ public class UIGuildList : UIWindow
     {
         foreach (var Item in guilds)
         {
-            GameObject go = Instantiate(guildItemPrefab, this.listMain.transform);
+            GameObject go = Instantiate(guildItemPrefab, this.listMain.transform, false);
             UIGuildItem uiItem = go.GetComponent<UIGuildItem>();
             uiItem.SetGuildInfo(Item);
             this.listMain.AddItem(uiItem);

@@ -55,7 +55,7 @@ public class UICharEquip : UIWindow
                 // 已经装备就不显示了
                 if (EquipManager.Instance.Contains(kv.Key) && kv.Value.Define.LimitClass == User.Instance.CurrentCharacter.Class)
                     continue;
-                GameObject go = Instantiate(itemPrefab, itemListRoot);
+                GameObject go = Instantiate(itemPrefab, itemListRoot, false);
                 UIEquipItem ui = go.GetComponent<UIEquipItem>();
                 ui.SetEquipItem(kv.Key, kv.Value, this, false);
             }
@@ -73,7 +73,7 @@ public class UICharEquip : UIWindow
             var item = EquipManager.Instance.Equips[i];
             if(item != null)
             {
-                GameObject go = Instantiate(itemEquipedPrefab, slots[i]);
+                GameObject go = Instantiate(itemEquipedPrefab, slots[i], false);
                 UIEquipItem ui = go.GetComponent<UIEquipItem>();
                 ui.SetEquipItem(i, item, this, true);
             }

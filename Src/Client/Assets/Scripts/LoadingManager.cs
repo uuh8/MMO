@@ -49,12 +49,12 @@ public class LoadingManager : MonoBehaviour {
         ShopManager.Instance.Init();
         SoundManager.Instance.PlayMusic(SoundDefine.Music_Login);
 
-        // 加载进度条
+        // 加载进度条（假进度条（UI 表现，非真实加载进度））
         for (float i = 0; i < 100;)
         {
             i += Random.Range(0.1f, 1.5f);
             progressBar.value = i;
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();   // 每帧推进
         }
 
         UILoading.SetActive(false);

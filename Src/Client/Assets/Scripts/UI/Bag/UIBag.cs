@@ -3,6 +3,7 @@ using Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UIBag : UIWindow
@@ -15,8 +16,15 @@ public class UIBag : UIWindow
 
     void Start()
     {
+        BagManager.Instance.OnBagUpdate += RefreshBag;
+        User.Instance.OnGoldChanged += RefreshGold;
+
+        // 打开背包时立刻同步一次当前金币
+        if (User.Instance.CurrentCharacter != null)
+            this.money.text = User.Instance.CurrentCharacter.Gold.ToString();
+
         // 共有多少个格子
-        if(slots == null)
+        if (slots == null)
         {
             slots = new List<Image>();
             // 页数
@@ -35,6 +43,27 @@ public class UIBag : UIWindow
         }
         StartCoroutine(InitBags());
     }
+    void OnDestroy()
+    {
+        BagManager.Instance.OnBagUpdate -= RefreshBag; // 防泄漏
+        User.Instance.OnGoldChanged -= RefreshGold;
+    }
+
+    // 刷新金币，不重建格子
+    private void RefreshGold()
+    {
+        Debug.Log("[UIBag] RefreshGold called");
+        if (User.Instance.CurrentCharacter != null)
+            this.money.text = User.Instance.CurrentCharacter.Gold.ToString();
+    }
+
+    private void RefreshBag()
+    {
+        this.money.text = User.Instance.CurrentCharacter.Gold.ToString(); // 更新金币
+        this.Clear();
+        StartCoroutine(InitBags());
+    }
+
     /// <summary>
     /// 初始化背包
     /// </summary>
@@ -46,7 +75,7 @@ public class UIBag : UIWindow
             var item = BagManager.Instance.Items[i];
             if(item.ItemId > 0)
             {
-                GameObject uiBagItem = Instantiate(bagItem, slots[i].transform);
+                GameObject uiBagItem = Instantiate(bagItem, slots[i].transform, false);
                 var uiBagIconItem = uiBagItem.GetComponent<UIIconItem>();
                 var def = ItemManager.Instance.Items[item.ItemId].Define;
                 uiBagIconItem.SetMainIcon(def.Icon, item.Count.ToString());    // 拿两个字段：图标和数量
@@ -61,10 +90,11 @@ public class UIBag : UIWindow
     }
 
 
-    public void SetTitle(string title)
+    public void SetTitle()
     {
-        this.money.text = User.Instance.CurrentCharacter.Id.ToString();
+        this.money.text = User.Instance.CurrentCharacter.Gold.ToString();
     }
+
     /// <summary>
     /// 背包整理
     /// </summary>
@@ -87,4 +117,5 @@ public class UIBag : UIWindow
             }
         }
     }
+
 }

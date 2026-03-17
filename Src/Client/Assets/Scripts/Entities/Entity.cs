@@ -10,42 +10,19 @@ namespace Entities
     public class Entity
     {
         public int entityId;
-        // “逻辑坐标系”三件套。这三个数据是客户端逻辑中实际处理的数据，当服务端发来数据后，需要将发来的这些NEntity中的数据赋值给这三个数据,也就是 SetEntityData 做的事情
+        // “逻辑层”三件套。这三个数据是客户端逻辑中实际处理的数据，当服务端发来数据后，需要将发来的这些NEntity中的数据赋值给这三个数据,也就是 SetEntityData 做的事情
         public Vector3Int position;
         public Vector3Int direction;
         public int speed;
 
-        /// <summary>
-        /// 从协议层（protobuf）同步过来的结构（权威/最新的网络快照）。
-        /// 注意：NEntity 是“数据载体”（DTO），不要把运行时逻辑塞到里面。
-        /// </summary>
         private NEntity entityData;
-        /// <summary>
-        /// 缓存协议层的镜像
-        /// - get：返回当前缓存的网络镜像；
-        /// - set：替换镜像并“落地”到逻辑三元组（position/direction/speed）。
-        /// 这样能保证：一旦收到服务器/网络层的新数据，本地逻辑层立即对齐。
-        /// </summary>
         public NEntity EntityData
         {
-            get 
-            {
-                UpdateEntityData();
-                return entityData; 
-            }
-            set
-            {
-                entityData = value;
-                this.SetEntityData(value);
-            }
+            // 网络收到服务器数据，set 把数据落地到逻辑层；
+            // 要发包了，get 把逻辑层最新数据取出来。
+            get { UpdateEntityData(); return entityData; } // 逻辑 → 网络，发包时用
+            set { entityData = value; SetEntityData(value); } // 网络 → 逻辑，收包时用
         }
-
-        /// <summary>
-        /// 构造时注入一份网络层的 NEntity：
-        /// - 保存 Id；
-        /// - 缓存镜像；
-        /// - 初始化逻辑三元组（position/direction/speed）。
-        /// </summary>
         public Entity(NEntity entity)
         {
             this.entityId = entity.Id;
@@ -59,12 +36,13 @@ namespace Entities
         /// <param name="delta"></param>
         public virtual void OnUpdate(float delta)
         {
+            // 每帧根据方向和速度推算下一帧位置，不依赖网络包，让移动看起来连续。
             if (this.speed != 0)
             {
                 // 将逻辑方向转为 Vector3 做乘法
                 Vector3 dir = this.direction;
                 // 逻辑积分：每个时间步累加“这一小段应该移动的距离”。
-                // 这里除以 100f 是逻辑→世界单位缩放（SCALE=100）。
+                // 除以 100f 是逻辑→世界单位缩放（SCALE=100）。
                 // RoundToInt 确保仍在整数网格上，便于跨端一致。
                 this.position += Vector3Int.RoundToInt(dir * speed * delta / 100f);
             }

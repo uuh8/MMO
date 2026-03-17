@@ -35,7 +35,13 @@ namespace Managers
             this.questInfos = quests;
             allQuests.Clear();
             this.npcQuests.Clear();
+
+            Debug.LogFormat("[QuestManager] DataManager.Quests count: {0}",
+                DataManager.Instance.Quests?.Count ?? -1);
+
             InitQuests();
+
+            Debug.LogFormat("[QuestManager] allQuests count after init: {0}", allQuests.Count);
         }
         private void InitQuests()
         {
@@ -190,7 +196,7 @@ namespace Managers
         #endregion
 
         /// <summary>
-        /// 显示任务对话框（点击NPC的时候出现）
+        /// 显示任务对话框（npc对话时出现）
         /// </summary>
         /// <param name="quest"></param>
         /// <returns></returns>
@@ -201,10 +207,12 @@ namespace Managers
                 // 只有 接任务 或 交任务 才弹 UIQuestDialog
                 UIQuestDialog dlg = UIManager.Instance.Show<UIQuestDialog>();
                 dlg.SetQuest(quest);
+                dlg.OnClose -= OnQuestDialogClose;  // 先移除防重复订阅
                 dlg.OnClose += OnQuestDialogClose;  // 处理关闭事件
                 return true;
             }
-            if(quest.Info != null || quest.Info.Status == QuestStatus.Completed)
+            // 进行中：显示未完成提示
+            if (quest.Info != null && quest.Info.Status != QuestStatus.Completed)
             {
                 if (!string.IsNullOrEmpty(quest.Define.DialogIncomplete))
                     MessageBox.Show(quest.Define.DialogIncomplete);

@@ -38,7 +38,7 @@ public class UIGuildApplyList : UIWindow
     {
         foreach (var item in GuildManager.Instance.guildInfo.Applies)
         {
-            GameObject go = Instantiate(itemPrefab, this.listMain.transform);
+            GameObject go = Instantiate(itemPrefab, this.listMain.transform, false);
             UIGuildApplyItem uiItem = go.GetComponent<UIGuildApplyItem>();
             uiItem.SetApplyItemInfo(item);
             this.listMain.AddItem(uiItem);

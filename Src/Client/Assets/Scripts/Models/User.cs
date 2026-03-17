@@ -23,7 +23,7 @@ namespace Models
         public MapDefine CurrentMapData { get; set; }   // 当前在哪一张地图
         public PlayerInputController CurrentCharacterObject { get; set; }  // 当前角色对象
 
-
+        public System.Action OnGoldChanged;
 
         //初始化或更新用户信息，例如从服务器登录成功后，调用此方法将服务器返回的用户信息设置到本地实例中
         public void SetupUserInfo(SkillBridge.Message.NUserInfo info)
@@ -34,6 +34,8 @@ namespace Models
         public void AddGold(int gold)
         {
             this.CurrentCharacter.Gold += gold;
+            Debug.Log($"[User] AddGold: Gold={CurrentCharacter.Gold}, ListenerCount={OnGoldChanged?.GetInvocationList().Length ?? 0}");
+            OnGoldChanged?.Invoke();
         }
 
         public int CurrentRide = 0;

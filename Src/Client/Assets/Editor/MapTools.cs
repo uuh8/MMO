@@ -16,7 +16,8 @@ public class MapTools
     [MenuItem("Map Tools/Export Teleporters")]
     public static void ExportTeleporters()
     {
-        DataManager.Instance.Load();
+        // 1. 加载所有配置表（地图/传送点定义）到内存
+        DataManager.Instance.Load();    
 
         Scene current = EditorSceneManager.GetActiveScene();
         string currentScene = current.name;
@@ -37,6 +38,7 @@ public class MapTools
                 Debug.LogWarningFormat("Scene {0} 不存在！", sceneFile);
                 continue;
             }
+            // 强制打开该地图对应的 .unity 场景文件
             EditorSceneManager.OpenScene(sceneFile, OpenSceneMode.Single);
 
             // 找到当前场景下的所有传送点
@@ -62,6 +64,7 @@ public class MapTools
                 def.Position = GameObjectTool.WorldToLogicN(teleporter.transform.position);
                 def.Direction = GameObjectTool.WorldToLogicN(teleporter.transform.forward);
             }
+            // 写回 JSON 配置文件
             DataManager.Instance.SaveTeleporters();
             EditorSceneManager.OpenScene("Assets/Levels/" + currentScene + ".unity");
             EditorUtility.DisplayDialog("提示", "传送点导出完成", "确定");
@@ -125,7 +128,7 @@ public class MapTools
     [MenuItem("Map Tools/Generate NavData")]
     public static void GenerateNavData()
     {
-        Material red = new Material(Shader.Find("Particals/Alpha Blended"));
+        Material red = new Material(Shader.Find("Particles/Alpha Blended"));
         red.color = Color.red;
         red.SetColor("_TintColor", Color.red);
         red.enableInstancing = true;

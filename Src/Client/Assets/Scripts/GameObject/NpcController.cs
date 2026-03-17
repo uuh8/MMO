@@ -3,155 +3,124 @@ using System.Collections.Generic;
 using UnityEngine;
 using Common.Data;
 using Managers;
-using UnityEditor;
 using Models;
-using Managers;
 using SkillBridge.Message;
 
 public class NpcController : MonoBehaviour
 {
     public int npcID;
+    public float interactDistance = 2.5f; // 触发交互提示的距离阈值
 
-    SkinnedMeshRenderer renderer;
     private Animator anim;
-    Color orignColor;
-
     private bool inInteractive = false;
-
     private NpcDefine npc;
-
     NpcQuestStatus questStatus;
+
+    // 当前是否在交互范围内
+    private bool isInRange = false;
+
 
     void Start()
     {
-        renderer = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
         anim = this.gameObject.GetComponent<Animator>();
-        orignColor = renderer.sharedMaterial.color;
         npc = NPCManager.Instance.GetNpcDefine(this.npcID);
         NPCManager.Instance.UpdateNpcPosition(this.npcID, this.transform.position);
         this.StartCoroutine(Actions());
         RefreshNpcStatus();
         QuestManager.Instance.onQuestStatusChanged += OnQuestStatusChanged;
     }
-
-    private void OnQuestStatusChanged(Quest quest)
+    void Update()
     {
-        this.RefreshNpcStatus();
+        // 每帧检测玩家和 NPC 的距离
+        if (User.Instance.CurrentCharacterObject == null) return;
+
+        float dist = Vector3.Distance(
+            this.transform.position,
+            User.Instance.CurrentCharacterObject.transform.position
+        );
+
+        if (dist <= interactDistance)
+        {
+            // 进入范围：显示提示，注册自己为当前可交互 NPC
+            if (!isInRange)
+            {
+                isInRange = true;
+                NPCManager.Instance.OnNpcEnterRange(this);
+            }
+        }
+        else
+        {
+            // 离开范围：隐藏提示，取消注册
+            if (isInRange)
+            {
+                isInRange = false;
+                NPCManager.Instance.OnNpcLeaveRange(this);
+            }
+        }
     }
+
+    private void OnDestroy()
+    {
+        // 销毁时确保清理状态
+        if (isInRange)
+            NPCManager.Instance.OnNpcLeaveRange(this);
+
+        QuestManager.Instance.onQuestStatusChanged -= OnQuestStatusChanged;
+        if (UIWorldElementManager.Instance != null)
+            UIWorldElementManager.Instance.RemoveNpcQuestStatus(this.transform);
+    }
+
+    // 供 NPCInteractManager 调用的交互入口
+    public void TryInteract()
+    {
+        if (!inInteractive)
+        {
+            inInteractive = true;
+            StartCoroutine(DoInteractice());
+        }
+    }
+
+    // 以下保持不变
+    private void OnQuestStatusChanged(Quest quest) { RefreshNpcStatus(); }
+
     private void RefreshNpcStatus()
     {
         questStatus = QuestManager.Instance.GetQuestStatusByNpc(this.npcID);
         UIWorldElementManager.Instance.AddNpcQuestStatus(this.transform, questStatus);
     }
 
-    private void OnDestroy()
-    {
-        QuestManager.Instance.onQuestStatusChanged -= OnQuestStatusChanged;
-        if (UIWorldElementManager.Instance != null)
-            UIWorldElementManager.Instance.RemoveNpcQuestStatus(this.transform);
-    }
-
     IEnumerator Actions()
     {
-        // npc 闲置动作协程
         while (true)
         {
             if (inInteractive)
                 yield return new WaitForSeconds(2f);
             else
                 yield return new WaitForSeconds(Random.Range(5f, 10f));
-            // npc的Idle动作
             this.Relax();
         }
     }
 
-    /// <summary>
-    /// npc 闲置动作
-    /// </summary>
-    void Relax()
-    {
-        anim.SetTrigger("Relax");
-    }
+    void Relax() { anim.SetTrigger("Relax"); }
 
-    #region 与npc接触鼠标高亮
-    void OnMouseEnter()
-    {
-        Highlight(true);
-    }
-    void OnMouseOver()
-    {
-        Highlight(true);
-    }
-    void OnMouseExit()
-    {
-        Highlight(false);
-    }
-    /// <summary>
-    /// 鼠标移动高光
-    /// </summary>
-    /// <param name="highlight"></param>
-    private void Highlight(bool highlight)
-    {
-        if (highlight)
-        {
-            if (renderer.sharedMaterial.color != Color.white)
-                renderer.sharedMaterial.color = Color.white;
-        }
-        else
-        {
-            if (renderer.sharedMaterial.color != orignColor)
-                renderer.sharedMaterial.color = orignColor;
-        }
-    }
-
-    #endregion
-
-    #region 与npc交互
-    /// <summary>
-    /// 点击后调用，与npc进行交互
-    /// </summary>
     IEnumerator DoInteractice()
     {
         yield return FaceToPlayer();
-        // 把npc交互请求发送给 NPCManager
         if (NPCManager.Instance.Interactive(npc))
-        {
             anim.SetTrigger("Talk");
-        }
-        // 结束之后3s之内无法重复点击该npc
         yield return new WaitForSeconds(3f);
         inInteractive = false;
     }
+
     IEnumerator FaceToPlayer()
     {
-        Vector3 faceTo = (User.Instance.CurrentCharacterObject.transform.position - this.transform.position).normalized;
+        Vector3 faceTo = (User.Instance.CurrentCharacterObject.transform.position
+                         - this.transform.position).normalized;
         while (Mathf.Abs(Vector3.Angle(this.gameObject.transform.forward, faceTo)) > 5)
         {
-            // 这里用插值目的是让npc慢慢的转，而不是瞬间转过去
-            this.gameObject.transform.forward = Vector3.Lerp(this.gameObject.transform.forward, faceTo, Time.deltaTime * 5f);
+            this.gameObject.transform.forward = Vector3.Lerp(
+                this.gameObject.transform.forward, faceTo, Time.deltaTime * 5f);
             yield return null;
         }
     }
-    void OnMouseDown()
-    {
-        // 如果用鼠标点击一个npc，自动寻路过去
-        if(Vector3.Distance(this.transform.position, User.Instance.CurrentCharacterObject.transform.position) > 2f)
-        {
-            User.Instance.CurrentCharacterObject.StartNav(this.transform.position);
-        }
-
-        // 交互
-        Interactive();
-    }
-    private void Interactive()
-    {
-        // 这个判断是为了防止用户连着点结果连着跳出窗口
-        if (!inInteractive)
-        {
-            inInteractive = true;               // 防止连点 NPC 疯狂弹窗
-            StartCoroutine(DoInteractice());
-        }
-    }
-    #endregion
-
 }

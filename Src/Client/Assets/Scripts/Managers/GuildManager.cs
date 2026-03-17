@@ -46,6 +46,11 @@ namespace Managers
             else
             {
                 UIGuildPopNoGuild win = UIManager.Instance.Show<UIGuildPopNoGuild>();
+                if (win == null)
+                {
+                    Debug.LogError("[GuildManager] UIGuildPopNoGuild º”‘ÿ ß∞‹£¨ºÏ≤È Resources/UI/Guild/UIGuildPopNoGuild ¬∑æ∂");
+                    return;
+                }
                 win.OnClose += PopNoGuild_OnClose;
             }
         }

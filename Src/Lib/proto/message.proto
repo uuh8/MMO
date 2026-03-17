@@ -50,6 +50,11 @@ enum ENTITY_EVENT
 	MOVE_BACK = 3;
 	JUMP = 4;
 	RIDE = 5;
+	AtkA = 6;
+    AtkB = 7;
+    SkillA = 8;
+    SkillB = 9;
+    SkillC = 10;
 }
 
 // 道具

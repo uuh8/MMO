@@ -42,7 +42,7 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
     }
 
     /// <summary>
-    /// 其他角色进入的初始化逻辑
+    /// 其他角色进入的初始化逻辑 
     /// </summary>
     /// <param name="cha"></param>
     void OnCharacterEnter(Character cha)

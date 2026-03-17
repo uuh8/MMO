@@ -1,6 +1,7 @@
 using Common.Data;
 using Managers;
 using Models;
+using Services;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,8 +18,25 @@ public class UIShop : UIWindow
 
     void Start()
     {
+        ItemService.Instance.OnBuyItem += OnBuyItemResult;
         StartCoroutine(InitItems());     
     }
+    void OnDestroy()
+    {
+        ItemService.Instance.OnBuyItem -= OnBuyItemResult; // ★ 防泄漏
+    }
+
+    private void OnBuyItemResult(bool result)
+    {
+        if (result)
+            StartCoroutine(RefreshGoldNextFrame());
+    }
+    IEnumerator RefreshGoldNextFrame()
+    {
+        yield return null; // 等一帧，确保 StatusNotify 已处理完
+        this.money.text = User.Instance.CurrentCharacter.Gold.ToString();
+    }
+
     IEnumerator InitItems()
     {
         int count = 0;
@@ -27,7 +45,7 @@ public class UIShop : UIWindow
         {
             if(kv.Value.Status > 0)
             {
-                GameObject go = Instantiate(shopItem, itemRoot[page]);
+                GameObject go = Instantiate(shopItem, itemRoot[page], false);
                 UIShopItem ui = go.GetComponent<UIShopItem>();
                 ui.SetShopItem(kv.Key, kv.Value, this);
                 count++;

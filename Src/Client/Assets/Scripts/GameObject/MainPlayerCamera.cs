@@ -14,21 +14,22 @@ using static UnityEngine.GraphicsBuffer;
 /// </summary>
 public class MainPlayerCamera : MonoSingleton<MainPlayerCamera>
 {
-    public Camera camera;
+    public Camera camera;       // 真正渲染画面的子相机对象
+    public Transform viewPoint; // 角色身上的"注视点"，相机看向这里而不是脚底
+    public GameObject player;   // 当前主角
 
-    public Transform viewPoint; // 玩家身上挂一个 CameraPivot（头顶/胸口），相机看向它
-    public GameObject player;   // 当前主角对象
-
+    // 轨道参数：决定相机在球壳上的位置
     [Header("Orbit Params")]
-    public float distance = 2f;   // 相机距离目标点的“后退距离”（第三人称相机一般在目标后方）
-    public float height = 2.2f;   // 相机相对目标点的基础高度
-    public float side = 0f;       // 肩偏：>0 右肩视角，<0 左肩视角，0 中间
+    public float distance = 2f;  // 相机距玩家多远（球半径）
+    public float height = 2.2f;  // 相机在玩家头顶多高
+    public float side = 0f;      // 肩偏：正值右肩，负值左肩
 
+    // 角度参数：鼠标控制这两个值
     [Header("Orbit Angles (Mouse Control)")]
-    public float yaw = 0f;        // 水平旋转角：绕世界 Y 轴（左右摇镜头）
-    public float pitch = 15f;     // 俯仰角：绕 X 轴（上下抬头低头）
-    public float minPitch = -30f; // 俯仰下限（避免镜头翻到脚底造成反转）
-    public float maxPitch = 70f;  // 俯仰上限（避免翻过头顶）
+    public float yaw = 0f;       // 水平角，鼠标左右改变它，决定相机在玩家左边还是右边
+    public float pitch = 15f;    // 俯仰角，鼠标上下改变它，决定相机在玩家上方还是下方
+    public float minPitch = -30f; // 俯仰下限，防止相机翻到地面以下
+    public float maxPitch = 30f;  // 俯仰上限，防止相机翻过头顶
 
     // 用于避免“第一次锁定玩家时镜头跳变”
     private bool initedAngles = false;
@@ -39,22 +40,22 @@ public class MainPlayerCamera : MonoSingleton<MainPlayerCamera>
     /// </summary>
     public void AddRotation(float yawDelta, float pitchDelta)
     {
-        // 左右鼠标移动 -> yaw 改变
+        // 左右鼠标移动 -> yaw 改变，累加水平角
         yaw += yawDelta;
 
-        // 上下鼠标移动 -> pitch 改变（并且要 clamp）
+        // 上下鼠标移动 -> pitch 改变， 累加俯仰角并限制范围
         pitch = Mathf.Clamp(pitch + pitchDelta, minPitch, maxPitch);
     }
 
     /// <summary>
     /// LateUpdate：等角色这一帧所有移动/动画/物理更新结束后，再摆相机。
-    /// 这么做能减少相机抖动（尤其是角色用 Rigidbody 或 root motion 时）。
+    /// 为什么用 LateUpdate？ 因为角色的物理移动在 FixedUpdate 里，动画更新在 Update 里，LateUpdate 在所有这些都完成之后执行，这时候读取角色位置是最准确的，不会产生相机抖动。
     /// </summary>
     private void LateUpdate()
     {
         // 1) 找玩家：主角对象挂在 User.Instance.CurrentCharacterObject
         if (player == null && User.Instance.CurrentCharacterObject != null)
-        {
+        { 
             player = User.Instance.CurrentCharacterObject.gameObject;
             viewPoint = null;
 

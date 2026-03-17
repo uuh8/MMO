@@ -42,7 +42,7 @@ public class UIRide : UIWindow
         {
             if (kv.Value.Define.Type == ItemType.Ride && kv.Value.Define.LimitClass == CharacterClass.None || kv.Value.Define.LimitClass == User.Instance.CurrentCharacter.Class)
             {
-                GameObject go = Instantiate(itemPrefab, this.listMain.transform);
+                GameObject go = Instantiate(itemPrefab, this.listMain.transform, false);
                 UIRideItem ui = go.GetComponent<UIRideItem>();
                 ui.SetRideItem(kv.Value, this, false);
                 this.listMain.AddItem(ui);

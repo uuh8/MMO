@@ -45,7 +45,7 @@ public class ItemManager : Singleton<ItemManager>
     /// </summary>
     /// <param name="itemId"></param>
     /// <param name="count"></param>
-    private void AddItem(int itemId, int count)
+    public void AddItem(int itemId, int count)
     {
         Item item = null;
         if(this.Items.TryGetValue(itemId, out item))

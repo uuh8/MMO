@@ -15,8 +15,11 @@ public class UIlogin : MonoBehaviour
 
     void Start()
     {
-        UserService.Instance.OnLogin = this.Login; 
+        // ContentType.Password 会把输入字符替换成 •
+        password.contentType = InputField.ContentType.Password;
+        password.ForceLabelUpdate(); // 立即刷新显示
 
+        UserService.Instance.OnLogin = this.Login;
         buttonlogin.onClick.AddListener(OnClickLogin);
     }
 

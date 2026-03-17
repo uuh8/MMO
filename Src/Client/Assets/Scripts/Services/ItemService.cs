@@ -7,11 +7,14 @@ using SkillBridge.Message;
 using Unity.Collections;
 using Models;
 using Managers;
+using UnityEngine.Events;
 
 namespace Services
 {
     class ItemService : Singleton<ItemService>, IDisposable
     {
+        public UnityAction<bool> OnBuyItem;
+
         public ItemService()
         {
             MessageDistributer.Instance.Subscribe<ItemBuyResponse>(this.OnItemBuy);
@@ -70,7 +73,19 @@ namespace Services
         /// <param name="response"></param>
         private void OnItemBuy(object sender, ItemBuyResponse response)
         {
-            MessageBox.Show("购买结果：" + response.Result + "\n" + response.Errormsg, "购买完成");
+            if (response.Result == Result.Success)
+            {
+                // ★ 购买成功后金币已经通过 StatusNotify 更新到 CurrentCharacter.Gold
+                // 触发事件通知 UIShop 刷新
+                if (OnBuyItem != null)
+                    OnBuyItem(true);
+            }
+            else
+            {
+                if (OnBuyItem != null)
+                    OnBuyItem(false);
+                MessageBox.Show("购买失败：" + response.Errormsg, "错误", MessageBoxType.Error);
+            }
         }
 
 

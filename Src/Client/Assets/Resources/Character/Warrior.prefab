@@ -1676,14 +1676,11 @@ MonoBehaviour:
   rb: {fileID: 54255169930946384}
   position: {x: 0, y: 0, z: 0}
   direction: {x: 0, y: 0, z: 0}
-  lastPosition: {x: 0, y: 0, z: 0}
   speed: 0
-  animSpeed: 1.5
-  jumpPower: 3
   isPlayer: 0
   rideController: {fileID: 0}
   currentRide: 0
-  rideBone: {fileID: 4204840262884974}
+  rideBone: {fileID: 4022653290096014}
 --- !u!114 &6576159755207531045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1697,14 +1694,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 54255169930946384}
-  entityController: {fileID: 0}
+  entityController: {fileID: -7724367513582322719}
   mouseXSensitivity: 3
   mouseYSensitivity: 2
-  rotateOnlyWhenRightMouseHeld: 1
-  turnAngle: 10
+  jumpPower: 10
+  fallMultiplier: 3
+  lowJumpMultiplier: 3
+  turnAngle: 5
   syncInterval: 0.1
   speed: 0
-  onAir: 0
+  isGrounded: 0
+  groundCheckDistance: 0.1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 512
   positionSnapThreshold: 100
   snapSyncInterval: 0.1
 --- !u!1 &1954705844561084
@@ -1826,11 +1829,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7812494319334598710}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4998761804184942}
   m_Father: {fileID: 4174984745379422}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

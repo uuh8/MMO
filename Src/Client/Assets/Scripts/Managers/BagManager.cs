@@ -4,6 +4,7 @@ using UnityEngine;
 using SkillBridge.Message;
 using Models;
 using UnityEngine.Analytics;
+using Services;
 
 namespace Managers
 {
@@ -28,7 +29,30 @@ namespace Managers
                 Info.Items = new byte[sizeof(BagItem) * this.Unlocked];
                 Reset();
             }
+
+            // 注册道具变化通知
+            StatusService.Instance.RegisterStatusNofity(StatusType.Item, OnItemStatusChanged);
         }
+
+        private bool OnItemStatusChanged(NStatus status)
+        {
+            if (status.Action == StatusAction.Add)
+            {
+                this.AddItem(status.Id, status.Value);
+                ItemManager.Instance.AddItem(status.Id, status.Value); // 同步 ItemManager
+            }
+            else if (status.Action == StatusAction.Delete)
+            {
+                this.RemoveItem(status.Id, status.Value);
+            }
+
+            // 通知 UIBag 刷新
+            if (OnBagUpdate != null)
+                OnBagUpdate();
+            return true;
+        }
+
+        public System.Action OnBagUpdate;
 
         /// <summary>
         /// 背包整理

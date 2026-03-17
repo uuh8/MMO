@@ -47,7 +47,8 @@ public class UIQuestInfo : MonoBehaviour
             this.npc = quest.Define.SubmitNPC;
         }
         // 如果既没有接，又没有完成，就不显示导航按钮
-        this.navButton.gameObject.SetActive(this.npc > 0);
+        if (this.navButton != null)
+            this.navButton.gameObject.SetActive(this.npc > 0);
 
         // 内容设置完成后强制布局一次（刷新ui）
         foreach (var fitter in this.GetComponentsInChildren<ContentSizeFitter>())

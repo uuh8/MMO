@@ -62,31 +62,26 @@ namespace Entities
         // 向前移动
         public void MoveForward()
         {
-            // Debug.LogFormat("MoveForward");
-            this.speed = -this.Define.Speed;
+            this.speed = this.Define.Speed;
         }
         // 向后移动
         public void MoveBack()
         {
-            // Debug.LogFormat("MoveBack");
             this.speed = this.Define.Speed;
         }
         // 停止
         public void Stop()
         {
-            // Debug.LogFormat("Stop");
             this.speed = 0;
         }
         // 设置方向
         public void SetDirection(Vector3Int direction)
         {
-            // Debug.LogFormat("SetDirection:{0}", direction);
             this.direction = direction;
         }
         // 设置位置
         public void SetPosition(Vector3Int position)
         {
-            // Debug.LogFormat("SetPosition:{0}", position);
             this.position = position;
         }
         #endregion

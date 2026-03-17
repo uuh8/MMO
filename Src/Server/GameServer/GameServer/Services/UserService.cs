@@ -17,16 +17,16 @@ namespace GameServer.Services
     class UserService : Singleton<UserService>
     {
         //构造函数
-        public UserService()
+        public UserService()  
         {
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserRegisterRequest>(this.OnRegister); 
-            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserLoginRequest>(this.OnLogin);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserLoginRequest>(this.OnLogin);   
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserCreateCharacterRequest>(this.OnCreateCharacter);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameEnterRequest>(this.OnGameEnter);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave); 
         }
 
-        public void Init()
+        public void Init() 
         {
 
         }
@@ -221,7 +221,7 @@ namespace GameServer.Services
                 Log.WarningFormat("[UserService] Duplicate GameEnter ignored. character:{0}:{1}",
                     sender.Session.Character.Id, sender.Session.Character.Info.Name);
 
-                // 进入游戏属于关键消息：如果你有“限频/合包”，这里必须强制发（否则客户端可能一直等）
+                // 进入游戏属于关键消息：如果有“限频/合包”，这里必须强制发（否则客户端可能一直等）
                 sender.Session.ForceFlush = true;
                 sender.SendResponse();
                 return;

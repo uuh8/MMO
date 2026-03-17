@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Models;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -37,6 +38,18 @@ public class UIMessageBox : MonoBehaviour {
             SoundManager.Instance.PlaySound(SoundDefine.SFX_Message_Error);
         else
             SoundManager.Instance.PlaySound(SoundDefine.SFX_Message_Info);
+    }
+    void OnEnable()
+    {
+        // 只有进入游戏后（CurrentCharacter != null）才需要手动唤出鼠标
+        if (User.Instance != null && User.Instance.CurrentCharacter != null)
+            InputManager.Instance.OnUIOpen();
+    }
+
+    void OnDisable()
+    {
+        if (User.Instance != null && User.Instance.CurrentCharacter != null)
+            InputManager.Instance.OnUIClose();
     }
 
     void OnClickYes()

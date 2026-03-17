@@ -21,7 +21,7 @@ public class GameObjectTool
     {
         return val / 100f;
     }
-
+    // ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
     public static int WorldToLogic(float val)
     {
         return Mathf.RoundToInt(val * 100f);
@@ -47,7 +47,7 @@ public class GameObjectTool
         };
     }
 
-
+    // ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
     public static bool EntityUpdate(NEntity entity,UnityEngine.Vector3 position, Quaternion rotation,float speed)
     {
         NVector3 pos = WorldToLogicN(position);

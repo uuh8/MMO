@@ -100,7 +100,7 @@ public class UIFriends : UIWindow
     {
         foreach (var Item in FriendManager.Instance.allFriends)
         {
-            GameObject go = Instantiate(friendItemPrefab, this.listMain.transform);
+            GameObject go = Instantiate(friendItemPrefab, this.listMain.transform, false);
             UIFriendItem uiItem = go.GetComponent<UIFriendItem>();
             uiItem.SetFriendInfo(Item);
             this.listMain.AddItem(uiItem);

@@ -1484,7 +1484,7 @@ MonoBehaviour:
   rewardItems: {fileID: 0}
   rewardMoney: {fileID: 2177907565897311930}
   rewardExp: {fileID: 2028989723919953247}
-  navButton: {fileID: 0}
+  navButton: {fileID: 8416087266310918041}
 --- !u!1 &2679892092659354278
 GameObject:
   m_ObjectHideFlags: 0
@@ -3032,7 +3032,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u89D2\u8272\u88C5\u5907"
+  m_Text: "\u4EFB\u52A1"
 --- !u!1 &5919197757297068500
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,6 +20,18 @@ public abstract class UIWindow : MonoBehaviour
         No,
     }
 
+    // 面板激活时自动调用（UIManager.Show 触发 SetActive(true) 时执行）
+    private void OnEnable()
+    {
+        InputManager.Instance.OnUIOpen();
+    }
+
+    // 面板隐藏时自动调用（UIManager.Close 触发 SetActive(false) 时执行）
+    private void OnDisable()
+    {
+        InputManager.Instance.OnUIClose();
+    }
+
     public void Close(WindowResult result = WindowResult.None)
     {
         SoundManager.Instance.PlaySound(SoundDefine.SFX_UI_Win_Close);
@@ -29,7 +41,7 @@ public abstract class UIWindow : MonoBehaviour
         this.OnClose = null;
     }
 
-    // 两个虚函数，子类如果需要可以重写
+    // 三个虚函数，子类如果需要可以重写
     public virtual void OnCloseClick()
     {
         // 用于关闭
@@ -45,6 +57,8 @@ public abstract class UIWindow : MonoBehaviour
         // 用于确认
         this.Close(WindowResult.No);
     }
+
+
 
     private void OnMouseDown()
     {

@@ -1,4 +1,5 @@
 using Common.Data;
+using Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ namespace Managers
     class NPCManager: Singleton<NPCManager>
     {
         public delegate bool NpcActionHandler(NpcDefine npc);
+        private NpcController currentNearestNpc = null;
+        private List<NpcController> npcsInRange = new List<NpcController>();
 
         // NPC的功能信息
         Dictionary<NpcFunction, NpcActionHandler> eventMap = new Dictionary<NpcFunction, NpcActionHandler>();
@@ -115,6 +118,50 @@ namespace Managers
         internal Vector3 GetNpcPosition(int npc)
         {
             return this.npcPositions[npc];
+        }
+
+        public void OnNpcEnterRange(NpcController npc)
+        {
+            if (!npcsInRange.Contains(npc))
+                npcsInRange.Add(npc);
+            RefreshNearestNpc();
+        }
+
+        public void OnNpcLeaveRange(NpcController npc)
+        {
+            npcsInRange.Remove(npc);
+            RefreshNearestNpc();
+        }
+
+        private void RefreshNearestNpc()
+        {
+            if (npcsInRange.Count == 0)
+            {
+                currentNearestNpc = null;
+                UIWorldElementManager.Instance.HideInteractTip();
+                return;
+            }
+            // 取距离玩家最近的那个
+            var playerPos = User.Instance.CurrentCharacterObject.transform.position;
+            NpcController nearest = null;
+            float minDist = float.MaxValue;
+            foreach (var n in npcsInRange)
+            {
+                float d = (n.transform.position - playerPos).sqrMagnitude; // 用sqrMagnitude避免开方
+                if (d < minDist) { minDist = d; nearest = n; }
+            }
+
+            if (nearest != currentNearestNpc)
+            {
+                currentNearestNpc = nearest;
+                UIWorldElementManager.Instance.ShowInteractTip(currentNearestNpc.transform);
+            }
+        }
+
+        // 由 PlayerInputController 在 Update 里调用
+        public void OnInteractKeyPressed()
+        {
+            currentNearestNpc?.TryInteract();
         }
     }
 }

@@ -14,7 +14,7 @@ public class RideController : MonoBehaviour
     {
         this.anim = this.GetComponent<Animator>();
     }
-    void Update()
+    void Update() 
     {
         if (this.mountPoint == null || this.rider == null)
             return;

@@ -1575,6 +1575,11 @@ namespace SkillBridge.Message
         Jump = 4,
         [global::ProtoBuf.ProtoEnum(Name = @"RIDE")]
         Ride = 5,
+        AtkA = 6,
+        AtkB = 7,
+        SkillA = 8,
+        SkillB = 9,
+        SkillC = 10,
     }
 
     [global::ProtoBuf.ProtoContract(Name = @"ITEM_TYPE")]

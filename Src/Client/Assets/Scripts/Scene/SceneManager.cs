@@ -36,6 +36,7 @@ public class SceneManager : MonoSingleton<SceneManager>
 
         async.allowSceneActivation = true;  // 表示加载完成后立即激活场景
         async.completed += LevelLoadCompleted;  // 订阅了这个异步操作的 completed 事件，让它在加载完成时回调到 LevelLoadCompleted
+
         while (!async.isDone)
         {
             // 只要加载没结束，就每帧把 async.progress 进度值抛给 onProgress（若有订阅者），并 yield return null 让出一帧，以免卡住主线程。这就是“每帧推动一次、顺便更新进度”的经典异步加载模式

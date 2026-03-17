@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4662196577031031466
 RectTransform:
   m_ObjectHideFlags: 0
@@ -171,6 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf92d0b5b8e12fb419733b9161c9b9f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Root: {fileID: 0}
   questInfo: {fileID: 2393556765339135163}
   openButtons: {fileID: 7337396900706764762}
   SubmitButtons: {fileID: 42987014003295147}
@@ -881,6 +882,7 @@ MonoBehaviour:
   rewardItems: {fileID: 0}
   rewardMoney: {fileID: 4636683780357375034}
   rewardExp: {fileID: 7293411064206617837}
+  navButton: {fileID: 0}
 --- !u!1 &3630267807361589965
 GameObject:
   m_ObjectHideFlags: 0
@@ -1346,6 +1348,7 @@ MonoBehaviour:
   rewardItems: {fileID: 0}
   rewardMoney: {fileID: 4636683780357375034}
   rewardExp: {fileID: 7293411064206617837}
+  navButton: {fileID: 0}
 --- !u!1 &4924983744693948517
 GameObject:
   m_ObjectHideFlags: 0

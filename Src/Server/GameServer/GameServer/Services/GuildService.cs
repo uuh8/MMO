@@ -23,7 +23,7 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildLeaveRequest>(this.OnGuildLeaveRequest);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<GuildAdminRequest>(this.OnGuildAdmin);
         }
-
+         
          
         public void Init()
         {
@@ -145,14 +145,26 @@ namespace GameServer.Services
 
             // 校验申请者还在不在线,在线才发消息
             var requester = SessionManager.Instance.GetSession(response.Apply.characterId);
-            if(requester != null)
+            if (requester != null)
             {
                 requester.Session.Character.Guild = guild;
-
                 requester.Session.Response.guildJoinRes = response;
                 requester.Session.Response.guildJoinRes.Result = Result.Success;
                 requester.Session.Response.guildJoinRes.Errormsg = "加入公会成功";
                 requester.SendResponse();
+            }
+
+            // 给公会所有在线成员广播最新的公会数据（包括 A 自己）
+            foreach (var member in guild.Data.TGuildMembers)
+            {
+                var memberSession = SessionManager.Instance.GetSession(member.CharacterId);
+                if (memberSession != null)
+                {
+                    memberSession.Session.Response.Guild = new GuildResponse();
+                    memberSession.Session.Response.Guild.Result = Result.Success;
+                    memberSession.Session.Response.Guild.guildInfo = guild.GuildInfo(memberSession.Session.Character);
+                    memberSession.SendResponse();
+                }
             }
         }
         /// <summary>
@@ -202,9 +214,7 @@ namespace GameServer.Services
             var target = SessionManager.Instance.GetSession(request.Target);
             if (target == null)
             {
-                target.Session.Response.guildAdmin = new GuildAdminResponse();
-                target.Session.Response.guildAdmin.Result = Result.Success;
-                target.Session.Response.guildAdmin.Command = request;
+                sender.Session.Response.guildAdmin.Result = Result.Success;
                 target.SendResponse();
                 return;
             }

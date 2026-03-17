@@ -12,8 +12,9 @@ public class UIQuestStatus : MonoBehaviour
     public void SetQuestStatus(NpcQuestStatus status)
     {
         this.questStatus = status;
+        this.gameObject.SetActive(status != NpcQuestStatus.None); // None 时隐藏整个组件
 
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             if (this.statusImages[i] != null)
             {

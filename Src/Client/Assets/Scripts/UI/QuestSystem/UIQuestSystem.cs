@@ -16,7 +16,7 @@ public class UIQuestSystem : UIWindow
     public GameObject itemPrefab;
 
     public TabView Tabs;
-    public ListView listMain;
+    public ListView listMain; 
     public ListView listBranch;
 
     public UIQuestInfo questInfo;
@@ -28,8 +28,18 @@ public class UIQuestSystem : UIWindow
         this.listMain.onItemSelected += this.OnQuestSelected;    
         this.listBranch.onItemSelected += this.OnQuestSelected;
         this.Tabs.OnTabSelect += OnSelectTab;
+        QuestManager.Instance.onQuestStatusChanged += OnQuestStatusChanged;
         RefreshUI();
     }
+    void OnDestroy()
+    {
+        QuestManager.Instance.onQuestStatusChanged -= OnQuestStatusChanged; // ★ 防内存泄漏
+    }
+    private void OnQuestStatusChanged(Quest quest)
+    {
+        RefreshUI();
+    }
+
     public void OnQuestSelected(ListView.ListViewItem item)
     {
         // 把抽象的 ListViewItem 转成具体的 UIQuestItem，读出它绑定的 quest，然后丢给右侧的 UIQuestInfo
@@ -74,7 +84,7 @@ public class UIQuestSystem : UIWindow
                 ? this.listMain.transform
                 : this.listBranch.transform;
 
-            GameObject go = Instantiate(itemPrefab, parent);
+            GameObject go = Instantiate(itemPrefab, parent, false);
             UIQuestItem ui = go.GetComponent<UIQuestItem>();
             ui.SetQuestInfo(kv.Value);
 

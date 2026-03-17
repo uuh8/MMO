@@ -35,6 +35,11 @@ public class UIGuild : UIWindow
 
     private void UpdateUI()
     {
+        if (GuildManager.Instance.guildInfo == null)
+        {
+            this.Close();   // 无公会状态下不应该显示这个界面，直接关闭
+            return;
+        }
         this.uiInfo.Info = GuildManager.Instance.guildInfo;
 
         ClearGuildList();    // 清空主线/支线两个列表
@@ -43,9 +48,11 @@ public class UIGuild : UIWindow
 
     private void InitGuildItems()
     {
+        if (GuildManager.Instance.guildInfo == null) return;
+
         foreach (var Item in GuildManager.Instance.guildInfo.Members)
         {
-            GameObject go = Instantiate(guildItemPrefab, this.listMain.transform);
+            GameObject go = Instantiate(guildItemPrefab, this.listMain.transform, false);
             UIGuildMemberItem uiItem = go.GetComponent<UIGuildMemberItem>();
             uiItem.SetGuildMemberInfo(Item);
             this.listMain.AddItem(uiItem);
@@ -65,19 +72,7 @@ public class UIGuild : UIWindow
     /// <returns></returns>
     public void OnClickLeave()
     {
-        /*tips = "";
-        int friendId = 0;
-        string friendName = "";
-        if (!int.TryParse(input, out friendId))
-            friendName = input;
-        if (friendId == User.Instance.CurrentCharacter.Id || friendName == User.Instance.CurrentCharacter.Name)
-        {
-            tips = "不能添加自己为好友";
-            return false;
-        }
 
-        FriendService.Instance.SendFriendAddRequest(friendId, friendName);
-        return true;*/
     }
     /// <summary>
     /// 点击私聊按钮
@@ -87,19 +82,7 @@ public class UIGuild : UIWindow
     /// <returns></returns>
     public void OnClickChat()
     {
-        /*tips = "";
-        int friendId = 0;
-        string friendName = "";
-        if (!int.TryParse(input, out friendId))
-            friendName = input;
-        if (friendId == User.Instance.CurrentCharacter.Id || friendName == User.Instance.CurrentCharacter.Name)
-        {
-            tips = "不能添加自己为好友";
-            return false;
-        }
 
-        FriendService.Instance.SendFriendAddRequest(friendId, friendName);
-        return true;*/
     }
     /// <summary>
     /// 点击公会宣言按钮
@@ -109,19 +92,7 @@ public class UIGuild : UIWindow
     /// <returns></returns>
     public void OnClickNotice()
     {
-        /*tips = "";
-        int friendId = 0;
-        string friendName = "";
-        if (!int.TryParse(input, out friendId))
-            friendName = input;
-        if (friendId == User.Instance.CurrentCharacter.Id || friendName == User.Instance.CurrentCharacter.Name)
-        {
-            tips = "不能添加自己为好友";
-            return false;
-        }
 
-        FriendService.Instance.SendFriendAddRequest(friendId, friendName);
-        return true;*/
     }
 
     /// <summary>
