@@ -22,6 +22,7 @@ namespace Services
             MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnMapCharacterEnter);
             MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnMapCharacterLeave);
             MessageDistributer.Instance.Subscribe<MapEntitySyncResponse>(this.OnMapEntitySync);
+            MessageDistributer.Instance.Subscribe<MonsterStateSyncResponse>(this.OnMonsterStateSync);
 
         }
 
@@ -31,6 +32,7 @@ namespace Services
             MessageDistributer.Instance.Unsubscribe<MapCharacterEnterResponse>(this.OnMapCharacterEnter);
             MessageDistributer.Instance.Unsubscribe<MapCharacterLeaveResponse>(this.OnMapCharacterLeave);
             MessageDistributer.Instance.Unsubscribe<MapEntitySyncResponse>(this.OnMapEntitySync);
+            MessageDistributer.Instance.Unsubscribe<MonsterStateSyncResponse>(this.OnMonsterStateSync);
         }
 
         public void Init()
@@ -99,33 +101,24 @@ namespace Services
             if (CurrentMapId != 0 && CurrentMapId != response.mapId)
             {
                 CharacterManager.Instance.Clear();
+                MonsterManager.Instance.Clear(); // 换图时也清理怪物
             }
             CurrentMapId = response.mapId;
 
-            // response.Characters 代表地图上的所有角色，挨个都交给 CharacterManager 管理
-            // 只负责把角色/怪物交给 CharacterManager 创建实体
-            /*foreach (var cha in response.Characters)
-            {
-                if (User.Instance.CurrentCharacter == null || (cha.Type == CharacterType.Player && User.Instance.CurrentCharacter.Id == cha.Id))
-                {
-                    User.Instance.CurrentCharacter = cha;
-                }
-                CharacterManager.Instance.AddCharacter(cha);
-            }*/
+            // 玩家列表 → CharacterManager
             foreach (var cha in response.Characters)
             {
-                // 防止同 entityId 被重复 Add 造成 EntityManager 残留
                 if (!CharacterManager.Instance.CharactersMngr.ContainsKey(cha.EntityId))
-                {
                     CharacterManager.Instance.AddCharacter(cha);
-                }
             }
 
-            /*if (CurrentMapId != response.mapId)
+            // 怪物列表 → MonsterManager（现在直接传 NMonsterInfo，不需要转换了）
+            foreach (var monster in response.Monsters)
             {
-                this.EnterMap(response.mapId);      // 角色进入地图
-                this.CurrentMapId = response.mapId; // 设置当前地图Id
-            }*/
+                if (!MonsterManager.Instance.MonstersMngr.ContainsKey(monster.EntityId))
+                    MonsterManager.Instance.AddMonster(monster);
+            }
+
         }
         private void EnterMap(int mapId)
         {
@@ -152,13 +145,22 @@ namespace Services
         {
             Debug.LogFormat("[MapService] OnMapCharacterLeave: CharId:{0}", response.entityId);
 
-            if(response.entityId != User.Instance.CurrentCharacter.EntityId)
+            if (response.entityId == User.Instance.CurrentCharacter.EntityId)
+            {
+                // 自己离开，全部清理
+                CharacterManager.Instance.Clear();
+                MonsterManager.Instance.Clear();
+                return;
+            }
+
+            // 先判断是玩家还是怪物再分别移除
+            if (CharacterManager.Instance.CharactersMngr.ContainsKey(response.entityId))
             {
                 CharacterManager.Instance.RemoveCharacter(response.entityId);
             }
-            else
+            else if (MonsterManager.Instance.MonstersMngr.ContainsKey(response.entityId))
             {
-                CharacterManager.Instance.Clear();
+                MonsterManager.Instance.RemoveMonster(response.entityId);
             }
         }
 
@@ -173,6 +175,20 @@ namespace Services
             foreach(var entity in response.entitySyncs)
             {
                 EntityManager.Instance.OnEntitySync(entity);
+            }
+        }
+
+        private void OnMonsterStateSync(object sender, MonsterStateSyncResponse response)
+        {
+            // 先确认消息有没有收到
+            Debug.LogFormat("[MapService] OnMonsterStateSync 收到消息，数量:{0}", response.Syncs.Count);
+
+            foreach (var sync in response.Syncs)
+            {
+                // 把这条消息交给 GameObjectManager 处理
+                // GameObjectManager 持有所有怪物的 GameObject 引用
+                // 由它来找到对应的怪物并切换行为
+                GameObjectManager.Instance.OnMonsterStateSync(sync);
             }
         }
 

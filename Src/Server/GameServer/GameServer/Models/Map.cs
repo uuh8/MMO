@@ -58,9 +58,16 @@ namespace GameServer.Models
             this.MonsterManager.Init(this);
         }
 
+        public IEnumerable<Character> GetAllCharacters()
+        {
+            foreach (var kv in MapCharacters)
+                yield return kv.Value.character;
+        }
+
         internal void Update()
         {
             SpawnManager.Update();
+            MonsterManager.Update();
         }
 
         #region 实体行为
@@ -92,10 +99,10 @@ namespace GameServer.Models
                 if (kv.Value.character != character)
                     this.AddCharacterEnterMap(kv.Value.connection, character.Info);
             }
-
+            
             foreach (var kv in this.MonsterManager.Monsters)
             {
-                conn.Session.Response.mapCharacterEnter.Characters.Add(kv.Value.Info);
+                conn.Session.Response.mapCharacterEnter.Monsters.Add(kv.Value.MonsterInfo);
             }
 
             // 2) 是否立刻发给进入者？
@@ -135,8 +142,19 @@ namespace GameServer.Models
             Log.InfoFormat("[Map] MonsterEnter:{0} monsterId:{1}", this.Define.ID, monster.Id);
             foreach (var kv in MapCharacters)
             {
-                this.AddCharacterEnterMap(kv.Value.connection, monster.Info);
+                this.AddMonsterEnterMap(kv.Value.connection, monster.MonsterInfo);
             }
+        }
+        void AddMonsterEnterMap(NetConnection<NetSession> conn, NMonsterInfo monster)
+        {
+            if (conn.Session.Response.mapCharacterEnter == null)
+            {
+                conn.Session.Response.mapCharacterEnter = new MapCharacterEnterResponse();
+                conn.Session.Response.mapCharacterEnter.mapId = this.Define.ID;
+            }
+            // 怪物放进 Monsters 列表，不放 Characters
+            conn.Session.Response.mapCharacterEnter.Monsters.Add(monster);
+            conn.SendResponse();
         }
         #endregion
 
@@ -187,7 +205,7 @@ namespace GameServer.Models
                     kv.Value.character.Position = entitySync.Entity.Position;
                     kv.Value.character.Direction = entitySync.Entity.Direction;
                     kv.Value.character.Speed = entitySync.Entity.Speed;
-                    if(entitySync.Event == EntityEvent.Ride)
+                    if(entitySync.Event == EntityEvent.Ride) 
                     {
                         kv.Value.character.Ride = entitySync.Param;
                     }
@@ -199,6 +217,23 @@ namespace GameServer.Models
                 }
             }
         }
-    
+
+        /// <summary>
+        /// 把怪物状态变化广播给地图里所有玩家
+        /// </summary>
+        public void BroadcastMonsterState(MonsterStateSync sync)
+        {
+            foreach (var kv in MapCharacters)
+            {
+                var conn = kv.Value.connection;
+
+                if (conn.Session.Response.monsterStateSync == null)
+                    conn.Session.Response.monsterStateSync = new MonsterStateSyncResponse();
+
+                conn.Session.Response.monsterStateSync.Syncs.Add(sync);
+                conn.SendResponse();
+            }
+        }
+
     }
 }

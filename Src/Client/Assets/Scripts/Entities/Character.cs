@@ -11,8 +11,7 @@ namespace Entities
     public class Character : Entity
     {
         public NCharacterInfo Info;
-
-        public Common.Data.CharacterDefine Define;
+        public CharacterDefine Define;
 
         public int Id
         {

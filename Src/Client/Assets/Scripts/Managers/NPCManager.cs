@@ -12,13 +12,10 @@ namespace Managers
     {
         public delegate bool NpcActionHandler(NpcDefine npc);
         private NpcController currentNearestNpc = null;
+
         private List<NpcController> npcsInRange = new List<NpcController>();
-
-        // NPC的功能信息
-        Dictionary<NpcFunction, NpcActionHandler> eventMap = new Dictionary<NpcFunction, NpcActionHandler>();
-
-        // NPC的位置信息
-        Dictionary<int, Vector3> npcPositions = new Dictionary<int, Vector3>();
+        private Dictionary<NpcFunction, NpcActionHandler> eventMap = new Dictionary<NpcFunction, NpcActionHandler>();   // NPC的功能信息
+        private Dictionary<int, Vector3> npcPositions = new Dictionary<int, Vector3>();     // NPC的位置信息
 
         public void RegisterNpcEvent(NpcFunction function, NpcActionHandler action)
         {
@@ -60,11 +57,13 @@ namespace Managers
         /// <returns></returns>
         public bool Interactive(NpcDefine npc)
         {
-            if(DoTaskInteractive(npc))
+            // 任务优先：先检查有没有任务相关交互
+            if (DoTaskInteractive(npc))
             {
                 return true;
             }
-            else if(npc.Type == NpcDefine.NpcType.Functional)
+            // 没有任务：再走功能分发
+            else if (npc.Type == NpcDefine.NpcType.Functional)
             {
                 return DoFunctionInteractive(npc);
             }
@@ -101,6 +100,7 @@ namespace Managers
             return eventMap[npc.Function](npc);
         }
 
+        #region npc位置相关
         /// <summary>
         /// 设置NPC的位置
         /// </summary>
@@ -126,7 +126,6 @@ namespace Managers
                 npcsInRange.Add(npc);
             RefreshNearestNpc();
         }
-
         public void OnNpcLeaveRange(NpcController npc)
         {
             npcsInRange.Remove(npc);
@@ -148,15 +147,18 @@ namespace Managers
             foreach (var n in npcsInRange)
             {
                 float d = (n.transform.position - playerPos).sqrMagnitude; // 用sqrMagnitude避免开方
-                if (d < minDist) { minDist = d; nearest = n; }
+                if (d < minDist) { 
+                    minDist = d; 
+                    nearest = n; 
+                }
             }
-
             if (nearest != currentNearestNpc)
             {
                 currentNearestNpc = nearest;
                 UIWorldElementManager.Instance.ShowInteractTip(currentNearestNpc.transform);
             }
         }
+        #endregion
 
         // 由 PlayerInputController 在 Update 里调用
         public void OnInteractKeyPressed()

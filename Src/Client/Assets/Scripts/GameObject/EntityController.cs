@@ -1,6 +1,4 @@
 using SkillBridge.Message;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Entities;
 using Managers;
@@ -21,7 +19,7 @@ public class EntityController : MonoBehaviour, IEntityNotify
 
     public RideController rideController;
     public int currentRide = 0;
-    public Transform rideBone;  // 设定一个位置和坐骑绑定(一般是臀部）
+    public Transform rideBone;
 
     // Use this for initialization
     void Start () {
@@ -30,8 +28,9 @@ public class EntityController : MonoBehaviour, IEntityNotify
 
         if (entity != null)
         {
-            // 注册事件的接收者
-            EntityManager.Instance.RegisterEntityChangeNotify(entity.entityId, this);
+            // 注册事件的接收者.
+            // 注意这儿 this 是 EntityController 自己,但被当作 IEntityNotify 接口类型传入，EntityManager 只看到接口，看不到 EntityController，以此利用面向接口编程，实现逻辑层和表现层的解耦
+            EntityManager.Instance.RegisterEntityChangeNotify(entity.entityId, this); 
             this.UpdateTransform();
         }
 
@@ -44,11 +43,12 @@ public class EntityController : MonoBehaviour, IEntityNotify
         if (this.entity == null)
             return;
 
+        // 第一步：逻辑层外推    
         // 固定时间步调用 OnUpdate(delta) 做“逻辑积分”（pos += dir * speed * delta / SCALE），并把结果回写到 NEntity，保证本地逻辑与可发往网络的数据一致
         this.entity.OnUpdate(Time.fixedDeltaTime);
 
-        // 不是本地玩家，把逻辑投影到可视层
-        // 只对其他玩家执行，本地玩家的位置由 Rigidbody 物理驱动，不走这里
+        // 第二步：逻辑坐标→世界坐标→驱动GameObject
+        // 不是本地玩家，把逻辑投影到可视层（只对其他玩家执行，本地玩家的位置由 Rigidbody 物理驱动，不走这里）
         if (!this.isPlayer)
         {
             this.UpdateTransform();
@@ -79,6 +79,8 @@ public class EntityController : MonoBehaviour, IEntityNotify
         }
     }
 
+#region IEntityNotify 接口实现
+
     /// <summary>
     /// 移除实体
     /// </summary>
@@ -93,10 +95,8 @@ public class EntityController : MonoBehaviour, IEntityNotify
         Destroy(this.gameObject);
     }
 
-
-
     /// <summary>
-    /// 状态改变
+    /// 实体状态改变
     /// </summary>
     /// <param name="entityEvent"></param>
     public void OnEntityEvent(EntityEvent entityEvent, int param)
@@ -139,6 +139,18 @@ public class EntityController : MonoBehaviour, IEntityNotify
             this.rideController.OnEntityEvent(entityEvent, param);  // 角色做了动作坐骑也要跟着做动作
     }
 
+    /// <summary>
+    /// 实体数据改变
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <exception cref="System.NotImplementedException"></exception>
+    public void OnEntityChanged(Entity entity)
+    {
+        // Debug.LogFormat("[EntityController] OnEntityChanged :ID:{0} POS:{1} DIR:{2} SPD:{3} ", entity.entityId, entity.position, entity.direction, entity.speed);
+    }
+
+#endregion
+
     public void Ride(int rideId)
     {
         if (currentRide == rideId) return;
@@ -166,6 +178,7 @@ public class EntityController : MonoBehaviour, IEntityNotify
             this.anim.SetLayerWeight(1, 1);
         }
     }
+
     /// <summary>
     /// 设置角色乘坐坐骑的状态
     /// </summary>  
@@ -176,15 +189,6 @@ public class EntityController : MonoBehaviour, IEntityNotify
         this.anim.transform.position = position + (this.anim.transform.position - this.rideBone.position);
     }
 
-    /// <summary>
-    /// 数据改变
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <exception cref="System.NotImplementedException"></exception>
-    public void OnEntityChanged(Entity entity)
-    {
-        // Debug.LogFormat("[EntityController] OnEntityChanged :ID:{0} POS:{1} DIR:{2} SPD:{3} ", entity.entityId, entity.position, entity.direction, entity.speed);
-    }
 
 
 }

@@ -208,7 +208,7 @@ namespace Network
         }
 
         /// <summary>
-        /// Closes the connection.
+        /// Closes the connection. 
         /// </summary>
         /// <param name="args">The SocketAsyncEventArgs for the connection.</param>
         private void CloseConnection(SocketAsyncEventArgs args)

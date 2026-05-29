@@ -23,22 +23,32 @@ public class NpcController : MonoBehaviour
     void Start()
     {
         anim = this.gameObject.GetComponent<Animator>();
+
+        // 用 Inspector 里设置的 npcID 查配置表，拿到这个NPC的完整定义
         npc = NPCManager.Instance.GetNpcDefine(this.npcID);
+
+        // 把自己的世界坐标注册进 NPCManager 的位置字典
+        // 任务系统的导航按钮需要用这个坐标来寻路
         NPCManager.Instance.UpdateNpcPosition(this.npcID, this.transform.position);
+
+        // 启动随机动画协程
         this.StartCoroutine(Actions());
+
+        // 查询当前任务状态，刷新头顶图标
         RefreshNpcStatus();
+
+        // 订阅任务状态变化事件
         QuestManager.Instance.onQuestStatusChanged += OnQuestStatusChanged;
     }
     void Update()
     {
-        // 每帧检测玩家和 NPC 的距离
         if (User.Instance.CurrentCharacterObject == null) return;
 
+        // 每帧检测玩家和 NPC 的距离
         float dist = Vector3.Distance(
             this.transform.position,
             User.Instance.CurrentCharacterObject.transform.position
         );
-
         if (dist <= interactDistance)
         {
             // 进入范围：显示提示，注册自己为当前可交互 NPC
@@ -75,12 +85,11 @@ public class NpcController : MonoBehaviour
     {
         if (!inInteractive)
         {
-            inInteractive = true;
+            inInteractive = true;   // npc进入交互中状态（防止重复点击导致多次交互）
             StartCoroutine(DoInteractice());
         }
     }
 
-    // 以下保持不变
     private void OnQuestStatusChanged(Quest quest) { RefreshNpcStatus(); }
 
     private void RefreshNpcStatus()
@@ -97,17 +106,23 @@ public class NpcController : MonoBehaviour
                 yield return new WaitForSeconds(2f);
             else
                 yield return new WaitForSeconds(Random.Range(5f, 10f));
-            this.Relax();
+
+            // 播放 Relax 动画
+            this.Relax();   
         }
     }
-
     void Relax() { anim.SetTrigger("Relax"); }
 
     IEnumerator DoInteractice()
     {
+        // 第一步：NPC 转身朝向玩家
         yield return FaceToPlayer();
+
+        // 第二步：执行交互分发
         if (NPCManager.Instance.Interactive(npc))
             anim.SetTrigger("Talk");
+
+        // 第三步：等待3秒后重置交互状态
         yield return new WaitForSeconds(3f);
         inInteractive = false;
     }
@@ -116,11 +131,13 @@ public class NpcController : MonoBehaviour
     {
         Vector3 faceTo = (User.Instance.CurrentCharacterObject.transform.position
                          - this.transform.position).normalized;
+
+        // 每帧用 Lerp 插值旋转，直到夹角小于5度
         while (Mathf.Abs(Vector3.Angle(this.gameObject.transform.forward, faceTo)) > 5)
         {
             this.gameObject.transform.forward = Vector3.Lerp(
                 this.gameObject.transform.forward, faceTo, Time.deltaTime * 5f);
-            yield return null;
+            yield return null;  // 等一帧继续转
         }
     }
 }

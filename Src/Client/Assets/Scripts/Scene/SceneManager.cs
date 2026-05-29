@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class SceneManager : MonoSingleton<SceneManager>
 {
     UnityAction<float> onProgress = null;
+    public UnityAction OnLevelLoaded;   // 场景加载完成的事件
 
     // Use this for initialization
     protected override void OnStart()
@@ -51,5 +52,11 @@ public class SceneManager : MonoSingleton<SceneManager>
         if (onProgress != null)
             onProgress(1f); // 这里再次把进度回调写死为 1f，确保 UI 进度条收尾
         Debug.Log("[SceneManager] LevelLoadCompleted:" + obj.progress);
+
+        // 场景加载完成，通知所有监听者
+        if (OnLevelLoaded != null)
+            OnLevelLoaded();
     }
+
+
 }

@@ -11,9 +11,8 @@ namespace GameServer.Managers
     class EntityManager : Singleton<EntityManager>
     {
         private int idx = 0;
-        public List<Entity> AllEntities = new List<Entity>();
-        // 区分每个地图的entity
-        public Dictionary<int, List<Entity>> MapEntities = new Dictionary<int, List<Entity>>();
+        public List<Entity> AllEntities = new List<Entity>();   // 全局的实体列表
+        public Dictionary<int, List<Entity>> MapEntities = new Dictionary<int, List<Entity>>();     // 每个地图的entity
 
         /// <summary>
         /// 添加/移除 实体

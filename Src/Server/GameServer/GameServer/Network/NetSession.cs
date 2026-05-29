@@ -13,19 +13,15 @@ namespace Network
 {
     class NetSession : INetSession
     {
-        /*1. TUser User
-        定义：TUser 是一个用户对象，通常对应于数据库中的 Users 表。
-        作用：存储当前连接的用户信息，例如用户名、密码等。*/
         public TUser User { get; set; }             // 当前登录的用户    
-
         public Character Character { get; set; }    // 当前用户选择的角色
         public NEntity Entity { get; set; }         // 当前用户选择的角色在游戏中的实体
 		public IPostResponser PostResponser { get; set; }   // 响应后处理器
 
         private const int MinSendIntervalMs = 100;
         private long lastSendTick = 0;
-        // 某些关键消息想绕过限频（登录/切图/强提示等）
-        public bool ForceFlush { get; set; } = false;
+        
+        public bool ForceFlush { get; set; } = false;   // 某些关键消息想绕过限频（登录/切图/强提示等）
 
 
         public void Disconnected()
@@ -37,8 +33,7 @@ namespace Network
 
 
         private NetMessage response;    // 用于响应的详细 
-
-        public NetMessageResponse Response
+        public NetMessageResponse Response 
         {
             get
             {

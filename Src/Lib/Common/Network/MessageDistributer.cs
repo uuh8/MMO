@@ -60,7 +60,7 @@ namespace Network
 
 
         public delegate void MessageHandler<Tm>(T sender, Tm message);
-        private Dictionary<string, System.Delegate> messageHandlers = new Dictionary<string, System.Delegate>();
+        private Dictionary<string, System.Delegate> messageHandlers = new Dictionary<string, System.Delegate>();    // 订阅注册表
 
         private bool Running = false;
         private AutoResetEvent threadEvent = new AutoResetEvent(true);
@@ -74,6 +74,11 @@ namespace Network
         {
         }
 
+        /// <summary>
+        /// 订阅/退订函数
+        /// </summary>
+        /// <typeparam name="Tm"></typeparam>
+        /// <param name="messageHandler"></param>
         public void Subscribe<Tm>(MessageHandler<Tm> messageHandler)
         {
             string type = typeof(Tm).Name;

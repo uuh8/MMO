@@ -38,7 +38,7 @@ public class PlayerInputController : MonoBehaviour
 
     public int speed;
 
-    private NavMeshAgent agent;
+    private NavMeshAgent agent;         // 自动寻路
     private bool autoNav;               // 是否正在自动寻路
 
     private bool jumpRequested = false; // 是否跳跃
@@ -55,16 +55,10 @@ public class PlayerInputController : MonoBehaviour
     private EntityEvent lastMoveEvent = EntityEvent.Idle;
 
     // LateUpdate 相关
-    // 用于计算 speed（世界坐标）
-    private Vector3 lastPos;
-    // 位置漂移纠偏阈值（逻辑坐标单位）
-    //  WorldToLogic 是 *100，所以 100 ≈ 1米
-    public int positionSnapThreshold = 100;
-    // 因为“位置纠偏”触发快照同步(EntityEvent.None)的最小间隔（秒）
-    // 防止持续漂移时每帧发包
-    public float snapSyncInterval = 0.10f;
-    // 上一次因为“位置纠偏”发送 None 的时间
-    private float lastSnapSyncTime = 0f;
+    private Vector3 lastPos;                    // 用于计算 speed（世界坐标）
+    public int positionSnapThreshold = 100;     // 位置漂移纠偏阈值（逻辑坐标单位）WorldToLogic 是 *100，所以 100 ≈ 1米
+    public float snapSyncInterval = 0.10f;      // 因为“位置纠偏”触发快照同步(EntityEvent.None)的最小间隔（秒） 防止持续漂移时每帧发包
+    private float lastSnapSyncTime = 0f;        // 上一次因为“位置纠偏”发送 None 的时间
 
 
     void Awake()
@@ -257,7 +251,7 @@ public class PlayerInputController : MonoBehaviour
             {
                 // 从 Idle -> Move：切状态 + 发一次移动事件
                 state = CharacterState.Move;
-                // 让 Character 的速度/状态进入移动（服务端/动画可能依赖这个）
+                // 让 Character 的速度/状态进入移动
                 character.MoveForward();
                 lastMoveEvent = desiredMoveEvent;
                 SendEntityEvent(desiredMoveEvent);
@@ -463,21 +457,26 @@ public class PlayerInputController : MonoBehaviour
     /// </summary>
     public void NavMove()
     {
+        // ① 路径还没算完，先等
         if (agent.pathPending || agent.pathStatus != NavMeshPathStatus.PathComplete)
         {
-            return;  // 寻路还没完成，直接返回
+            return;
         }
+        // ② 渲染路径线（让玩家看到走向）
         if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
         {
-            // target的路径不可到达，直接停止
             StopNav();
             return;
         }
-
-        /// 如果能执行到下面逻辑说明寻路一定完成了
+        // ③ 快到终点了，停下来
+        if (agent.remainingDistance < 0.3f)
+        {
+            StopNav();
+            return;
+        }
+        // ④ 玩家按了键盘，中断寻路切回手动
         if (Mathf.Abs(Input.GetAxis("Vertical")) > 0.1 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0.1)
         {
-            // 玩家有主动输入，说明玩家想结束自动寻路
             StopNav();
             return;
         }

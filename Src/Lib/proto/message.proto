@@ -57,6 +57,28 @@ enum ENTITY_EVENT
     SkillC = 10;
 }
 
+// 怪物
+// 怪物 AI 状态枚举，和 ENTITY_EVENT 分离
+enum MONSTER_STATE
+{
+    MONSTER_PATROL = 0;  // 巡逻
+    MONSTER_CHASE  = 1;  // 追击，param = 目标玩家 entityId
+    MONSTER_RETURN = 2;  // 返回
+}
+// 怪物状态同步消息
+message MonsterStateSync
+{
+    int32         monster_entity_id = 1; // 哪只怪物
+    MONSTER_STATE state             = 2; // 切换到什么状态
+    int32         param             = 3; // 附加参数（追击时是目标玩家entityId）
+    NEntity       entity            = 4; // 怪物当前位置和朝向
+}
+// 服务端 → 客户端的响应，广播怪物状态变化
+message MonsterStateSyncResponse
+{
+    repeated MonsterStateSync syncs = 1;
+}
+
 // 道具
 enum ITEM_TYPE 
 {
@@ -104,7 +126,7 @@ message NEntitySync {
 	int32 id = 1;            // 发生同步的实体ID
 	ENTITY_EVENT event = 2;  // 触发的事件（移动、跳跃等）
 	NEntity entity = 3;      // 同步后的实体快照（位置/方向/速度等）
-	int32 param = 4;	// 
+	int32 param = 4;        // 事件参数（如跳跃高度、攻击类型等）
 }
 
 
@@ -171,9 +193,7 @@ message NetMessageResponse{
 	UserGameLeaveResponse gameLeave = 5;          // 离开游戏结果
 
 	MapCharacterEnterResponse mapCharacterEnter = 6; // 进入地图结果/同步
-
 	MapCharacterLeaveResponse mapCharacterLeave = 7; // 地图内角色离开通知
-
 	MapEntitySyncResponse mapEntitySync = 8;      // 实体同步（服务器广播）
 
 	ItemBuyResponse itemBuy = 10;                    // 购买物品结果
@@ -200,7 +220,9 @@ message NetMessageResponse{
 	GuildListResponse guildList = 28;
 	GuildAdminResponse guildAdmin = 29;
 	ChatResponse chat = 30;
-	
+
+	MonsterStateSyncResponse monsterStateSync = 31;
+
 	StatusNotify statusNotify = 100;                   // 状态通知
 	
 }
@@ -256,6 +278,16 @@ message NItemInfo {
 message NBagInfo {
 	int32 Unlocked = 1;         // 已解锁格子数
 	bytes items = 2; 			// 背包中的道具信息
+}
+
+/* ———————————————————————怪物————————————————————————————— */
+message NMonsterInfo {
+    int32 config_id      = 1;  // 怪物配置 ID，对应 M1001
+    int32 entity_id      = 2;  // 运行时 Entity ID
+    int32 level          = 3;  // 等级
+    NEntity entity       = 4;  // 位置、朝向、速度
+    int32 spawn_point_id = 5;  // 刷怪点 ID，客户端用来找对应 SpawnPoint 读取巡逻路径
+	int32 map_id         = 6;  // 怪物所在地图 ID
 }
 
 /* ———————————————————————状态系统————————————————————————————— */
@@ -355,6 +387,7 @@ message MapCharacterEnterResponse
 {
 	int32 mapId = 1;                    // 当前地图ID
 	repeated NCharacterInfo characters = 2; // 地图内可见角色列表
+	repeated NMonsterInfo monsters     = 3; // 怪物列表
 }
 /* ———————————————————————————————————————————————————— */
 message MapCharacterLeaveResponse

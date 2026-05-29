@@ -49,6 +49,7 @@ namespace Managers
                 OnCharacterEnter(character);
             }
         }
+
         /// <summary>
         /// 从管理器中移除角色
         /// </summary>
@@ -67,6 +68,7 @@ namespace Managers
                 CharactersMngr.Remove(entityId);
             }
         }
+
         public void Clear()
         {
             int[] keys = this.CharactersMngr.Keys.ToArray();

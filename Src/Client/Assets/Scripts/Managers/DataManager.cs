@@ -23,13 +23,15 @@ public class DataManager : Singleton<DataManager>
     internal Dictionary<int, RideDefine> Rides = null;
     public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
     public Dictionary<int, Dictionary<int, SpawnRuleDefine>> SpawnRules = null;
+    public Dictionary<int, MonsterDefine> Monsters = null;
+
 
     public DataManager()
     {
         this.DataPath = "Data/"; 
     }
 
-    /*Load() 方法会读取游戏数据文件（如CharacterDefine.txt），并解析成对象（如 CharacterDefine），存储到字典中。不分帧（Load）的效果：主线程会在某一帧（或几帧）里连续做“文件读取 + JSON 反序列化 + 构建字典/索引”。*/
+    /*Load() 是同步版本，调用后主线程会一直阻塞，把所有配置文件全部读完才继续执行。它用于 Editor 工具，比如 MapTools.ExportSpawnPoints() 点击菜单后需要立刻读到数据，没有进度条，没有等待，直接读完就用。*/
     public void Load()
     {
         string json = File.ReadAllText(this.DataPath + "MapDefine.txt"); 
@@ -61,12 +63,9 @@ public class DataManager : Singleton<DataManager>
 
         json = File.ReadAllText(this.DataPath + "RideDefine.txt");
         this.Rides = JsonConvert.DeserializeObject<Dictionary<int, RideDefine>>(json);
-
-        //json = File.ReadAllText(this.DataPath + "SpawnPointDefine.txt");
-        //this.SpawnPoints = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, SpawnPointDefine>>> (json);
     }
 
-    /*放进 LoadingManager使用，是因为它负责“加载页/进度条/过场动画”的生命周期，只有在这里分帧加载才有意义，用户才能看到进度、按钮还能响应，动画也不会卡住。*/
+    /*LoadData() 是协程版本，放进 LoadingManager使用，每读一个文件就 yield return null 让出一帧，分散到多帧里执行。它用于游戏运行时的 Loading 界面，玩家在看进度条的时候，后台在逐帧加载数据，UI 不会卡死，动画也能正常播放*/
     public IEnumerator LoadData()
     {
         string json = File.ReadAllText(this.DataPath + "MapDefine.txt");
@@ -98,6 +97,9 @@ public class DataManager : Singleton<DataManager>
 
         json = File.ReadAllText(this.DataPath + "RideDefine.txt");
         this.Rides = JsonConvert.DeserializeObject<Dictionary<int, RideDefine>>(json);
+
+        json = File.ReadAllText(this.DataPath + "MonsterDefine.txt");
+        this.Monsters = JsonConvert.DeserializeObject<Dictionary<int, MonsterDefine>>(json);
 
         yield return null;
     }

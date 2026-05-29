@@ -67,13 +67,16 @@
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Interfaces\ISceneGUIContext.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\GUI\SceneGUI.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\PopupDrawer.cs" />
+    <Compile Include="Assets\Editor\MonsterPatrolControllerEditor.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\InflectedFormDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\HyperTextLinkStyleDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Gizmos\EditorGizmos.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\PropertyBackingFieldDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\GUI\EditorGUIXRedistributable.cs" />
+    <Compile Include="Assets\Editor\EntityInspectorWindow.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\HyperTextProcessorDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Utilities\SerializedPropertyX.cs" />
+    <Compile Include="Assets\Editor\HierarchyIconDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Editors\KeywordCollectionEditor.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Editors\HyperTextStylesEditor.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\FlushChildrenDrawer.cs" />
@@ -89,12 +92,15 @@
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\HyperTextLinkSubclassDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\GUI\EditorStylesX.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\GUI\EditorGUIX.cs" />
+    <Compile Include="Assets\Editor\SpawnPointEditor.cs" />
+    <Compile Include="Assets\Editor\AssetsTools.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Editors\HyperTextEditor.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Define Symbols\HyperTextDefineSymbols.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Utilities\EditorUtilityX.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\HyperTextTextStyleDrawer.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Utilities\ReflectionX.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Editors\KeywordsGlossaryEditor.cs" />
+    <Compile Include="Assets\Editor\HierarchyTools.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Utilities\AssetDatabaseX.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Editor\Candlelight\Library\Property Drawers\RichTextStyleDrawer.cs" />
   </ItemGroup>

@@ -34,8 +34,19 @@ namespace GameServer.Entities
             this.Info.ConfigId = configId;          // 配置表里的id
             this.Info.Entity = this.EntityData;
             this.Info.EntityId = this.entityId;     // 实体id
-            this.Define = DataManager.Instance.Characters[this.Info.ConfigId];
-            this.Info.Name = this.Define.Name;
+
+            if (type == CharacterType.Monster)
+            {
+                // 怪物不查 Characters 字典，名字由 Monster 子类自己设置
+                this.Define = null;
+                this.Info.Name = "Monster_" + configId;
+            }
+            else
+            {
+                // 玩家正常查 Characters 字典
+                this.Define = DataManager.Instance.Characters[configId];
+                this.Info.Name = this.Define.Name;
+            }
         }
     }
 }

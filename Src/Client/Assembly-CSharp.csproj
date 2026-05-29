@@ -82,6 +82,7 @@
     <Compile Include="Assets\Scripts\UI\Guild\UIGuild.cs" />
     <Compile Include="Assets\Scripts\UI\Shop\UIShopItem.cs" />
     <Compile Include="Assets\Scripts\UI\UISystemConfig.cs" />
+    <Compile Include="Assets\Scripts\Entities\Monster.cs" />
     <Compile Include="Assets\Scripts\Managers\GuildManager.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\GUI\TextAnchorX.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneManager.cs" />
@@ -171,6 +172,8 @@
     <Compile Include="Assets\Scripts\UI\TabView\TabButton.cs" />
     <Compile Include="Assets\Scripts\Services\UserService.cs" />
     <Compile Include="Assets\Scripts\GameObject\RideController.cs" />
+    <Compile Include="Assets\Scripts\GameObject\MonsterPatrolController.cs" />
+    <Compile Include="Assets\Scripts\Managers\MonsterManager.cs" />
     <Compile Include="Assets\ThirdParty\Candlelight\Library\Property Attributes\PropertyBackingFieldAttribute.cs" />
     <Compile Include="Assets\Scripts\Models\User.cs" />
     <Compile Include="Assets\Scripts\UI\Ride\UIRideItem.cs" />

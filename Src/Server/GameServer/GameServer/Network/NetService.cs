@@ -20,8 +20,7 @@ namespace Network
             ServerListener.SocketConnected += OnSocketConnected;
             return true;
         }
-
-
+         
         public void Start()
         {
             //启动监听
@@ -31,7 +30,6 @@ namespace Network
             MessageDistributer<NetConnection<NetSession>>.Instance.Start(8);
             Log.Warning("NetService Started");
         }
-
 
         public void Stop()
         {
@@ -43,6 +41,11 @@ namespace Network
             MessageDistributer<NetConnection<NetSession>>.Instance.Stop();
         }
 
+        /// <summary>
+        /// 当有新客户端连上来
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSocketConnected(object sender, Socket e)
         {
             IPEndPoint clientIP = (IPEndPoint)e.RemoteEndPoint;
@@ -59,35 +62,30 @@ namespace Network
             Log.WarningFormat("Client[{0}]] Connected", clientIP);
         }
 
-
         /// <summary>
-        /// 连接断开回调
+        /// 断开连接时触发
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         static void Disconnected(NetConnection<NetSession> sender, SocketAsyncEventArgs e)
         {
-            //Performance.ServerConnect = Interlocked.Decrement(ref Performance.ServerConnect);
             sender.Session.Disconnected();
             Log.WarningFormat("Client[{0}] Disconnected", e.RemoteEndPoint);
         }
 
 
         /// <summary>
-        /// 接受数据回调
+        /// 收到数据时触发
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         static void DataReceived(NetConnection<NetSession> sender, DataEventArgs e)
         {
-            // Log.WarningFormat("Client[{0}] DataReceived Len:{1}", e.RemoteEndPoint, e.Length);
             // 由包处理器处理封包
             lock (sender.packageHandler)
             {
                 sender.packageHandler.ReceiveData(e.Data, 0, e.Data.Length);
             }
-            //PacketsPerSec = Interlocked.Increment(ref PacketsPerSec);
-            //RecvBytesPerSec = Interlocked.Add(ref RecvBytesPerSec, e.Data.Length);
         }
     }
 }

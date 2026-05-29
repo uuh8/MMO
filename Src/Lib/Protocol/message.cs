@@ -7,6 +7,39 @@ namespace SkillBridge.Message
 {
 
     [global::ProtoBuf.ProtoContract()]
+    public partial class MonsterStateSync : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"monster_entity_id")]
+        public int MonsterEntityId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"state")]
+        public MonsterState State { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"param")]
+        public int Param { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4, Name = @"entity")]
+        public NEntity Entity { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class MonsterStateSyncResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"syncs")]
+        public global::System.Collections.Generic.List<MonsterStateSync> Syncs { get; } = new global::System.Collections.Generic.List<MonsterStateSync>();
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
     public partial class NVector3 : global::ProtoBuf.IExtensible
     {
         private global::ProtoBuf.IExtension __pbn__extensionData;
@@ -271,6 +304,9 @@ namespace SkillBridge.Message
         [global::ProtoBuf.ProtoMember(30, Name = @"chat")]
         public ChatResponse Chat { get; set; }
 
+        [global::ProtoBuf.ProtoMember(31)]
+        public MonsterStateSyncResponse monsterStateSync { get; set; }
+
         [global::ProtoBuf.ProtoMember(100)]
         public StatusNotify statusNotify { get; set; }
 
@@ -430,6 +466,33 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(2, Name = @"items")]
         public byte[] Items { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NMonsterInfo : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"config_id")]
+        public int ConfigId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"entity_id")]
+        public int EntityId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"level")]
+        public int Level { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4, Name = @"entity")]
+        public NEntity Entity { get; set; }
+
+        [global::ProtoBuf.ProtoMember(5, Name = @"spawn_point_id")]
+        public int SpawnPointId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(6, Name = @"map_id")]
+        public int MapId { get; set; }
 
     }
 
@@ -626,6 +689,9 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(2, Name = @"characters")]
         public global::System.Collections.Generic.List<NCharacterInfo> Characters { get; } = new global::System.Collections.Generic.List<NCharacterInfo>();
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"monsters")]
+        public global::System.Collections.Generic.List<NMonsterInfo> Monsters { get; } = new global::System.Collections.Generic.List<NMonsterInfo>();
 
     }
 
@@ -1580,6 +1646,17 @@ namespace SkillBridge.Message
         SkillA = 8,
         SkillB = 9,
         SkillC = 10,
+    }
+
+    [global::ProtoBuf.ProtoContract(Name = @"MONSTER_STATE")]
+    public enum MonsterState
+    {
+        [global::ProtoBuf.ProtoEnum(Name = @"MONSTER_PATROL")]
+        MonsterPatrol = 0,
+        [global::ProtoBuf.ProtoEnum(Name = @"MONSTER_CHASE")]
+        MonsterChase = 1,
+        [global::ProtoBuf.ProtoEnum(Name = @"MONSTER_RETURN")]
+        MonsterReturn = 2,
     }
 
     [global::ProtoBuf.ProtoContract(Name = @"ITEM_TYPE")]

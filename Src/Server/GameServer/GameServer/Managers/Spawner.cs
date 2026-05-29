@@ -82,7 +82,9 @@ namespace GameServer.Managers
                 this.Define.SpawnMonID, 
                 this.Define.SpawnLevel, 
                 this.spawnPoint.Position, 
-                this.spawnPoint.Direction);
+                this.spawnPoint.Direction,
+                this.spawnPoint.ID      // 新增：把刷怪点 ID 传给 MonsterManager
+            );
         }
     }
 }
