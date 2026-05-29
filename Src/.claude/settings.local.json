@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(Get-ChildItem -Path \"F:\\\\Develop Project\\\\Extreme World\\\\MyMMO\\\\Client\" -Directory)",
+      "Bash(Select-Object Name)",
+      "PowerShell(Head *)"
     ]
   }
 }
